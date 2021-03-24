@@ -14,6 +14,9 @@ type Collector struct {
 	Listen    listen    `json:"listen"`
 	Forwarder forwarder `json:"forwarder"`
 	LogFile   string    `json:"logFile"`
+
+	// netflow collector exporter
+	Exporter exporter `json:"exporter"`
 }
 
 // Read configs
@@ -75,4 +78,29 @@ type forwarder struct {
 
 	// UPD port to forward
 	Port int `json:"port"`
+}
+
+// exporter struct
+// will be used to export flow metrics to
+type exporter struct {
+	Kind      string     `json:"kind"`
+	InfluxDBs []influxDB `json:"influxDBs"`
+}
+
+// influxDB exporter struct
+type influxDB struct {
+	// Influx DB Host
+	Host string `json:"host"`
+
+	// Influx DB Port
+	Port int `json:"port"`
+
+	// Influx DB Username
+	Username string `json:"username"`
+
+	// Influx DB Password
+	Password string `json:"password"`
+
+	// Influx DB Database Name
+	Database string `json:"database"`
 }

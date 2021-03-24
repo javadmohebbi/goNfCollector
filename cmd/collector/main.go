@@ -56,7 +56,7 @@ func main() {
 	}
 
 	// check listen UDP port
-	if *port >= 1 && *port <= 6535 {
+	if *port >= 1 && *port <= 65535 {
 		collectorConf.Listen.Port = *port
 
 	}
@@ -107,6 +107,10 @@ func main() {
 		collectorConf.Listen.Port,
 		logr, collectorConf, d,
 	)
+
+	for _, nfexp := range collectorConf.Exporter.InfluxDBs {
+		log.Printf("\n %v:%v (%v) \n", nfexp.Host, nfexp.Port, nfexp.Database)
+	}
 
 	// serve netflow collector service
 	nfcol.Serve()

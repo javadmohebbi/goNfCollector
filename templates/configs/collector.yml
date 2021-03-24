@@ -6,22 +6,16 @@ debug: true
 # LogFile
 logFile: /opt/nfcollector/var/log/collector.log
 
-
 # Listen on address & port
 listen:
-
   # Listen Address
   address: 0.0.0.0
 
   # Listen Port
   port: 6859
 
-
-
-
 # Forwarder configuration
 forwarder:
-
   # Enable
   enabled: true
 
@@ -33,3 +27,19 @@ forwarder:
 
   # Port to forward
   port: 7161
+
+# Exporters
+exporter:
+  kind: influxdb
+  influxDBs:
+    - host: 127.0.0.1
+      port: 8086
+      #username: user
+      #password: secret
+      database: dbNetflow
+
+    - host: 127.0.0.2
+      port: 8087
+      #username: user
+      #password: secret
+      database: dbNetflow2

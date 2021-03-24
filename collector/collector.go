@@ -6,7 +6,9 @@ import (
 	"log"
 	"net"
 	"os"
+	"os/signal"
 	"sync"
+	"syscall"
 
 	"github.com/goNfCollector/collector/nfipfix"
 	"github.com/goNfCollector/collector/nfv1"
@@ -49,7 +51,7 @@ type Collector struct {
 	d *debugger.Debugger
 
 	// channel
-	ch chan bool
+	ch chan os.Signal
 
 	// wait group
 	waitGroup *sync.WaitGroup
@@ -57,16 +59,21 @@ type Collector struct {
 
 // create new netflow collector
 func New(h string, p int, l *logrus.Logger, c *configurations.Collector, d *debugger.Debugger) *Collector {
-	return &Collector{
+	nf := &Collector{
 		host: h,
 		port: p,
 		l:    l,
 		c:    c,
 		d:    d,
 
-		ch:        make(chan bool),
+		ch:        make(chan os.Signal, 1),
 		waitGroup: &sync.WaitGroup{},
 	}
+
+	// grab the signals
+	signal.Notify(nf.ch, syscall.SIGINT, syscall.SIGTERM)
+
+	return nf
 }
 
 // listen to the provided configuration
@@ -113,6 +120,7 @@ func (nf *Collector) Serve() {
 
 	// start collecting netflows
 	nf.collect(udpConn)
+
 }
 
 // this method will do the collection
@@ -121,7 +129,7 @@ func (nf *Collector) collect(conn *net.UDPConn) {
 	defer conn.Close()
 
 	// done the wait group
-	defer nf.waitGroup.Done()
+	// defer nf.waitGroup.Done()
 
 	// set the buffer size
 	data := make([]byte, bufferSize)
@@ -129,18 +137,22 @@ func (nf *Collector) collect(conn *net.UDPConn) {
 	// set the decoder
 	decoders := make(map[string]*netflow.Decoder)
 
+	ch := make(chan os.Signal, 1)
+	signal.Notify(ch,
+		// https://www.gnu.org/software/libc/manual/html_node/Termination-Signals.html
+		syscall.SIGTERM, // "the normal way to politely ask a program to terminate"
+		syscall.SIGINT,  // Ctrl+C
+		syscall.SIGQUIT, // Ctrl-\
+		syscall.SIGKILL, // "always fatal", "SIGKILL and SIGSTOP may not be caught by a program"
+		syscall.SIGHUP,  // "terminal is disconnected"
+	)
+
 	// collect & wait until
 	// get the SIGTERM
 	for {
-		select {
-		case <-nf.ch:
-			nf.d.Verbose("Stopping netflow collector ...",
-				logrus.InfoLevel,
-			)
-			return
-		default:
-			// nothing to do
-		}
+
+		nf.waitGroup.Add(1)
+		defer nf.waitGroup.Done()
 
 		// read data recieved from exporter device
 		length, remote, err := conn.ReadFrom(data)
@@ -180,6 +192,14 @@ func (nf *Collector) collect(conn *net.UDPConn) {
 		// parse netflow
 		go nf.parse(m, remote, data)
 
+		// check if channel signal has notified
+		<-ch
+		nf.d.Verbose("Stopping netflow collector ...",
+			logrus.InfoLevel,
+		)
+		// exit all the things
+		return
+
 	}
 }
 
@@ -188,8 +208,10 @@ func (nf *Collector) parse(m interface{}, remote net.Addr, data []byte) {
 	defer nf.waitGroup.Done()
 	nf.waitGroup.Add(1)
 
+	// metrics to collect
 	var metrics []common.Metric
 
+	// check the netflow version
 	switch p := m.(type) {
 	case *netflow1.Packet:
 		metrics = nfv1.Prepare(remote.String(), p)
@@ -211,6 +233,8 @@ func (nf *Collector) parse(m interface{}, remote net.Addr, data []byte) {
 
 	}
 
-	log.Println(metrics)
+	for _, m := range metrics {
+		log.Println(m.Bytes, m.FlowVersion, m.Device)
+	}
 
 }
