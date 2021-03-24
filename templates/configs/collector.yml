@@ -35,12 +35,6 @@ exporter:
   influxDBs:
     - host: 127.0.0.1
       port: 8086
-      #username: user
-      #password: secret
-      database: dbNetflow
-
-    - host: 127.0.0.2
-      port: 8087
-      #username: user
-      #password: secret
-      database: dbNetflow2
+      token: zFLheDO3orEfXnn8H_GiZ9H3KgNEZtKWEbVHiTX0_Z6KUU1Gb17l2sfQUXCf0ExIcGTD8IEYHGV69Jh8ZKVKkQ==
+      bucket: nfBucket
+      org: MJMOHEBBI

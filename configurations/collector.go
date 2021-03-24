@@ -94,12 +94,12 @@ type influxDB struct {
 	// Influx DB Port
 	Port int `json:"port"`
 
-	// Influx DB Username
-	Username string `json:"username"`
+	// Influx DB Token
+	Token string `json:"token"`
 
-	// Influx DB Password
-	Password string `json:"password"`
+	// Influx DB Bucket
+	Bucket string `json:"bucket"`
 
-	// Influx DB Database Name
-	Database string `json:"database"`
+	// Influx DB Database Org
+	Org string `json:"org"`
 }

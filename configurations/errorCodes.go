@@ -26,6 +26,9 @@ const (
 	// can not decode netflow data
 	ERROR_CAN_T_DECODE_NETFLOW_DATA
 
+	// It's not a valid exporter
+	ERROR_NO_VALID_EXPORTER_FOUND
+
 	// UNKOWN ERORR
 	ERROR_UKNOWN
 )
@@ -44,6 +47,8 @@ func (e ErrorCodes) String() string {
 		"Can not set connection read buffer",
 		"Can not read recieved data from exporter device",
 		"Can not decode netflow data",
+
+		"It's not a valid exporter",
 
 		"Unknown error",
 	}[e]

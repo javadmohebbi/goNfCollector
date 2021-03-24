@@ -3,7 +3,6 @@ package collector
 import (
 	"bytes"
 	"fmt"
-	"log"
 	"net"
 	"os"
 	"os/signal"
@@ -19,6 +18,8 @@ import (
 	"github.com/goNfCollector/common"
 	"github.com/goNfCollector/configurations"
 	"github.com/goNfCollector/debugger"
+	"github.com/goNfCollector/exporters"
+	"github.com/goNfCollector/influxdb"
 	"github.com/sirupsen/logrus"
 	"github.com/tehmaze/netflow"
 	"github.com/tehmaze/netflow/ipfix"
@@ -55,10 +56,13 @@ type Collector struct {
 
 	// wait group
 	waitGroup *sync.WaitGroup
+
+	exporters []exporters.Exporter
 }
 
 // create new netflow collector
 func New(h string, p int, l *logrus.Logger, c *configurations.Collector, d *debugger.Debugger) *Collector {
+
 	nf := &Collector{
 		host: h,
 		port: p,
@@ -69,6 +73,9 @@ func New(h string, p int, l *logrus.Logger, c *configurations.Collector, d *debu
 		ch:        make(chan os.Signal, 1),
 		waitGroup: &sync.WaitGroup{},
 	}
+
+	// extract valid exporters
+	nf.exporters = nf.getExporters()
 
 	// grab the signals
 	signal.Notify(nf.ch, syscall.SIGINT, syscall.SIGTERM)
@@ -128,15 +135,13 @@ func (nf *Collector) collect(conn *net.UDPConn) {
 	// close the udp connection
 	defer conn.Close()
 
-	// done the wait group
-	// defer nf.waitGroup.Done()
-
 	// set the buffer size
 	data := make([]byte, bufferSize)
 
 	// set the decoder
 	decoders := make(map[string]*netflow.Decoder)
 
+	// make notify channel
 	ch := make(chan os.Signal, 1)
 	signal.Notify(ch,
 		// https://www.gnu.org/software/libc/manual/html_node/Termination-Signals.html
@@ -197,7 +202,14 @@ func (nf *Collector) collect(conn *net.UDPConn) {
 		nf.d.Verbose("Stopping netflow collector ...",
 			logrus.InfoLevel,
 		)
-		// exit all the things
+		// cleaning up things
+
+		// close all open
+		for _, e := range nf.exporters {
+			// close exporter clients if needed
+			e.Close()
+		}
+
 		return
 
 	}
@@ -233,8 +245,43 @@ func (nf *Collector) parse(m interface{}, remote net.Addr, data []byte) {
 
 	}
 
-	for _, m := range metrics {
-		log.Println(m.Bytes, m.FlowVersion, m.Device)
+	// export metrics if neededs
+	go nf.export(metrics)
+
+}
+
+// find valid netflow exporters and return them
+func (nf *Collector) getExporters() []exporters.Exporter {
+
+	var exps []exporters.Exporter
+
+	// Loop through InfluxDB Exporters
+	for _, ex := range nf.c.Exporter.InfluxDBs {
+		ifl := influxdb.New(ex.Token, ex.Bucket, ex.Org, ex.Host, ex.Port, nf.d)
+		influxExporter, err := exporters.New(ifl, ifl.Debuuger)
+		if err != nil {
+			// errors handled in the exporter new package
+			continue
+		}
+
+		// if no error, append it to exporters
+		exps = append(exps, *influxExporter)
 	}
 
+	return exps
+}
+
+// export if needed
+func (nf *Collector) export(metrics []common.Metric) {
+
+	// check if there are valid exporters
+	if len(nf.exporters) > 0 {
+
+		// loop through exporters
+		for _, e := range nf.exporters {
+
+			// write metrics
+			go e.Write(metrics)
+		}
+	}
 }
