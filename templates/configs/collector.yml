@@ -30,7 +30,8 @@ forwarder:
 
 # Exporters
 exporter:
-  kind: influxdb
+  # InfluxDB exporter
+  # you can config as many as you want
   influxDBs:
     - host: 127.0.0.1
       port: 8086

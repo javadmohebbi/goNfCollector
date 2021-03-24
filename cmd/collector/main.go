@@ -108,10 +108,6 @@ func main() {
 		logr, collectorConf, d,
 	)
 
-	for _, nfexp := range collectorConf.Exporter.InfluxDBs {
-		log.Printf("\n %v:%v (%v) \n", nfexp.Host, nfexp.Port, nfexp.Database)
-	}
-
 	// serve netflow collector service
 	nfcol.Serve()
 
