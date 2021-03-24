@@ -1,0 +1,35 @@
+# Collector Configurations
+
+# Debug mode
+debug: true
+
+# LogFile
+logFile: /opt/nfcollector/var/log/collector.log
+
+
+# Listen on address & port
+listen:
+
+  # Listen Address
+  address: 0.0.0.0
+
+  # Listen Port
+  port: 6859
+
+
+
+
+# Forwarder configuration
+forwarder:
+
+  # Enable
+  enabled: true
+
+  # Host to forward
+  hosts:
+    - 127.0.0.1
+    - 192.168.1.1
+    - 10.20.3.15
+
+  # Port to forward
+  port: 7161
