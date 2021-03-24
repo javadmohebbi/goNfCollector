@@ -83,7 +83,6 @@ type forwarder struct {
 // exporter struct
 // will be used to export flow metrics to
 type exporter struct {
-	Kind      string     `json:"kind"`
 	InfluxDBs []influxDB `json:"influxDBs"`
 }
 
