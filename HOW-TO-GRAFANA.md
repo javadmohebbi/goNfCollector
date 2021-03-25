@@ -5,7 +5,7 @@
 - Run container
 ```
 docker run -d --network tick-net \
---user $(id -u)
+--user $(id -u) \
 -p 3000:3000 \
 -v /opt/nfcollector/vendors/grafana:/var/lib/grafana \
 --name=grafana \
