@@ -281,10 +281,8 @@ func (nf *Collector) parse(m interface{}, remote net.Addr, data []byte) {
 
 	}
 
-	color.Yellow.Printf("\n ==> len: %v \n", len(metrics))
-
 	// export metrics if neededs
-	// go nf.export(metrics)
+	go nf.export(metrics)
 
 }
 
@@ -322,10 +320,8 @@ func (nf *Collector) export(metrics []common.Metric) {
 
 	// check if there are valid exporters
 	if len(nf.exporters) > 0 {
-
 		// loop through exporters
 		for _, e := range nf.exporters {
-
 			// write metrics
 			e.Write(metrics)
 		}
