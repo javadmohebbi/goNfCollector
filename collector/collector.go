@@ -21,6 +21,7 @@ import (
 	"github.com/goNfCollector/exporters"
 	"github.com/goNfCollector/influxdb"
 	"github.com/goNfCollector/location"
+	"github.com/gookit/color"
 	"github.com/sirupsen/logrus"
 	"github.com/tehmaze/netflow"
 	"github.com/tehmaze/netflow/ipfix"
@@ -184,6 +185,24 @@ func (nf *Collector) collect(conn *net.UDPConn) {
 		syscall.SIGHUP,  // "terminal is disconnected"
 	)
 
+	go func() {
+		// check if channel signal has notified
+		<-ch
+
+		nf.d.Verbose("Stopping netflow collector ...",
+			logrus.InfoLevel,
+		)
+		// cleaning up things
+
+		// close all open
+		for _, e := range nf.exporters {
+			// close exporter clients if needed
+			e.Close()
+		}
+		color.Red.Printf("\nApp Exited due to recieved signal from OS or User!\n")
+		os.Exit(0)
+	}()
+
 	// collect & wait until
 	// get the SIGTERM
 	for {
@@ -224,25 +243,10 @@ func (nf *Collector) collect(conn *net.UDPConn) {
 		}
 
 		// write debug info
-		// nf.d.Verbose(fmt.Sprintf("received %d bytes from %s - COUNT(%v)\n", length, remote), logrus.DebugLevel)
+		nf.d.Verbose(fmt.Sprintf("received %d bytes from %s\n", length, remote), logrus.DebugLevel)
 
 		// parse netflow
 		go nf.parse(m, remote, data)
-
-		// check if channel signal has notified
-		<-ch
-		nf.d.Verbose("Stopping netflow collector ...",
-			logrus.InfoLevel,
-		)
-		// cleaning up things
-
-		// close all open
-		for _, e := range nf.exporters {
-			// close exporter clients if needed
-			e.Close()
-		}
-
-		return
 
 	}
 }
@@ -277,8 +281,10 @@ func (nf *Collector) parse(m interface{}, remote net.Addr, data []byte) {
 
 	}
 
+	color.Yellow.Printf("\n ==> len: %v \n", len(metrics))
+
 	// export metrics if neededs
-	go nf.export(metrics)
+	// go nf.export(metrics)
 
 }
 
