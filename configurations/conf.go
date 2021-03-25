@@ -24,16 +24,30 @@ type ConfType int
 // enum const for type of configuration files
 const (
 	CONF_TYPE_COLLECTOR ConfType = iota
+<<<<<<< HEAD
 
 	CONF_TYPE_IP2LOCATION
+=======
+	CONF_TYPE_DATABASE
+	CONF_TYPE_EXPORTER
+	CONF_TYPE_API
+	CONF_TYPE_WEB
+>>>>>>> a23579dadc9ed22a00f4342d116e75fdf26c2253
 )
 
 // return filename related to requested configuration
 func (ct ConfType) String() string {
 	return [...]string{
 		"collector",
+<<<<<<< HEAD
 
 		"ip2location",
+=======
+		"database",
+		"exporter",
+		"api",
+		"web",
+>>>>>>> a23579dadc9ed22a00f4342d116e75fdf26c2253
 	}[ct]
 }
 
@@ -54,6 +68,7 @@ func New(ct ConfType) (Configuration, error) {
 				confFile: cf,
 			},
 		), nil
+<<<<<<< HEAD
 	case CONF_TYPE_IP2LOCATION:
 		return Configuration(
 			&IP2Location{
@@ -64,6 +79,8 @@ func New(ct ConfType) (Configuration, error) {
 				},
 			},
 		), nil
+=======
+>>>>>>> a23579dadc9ed22a00f4342d116e75fdf26c2253
 	default:
 		return Configuration(&Collector{}), errors.New(fmt.Sprintf("No valid configuration type found"))
 	}

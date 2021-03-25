@@ -29,12 +29,15 @@ const (
 	// It's not a valid exporter
 	ERROR_NO_VALID_EXPORTER_FOUND
 
+<<<<<<< HEAD
 	// Unable to open ip2location database
 	ERROR_OPEN_IP2LOCATION_DB
 
 	// Can't get IP Location information due to error
 	ERROR_GET_IP2LOCATION_INFO
 
+=======
+>>>>>>> a23579dadc9ed22a00f4342d116e75fdf26c2253
 	// UNKOWN ERORR
 	ERROR_UKNOWN
 )
@@ -56,9 +59,12 @@ func (e ErrorCodes) String() string {
 
 		"It's not a valid exporter",
 
+<<<<<<< HEAD
 		"Unable to open IP2Location DB",
 		"Can't get IP Location information due to error",
 
+=======
+>>>>>>> a23579dadc9ed22a00f4342d116e75fdf26c2253
 		"Unknown error",
 	}[e]
 }
