@@ -323,7 +323,7 @@ func (nf *Collector) export(metrics []common.Metric) {
 		// loop through exporters
 		for _, e := range nf.exporters {
 			// write metrics
-			e.Write(metrics)
+			go e.Write(metrics)
 		}
 	}
 }

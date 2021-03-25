@@ -35,6 +35,6 @@ exporter:
   influxDBs:
     - host: 127.0.0.1
       port: 8086
-      token: zFLheDO3orEfXnn8H_GiZ9H3KgNEZtKWEbVHiTX0_Z6KUU1Gb17l2sfQUXCf0ExIcGTD8IEYHGV69Jh8ZKVKkQ==
+      token: tWJ5r5melJ48OobcfnXg8Ts5S-uNMB0OE5Spl0-9wiMsoISm1UwcbhCy_WZZXLnbgYB18Bg7mzZaHmzYv2q3DA==
       bucket: nfBucket
       org: MJMOHEBBI
