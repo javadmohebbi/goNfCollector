@@ -9,61 +9,41 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// write to db
 func (i *InfluxDBv2) Write(metrics []common.Metric) error {
-
-	// i.WaitGroup.Add(1)
-	// defer i.WaitGroup.Done()
-
-	// // define new write api
-	// // wapi := i.client.WriteAPI(i.Org, i.Bucket)
-
-	// // wapi.WriteRecord(fmt.Sprintf("test,unit=temp avg=%f,max=%f", 33.4, 44.2))
-	// // wapi.WriteRecord(fmt.Sprintf("test,unit=temp avg=%f,max=%f", 23.4, 22.2))
-	// // wapi.WriteRecord(fmt.Sprintf("test,unit=temp avg=%f,max=%f", 43.4, 56.2))
-	// // wapi.WriteRecord(fmt.Sprintf("test,unit=temp avg=%f,max=%f", 13.4, 14.2))
-	// // wapi.WriteRecord(fmt.Sprintf("test,unit=temp avg=%f,max=%f", 32.4, 42.2))
-	// // wapi.WriteRecord(fmt.Sprintf("test,unit=temp avg=%f,max=%f", 53.4, 54.2))
-	// // wapi.WriteRecord(fmt.Sprintf("test,unit=temp avg=%f,max=%f", 34.4, 45.2))
-
-	// // i.Debuuger.Verbose(fmt.Sprintf("writing %v record(s) to %v:%v bucket:%v org:%v ", len(metrics), i.Host, i.Port, i.Bucket, i.Org), logrus.DebugLevel)
-
-	// // wapi.Flush()
-
-	// // no error will be returned yet
-	// // but wapi.Errors() channel will be used
-	// // in the future
-	// return nil
-
 	// define new write api
-	wapi := i.client.WriteAPI(i.Org, i.Bucket)
+	// wapi := i.client.WriteAPI(i.Org, i.Bucket)
 
-	for _, m := range metrics {
-		// ilNextHop := i.getLocation(m.NextHop)
-		ilSrc, ilDst := i.getLocation(m.SrcIP), i.getLocation(m.DstIP)
+	// for _, m := range metrics {
+	// 	// ilNextHop := i.getLocation(m.NextHop)
+	// 	ilSrc, ilDst := i.getLocation(m.SrcIP), i.getLocation(m.DstIP)
 
-		// prepare protoline
-		protoLine := fmt.Sprintf("flows,ver=%v,device=%v,proto=%v,"+
-			"sHost=%v,sPort=%v,dHost=%v,dPort=%v,"+
-			"sCountSh=%v,sCountLo=%v,sRegion=%v,sCity=%v,"+
-			"dCountSh=%v,dCountLo=%v,dRegion=%v,dCity=%v"+
-			" bytes=%vi,packets=%vi,version=\"%v\","+
-			"ddLat=%f,ddLon=%f,ssLat=%f,ssLon=%f %v",
-			m.FlowVersion, m.Device, m.ProtoName,
-			m.SrcIP, m.SrcPortName, m.DstIP, m.DstPortName,
-			ilSrc.Country_short, ilSrc.Country_long, ilSrc.Region, ilSrc.City,
-			ilDst.Country_short, ilDst.Country_long, ilDst.Region, ilDst.City,
-			m.Bytes, m.Packets, m.FlowVersion,
-			ilDst.Latitude, ilDst.Longitude, ilSrc.Latitude, ilSrc.Longitude, m.Time.UnixNano(),
-		)
+	// 	// prepare protoline
+	// 	protoLine := fmt.Sprintf("flows,ver=%v,device=%v,proto=%v,"+
+	// 		"sHost=%v,sPort=%v,dHost=%v,dPort=%v,"+
+	// 		"sCountSh=%v,sCountLo=%v,sRegion=%v,sCity=%v,"+
+	// 		"dCountSh=%v,dCountLo=%v,dRegion=%v,dCity=%v"+
+	// 		" bytes=%vi,packets=%vi,version=\"%v\","+
+	// 		"ddLat=%f,ddLon=%f,ssLat=%f,ssLon=%f %v",
+	// 		m.FlowVersion, m.Device, m.ProtoName,
+	// 		m.SrcIP, m.SrcPortName, m.DstIP, m.DstPortName,
+	// 		ilSrc.Country_short, ilSrc.Country_long, ilSrc.Region, ilSrc.City,
+	// 		ilDst.Country_short, ilDst.Country_long, ilDst.Region, ilDst.City,
+	// 		m.Bytes, m.Packets, m.FlowVersion,
+	// 		ilDst.Latitude, ilDst.Longitude, ilSrc.Latitude, ilSrc.Longitude, m.Time.UnixNano(),
+	// 	)
 
-		// write proto line records
-		wapi.WriteRecord(protoLine)
-	}
+	// 	// write proto line records
+	// 	wapi.WriteRecord(protoLine)
+	// }
 
-	i.Debuuger.Verbose(fmt.Sprintf("writing %v record(s) to %v:%v bucket:%v org:%v ", len(metrics), i.Host, i.Port, i.Bucket, i.Org), logrus.DebugLevel)
+	// i.Debuuger.Verbose(fmt.Sprintf("writing %v record(s) to %v:%v bucket:%v org:%v ", len(metrics), i.Host, i.Port, i.Bucket, i.Org), logrus.DebugLevel)
 
-	// write to influx
-	wapi.Flush()
+	// // write to influx
+	// wapi.Flush()
+
+	// device measurement
+	go i.measureDevice(metrics)
 
 	return nil
 }
