@@ -3,6 +3,7 @@ package nfv7
 import (
 	"fmt"
 	"net"
+	"time"
 
 	"github.com/goNfCollector/common"
 	"github.com/tehmaze/netflow/netflow7"
@@ -14,6 +15,10 @@ func Prepare(addr string, p *netflow7.Packet) []common.Metric {
 	var met common.Metric
 	for _, r := range p.Records {
 		met = common.Metric{OutBytes: "0", InBytes: "0", OutPacket: "0", InPacket: "0", Device: nfExporter}
+
+		met.Time = p.Header.Unix
+		met.Uptime = time.Duration(p.Header.SysUptime) * time.Second
+
 		met.FlowVersion = "Netflow-V7"
 		met.Direction = "Unsupported"
 		met.First = fmt.Sprintf("%v", r.First)

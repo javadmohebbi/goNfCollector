@@ -249,8 +249,8 @@ func (nf *Collector) collect(conn *net.UDPConn) {
 
 // parse netflow from traffic
 func (nf *Collector) parse(m interface{}, remote net.Addr, data []byte) {
-	defer nf.waitGroup.Done()
-	nf.waitGroup.Add(1)
+	// defer nf.waitGroup.Done()
+	// nf.waitGroup.Add(1)
 
 	// metrics to collect
 	var metrics []common.Metric
@@ -292,7 +292,7 @@ func (nf *Collector) getExporters() []exporters.Exporter {
 	for _, ex := range nf.c.Exporter.InfluxDBs {
 
 		// create new influxDB
-		ifl := influxdb.New(ex.Token, ex.Bucket, ex.Org, ex.Host, ex.Port, nf.d, nf.iploc)
+		ifl := influxdb.New(ex.Token, ex.Bucket, ex.Org, ex.Host, ex.Port, nf.d, nf.iploc, nf.waitGroup)
 
 		// create new influxDB exporter
 		influxExporter, err := exporters.New(ifl, ifl.Debuuger)
@@ -311,6 +311,9 @@ func (nf *Collector) getExporters() []exporters.Exporter {
 // export if needed
 func (nf *Collector) export(metrics []common.Metric) {
 
+	// nf.waitGroup.Add(1)
+	// defer nf.waitGroup.Done()
+
 	// check if there are valid exporters
 	if len(nf.exporters) > 0 {
 
@@ -318,7 +321,7 @@ func (nf *Collector) export(metrics []common.Metric) {
 		for _, e := range nf.exporters {
 
 			// write metrics
-			go e.Write(metrics)
+			e.Write(metrics)
 		}
 	}
 }

@@ -3,6 +3,7 @@ package nfv9
 import (
 	"fmt"
 	"net"
+	"time"
 
 	"strings"
 
@@ -21,6 +22,10 @@ func Prepare(addr string, p *netflow9.Packet) []common.Metric {
 		}
 		for _, dr := range ds.Records {
 			met = common.Metric{OutBytes: "0", InBytes: "0", OutPacket: "0", InPacket: "0", Device: nfExporter}
+
+			met.Time = time.Unix(int64(p.Header.UnixSecs), 0)
+			met.Uptime = time.Duration(p.Header.SysUpTime) * time.Second
+
 			met.FlowVersion = "Netflow-V9"
 			for _, f := range dr.Fields {
 				if f.Translated != nil {

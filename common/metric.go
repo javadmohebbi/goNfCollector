@@ -1,6 +1,10 @@
 package common
 
+import "time"
+
 type Metric struct {
+	Time                time.Time
+	Uptime              time.Duration
 	FlowVersion         string `header:"NF Ver"`
 	Device              string `header:"Device"`
 	Last                string //`header:"Last"`

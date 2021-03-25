@@ -1,6 +1,8 @@
 package nfipfix
 
 import (
+	"time"
+
 	"github.com/goNfCollector/common"
 	"github.com/tehmaze/netflow/ipfix"
 
@@ -24,6 +26,10 @@ func Prepare(addr string, m *ipfix.Message) []common.Metric {
 
 		for _, dr := range ds.Records {
 			met = common.Metric{OutBytes: "0", InBytes: "0", OutPacket: "0", InPacket: "0", Device: nfExporter}
+
+			met.Time = time.Unix(int64(m.Header.ExportTime), 0)
+			// no up time
+
 			met.FlowVersion = "IPFIX"
 			for _, f := range dr.Fields {
 				if f.Translated != nil {
