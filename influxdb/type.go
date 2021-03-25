@@ -4,10 +4,7 @@ import (
 	"fmt"
 
 	"github.com/goNfCollector/debugger"
-<<<<<<< HEAD
 	"github.com/goNfCollector/location"
-=======
->>>>>>> a23579dadc9ed22a00f4342d116e75fdf26c2253
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/sirupsen/logrus"
 )
@@ -35,12 +32,9 @@ type InfluxDBv2 struct {
 
 	// influxdb client
 	client influxdb2.Client
-<<<<<<< HEAD
 
 	// IP2locaion instance
 	iplocation *location.IPLocation
-=======
->>>>>>> a23579dadc9ed22a00f4342d116e75fdf26c2253
 }
 
 // return exporter info
@@ -49,11 +43,7 @@ func (i InfluxDBv2) String() string {
 }
 
 // create new instance of influxDB
-<<<<<<< HEAD
 func New(token, bucket, org, host string, port int, d *debugger.Debugger, ip2location *location.IPLocation) InfluxDBv2 {
-=======
-func New(token, bucket, org, host string, port int, d *debugger.Debugger) InfluxDBv2 {
->>>>>>> a23579dadc9ed22a00f4342d116e75fdf26c2253
 
 	// create new influx db client
 	client := influxdb2.NewClient(
@@ -72,11 +62,8 @@ func New(token, bucket, org, host string, port int, d *debugger.Debugger) Influx
 		Port:     port,
 		Debuuger: d,
 		client:   client,
-<<<<<<< HEAD
 
 		iplocation: ip2location,
-=======
->>>>>>> a23579dadc9ed22a00f4342d116e75fdf26c2253
 	}
 
 }
