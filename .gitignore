@@ -1,1 +1,3 @@
 templates/ip2location/db
+test-docker-container.sh
+flux-qry/**
