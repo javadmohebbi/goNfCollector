@@ -2,6 +2,7 @@ package influxdb
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/goNfCollector/common"
 )
@@ -15,11 +16,15 @@ func (i *InfluxDBv2) measureDevice(metrics []common.Metric) {
 		protoLine := fmt.Sprintf("device,ver=%v,device=%v bytes=%vu,packets=%vu %v",
 			m.FlowVersion,
 			m.Device,
-			m.Bytes, m.Packets,
-			m.Time.UnixNano(),
+			m.Bytes,
+			m.Packets,
+			time.Now().Add(-time.Duration(m.Time.Second())).UnixNano(),
 		)
+		// fmt.Println("====", protoLine)
+
 		// write proto line records
 		wapi.WriteRecord(protoLine)
+
 	}
 
 	// write to influx

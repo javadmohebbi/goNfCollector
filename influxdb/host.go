@@ -2,6 +2,7 @@ package influxdb
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/goNfCollector/common"
 	"github.com/ip2location/ip2location-go"
@@ -45,8 +46,10 @@ func (i *InfluxDBv2) measureHost(metrics []common.Metric, kind string) {
 			i2l.Region,
 			i2l.City,
 			m.Bytes, m.Packets,
-			m.Time.UnixNano(),
+			time.Now().Add(-time.Duration(m.Time.Second())).UnixNano(),
 		)
+
+		// log.Println("+++====", protoLine)
 
 		// write proto line records
 		wapi.WriteRecord(protoLine)

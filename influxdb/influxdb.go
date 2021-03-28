@@ -13,13 +13,13 @@ import (
 func (i *InfluxDBv2) Write(metrics []common.Metric) error {
 
 	// device measurement
-	go i.measureDevice(metrics)
+	i.measureDevice(metrics)
 
 	// write src host
-	go i.measureHost(metrics, "src")
+	i.measureHost(metrics, "src")
 
-	// write src dst
-	go i.measureHost(metrics, "dst")
+	// // write src dst
+	i.measureHost(metrics, "dst")
 
 	return nil
 }

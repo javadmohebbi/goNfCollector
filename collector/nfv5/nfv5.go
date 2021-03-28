@@ -17,7 +17,7 @@ func Prepare(addr string, p *netflow5.Packet) []common.Metric {
 		met = common.Metric{OutBytes: "0", InBytes: "0", OutPacket: "0", InPacket: "0", Device: nfExporter}
 
 		met.Time = p.Header.Unix
-		met.Uptime = time.Duration(p.Header.SysUptime) * time.Second
+		met.Uptime = time.Duration(p.Header.SysUptime) * time.Nanosecond
 
 		met.FlowVersion = "Netflow-V5"
 		met.Direction = "Unsupported"
