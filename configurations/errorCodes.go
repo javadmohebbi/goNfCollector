@@ -38,6 +38,15 @@ const (
 	// Can not open ASN CSV DB
 	ERROR_CAN_T_OPEN_ASN_DB
 
+	// Can not Read ASN CSV DB
+	ERROR_CAN_T_READ_ASN_DB
+
+	// Can not open proxy CSV DB
+	ERROR_CAN_T_OPEN_PROXY_DB
+
+	// Can not Read proxy CSV DB
+	ERROR_CAN_T_READ_PROXY_DB
+
 	// UNKOWN ERORR
 	ERROR_UKNOWN
 )
@@ -62,6 +71,9 @@ func (e ErrorCodes) String() string {
 		"Unable to open IP2Location DB",
 		"Can't get IP Location information due to error",
 		"Can not open ASN CSV DB",
+		"Can not read ASN CSV DB",
+		"Can not open PROXY CSV DB",
+		"Can not read PROXY CSV DB",
 
 		"Unknown error",
 	}[e]

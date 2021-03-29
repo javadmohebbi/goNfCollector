@@ -119,6 +119,12 @@ func (i *InfluxDBv2) measureSrcDstRelatedMetrics(metrics []common.Metric, kind s
 		// asn
 		wapi.WriteRecord(protoLineASN)
 
+		// check if has proxy
+		// and write proto line
+		// if hasProxy, proxyProtoLine := i.measureProxy(host, i2l, m); hasProxy {
+		// 	wapi.WriteRecord(proxyProtoLine)
+		// }
+
 	}
 
 	// write to influx

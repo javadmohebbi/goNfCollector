@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math/big"
 	"net"
 	"os"
 	"strconv"
@@ -146,35 +147,76 @@ func (i *IPLocation) GetAsnName(asNumber string) string {
 	// returning asn name
 	asn := "NA"
 
-	// open asn CSV db
-	f, err := os.Open(i.ASN)
+	// find asn name
+	for _, record := range i.allASN {
 
-	if err != nil {
-		i.d.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
-			configurations.ERROR_CAN_T_OPEN_ASN_DB.Int(),
-			configurations.ERROR_CAN_T_OPEN_ASN_DB, err),
-			logrus.ErrorLevel,
-		)
-		return asn
+		if "AS"+record[ASN_DB_NUMBER_INDEX] == asNumber {
+			asn = record[ASN_DB_NAME_INDEX]
+			break
+		}
+
 	}
 
-	// new csv parser
-	parser := csv.NewReader(f)
+	return asn
+}
+
+// GetProxy Info
+func (i *IPLocation) GetProxyInfo(adr string) (bool, ProxyInfo) {
+
+	// returning prx name
+	hasPrx := false
+	prx := ProxyInfo{}
+
+	host := net.ParseIP(adr)
+	nh := big.NewInt(0)
+	nh.SetBytes(host)
 
 	// find asn name
-	for {
-		record, err := parser.Read()
-		if err == io.EOF {
-			return asn
-		}
-		if err != nil {
+	for _, record := range i.allProxies {
+
+		// GET FROM RANGE
+		nf := new(big.Int)
+		nf, ok := nf.SetString(record[PRX_IP_FROM], 10)
+		if !ok {
 			continue
 		}
 
-		if "AS"+record[ASN_DB_NUMBER_INDEX] == asNumber {
-			return record[ASN_DB_NAME_INDEX]
+		// GET FROM RANGE
+		nt := new(big.Int)
+		nt, ok = nf.SetString(record[PRX_IP_TO], 10)
+		if !ok {
+			continue
+		}
+
+		inRange := false
+
+		compareFrom := nh.Cmp(nf)
+
+		// means nh >= nf
+		if compareFrom >= 0 {
+			compareTo := nh.Cmp(nt)
+
+			// means nh <= nt
+			if compareTo <= 0 {
+				inRange = true
+			}
+		}
+
+		if inRange {
+
+			prx.ISP = record[PRX_ISP]
+			prx.Doamin = record[PRX_DOMAIN]
+			prx.Threat = record[PRX_THREAT]
+			prx.Type = record[PRX_TYPE]
+			prx.UsageType = record[PRX_USAGE_TYPE]
+
+			hasPrx = true
+			break
+
 		}
 
 	}
+
+	return hasPrx, prx
 
 }
