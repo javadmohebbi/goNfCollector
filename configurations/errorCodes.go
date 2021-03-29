@@ -35,6 +35,9 @@ const (
 	// Can't get IP Location information due to error
 	ERROR_GET_IP2LOCATION_INFO
 
+	// Can not open ASN CSV DB
+	ERROR_CAN_T_OPEN_ASN_DB
+
 	// UNKOWN ERORR
 	ERROR_UKNOWN
 )
@@ -58,6 +61,7 @@ func (e ErrorCodes) String() string {
 
 		"Unable to open IP2Location DB",
 		"Can't get IP Location information due to error",
+		"Can not open ASN CSV DB",
 
 		"Unknown error",
 	}[e]

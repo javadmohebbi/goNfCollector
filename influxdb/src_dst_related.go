@@ -78,10 +78,24 @@ func (i *InfluxDBv2) measureSrcDstRelatedMetrics(metrics []common.Metric, kind s
 			time.Now().Add(-time.Duration(m.Time.Second())).UnixNano(),
 		)
 
+		// DNS REverse Looup
 		protoLineReverseLookup := fmt.Sprintf("%vDnsLookup,device=%v,domain=%v,countryLong=%v,countryShort=%v,region=%v,city=%v bytes=%vu,packets=%vu %v",
 			kind,
 			m.Device,
 			i.revereseDNS(host),
+			i2l.Country_long,
+			i2l.Country_short,
+			i2l.Region,
+			i2l.City,
+			m.Bytes, m.Packets,
+			time.Now().Add(-time.Duration(m.Time.Second())).UnixNano(),
+		)
+
+		// ASN Name
+		protoLineASN := fmt.Sprintf("%vAS,device=%v,as=%v,countryLong=%v,countryShort=%v,region=%v,city=%v bytes=%vu,packets=%vu %v",
+			kind,
+			m.Device,
+			i.asnLookup(host),
 			i2l.Country_long,
 			i2l.Country_short,
 			i2l.Region,
@@ -101,6 +115,10 @@ func (i *InfluxDBv2) measureSrcDstRelatedMetrics(metrics []common.Metric, kind s
 
 		// reverse dns lookup
 		wapi.WriteRecord(protoLineReverseLookup)
+
+		// asn
+		wapi.WriteRecord(protoLineASN)
+
 	}
 
 	// write to influx

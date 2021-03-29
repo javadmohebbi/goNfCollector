@@ -139,3 +139,42 @@ func (i *IPLocation) isItInTheRangeIPv4(ip string, startIP string, endIP string)
 	// ip is not in the range
 	return false
 }
+
+// GetAsnName with AS Number
+func (i *IPLocation) GetAsnName(asNumber string) string {
+
+	// returning asn name
+	asn := "NA"
+
+	// open asn CSV db
+	f, err := os.Open(i.ASN)
+
+	if err != nil {
+		i.d.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
+			configurations.ERROR_CAN_T_OPEN_ASN_DB.Int(),
+			configurations.ERROR_CAN_T_OPEN_ASN_DB, err),
+			logrus.ErrorLevel,
+		)
+		return asn
+	}
+
+	// new csv parser
+	parser := csv.NewReader(f)
+
+	// find asn name
+	for {
+		record, err := parser.Read()
+		if err == io.EOF {
+			return asn
+		}
+		if err != nil {
+			continue
+		}
+
+		if "AS"+record[ASN_DB_NUMBER_INDEX] == asNumber {
+			return record[ASN_DB_NAME_INDEX]
+		}
+
+	}
+
+}

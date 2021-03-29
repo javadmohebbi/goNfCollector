@@ -5,6 +5,11 @@ import (
 	"github.com/goNfCollector/debugger"
 )
 
+const (
+	ASN_DB_NUMBER_INDEX int = 3 // index of as number in csv db
+	ASN_DB_NAME_INDEX   int = 4 // index of as name in csv db
+)
+
 // IP 2 Location struct
 type IPLocation struct {
 	// ASN DB Path
