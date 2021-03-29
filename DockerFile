@@ -1,0 +1,13 @@
+
+# new docker image base on ubuntu 20.04 Image
+FROM ubuntu:focal
+
+
+RUN mkdir /opt/nfcollector/
+
+# copy executable file
+COPY build/linux/amd64/nfcollector /
+
+RUN chmod +x build/linux/amd64/nfcollector
+
+
