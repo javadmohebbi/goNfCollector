@@ -3,11 +3,35 @@
 FROM ubuntu:focal
 
 
-RUN mkdir /opt/nfcollector/
+# creating needed directories
+RUN mkdir /opt/nfcollector/vendors/ip2location/db
+RUN mkdir /opt/nfcollector/vendors/ip2location/local-db
+RUN mkdir /opt/nfcollector/vendors/ipsum
+RUN mkdir /opt/nfcollector/var/log
+RUN mkdir /opt/nfcollector/etc
+RUN mkdir /opt/nfcollector/bin
+
 
 # copy executable file
-COPY build/linux/amd64/nfcollector /
+COPY build/linux/amd64/nfcollector /opt/nfcollector/bin/nfcollector
 
-RUN chmod +x build/linux/amd64/nfcollector
+# copy templates/
+COPY templates/configs/*.yml /opt.nfcollector/etc/
+
+
+# allow nfcollector to run
+RUN chmod +x /opt/nfcollector/bin/nfcollector
+
+# get ip2location dbs
+RUN sudo apt-get install unzip && wget https://github.com/javadmohebbi/goNfCollector/raw/main/updates/IP2LOCATION-LITE-ASN.IPV6.CSV.ZIP \
+    && wget https://github.com/javadmohebbi/goNfCollector/raw/main/updates/IP2LOCATION-LITE-DB11.IPV6.BIN.ZIP \
+    && wget https://github.com/javadmohebbi/goNfCollector/raw/main/updates/IP2PROXY-LITE-PX10.IPV6.CSV.ZIP \
+    && unzip IP2LOCATION-LITE-DB11.IPV6.BIN.ZIP -d /opt/nfcollector/vendors/ip2location/db/IP2LOCATION-LITE-DB11.IPV6.BIN/ \
+    && unzip IP2PROXY-LITE-PX10.IPV6.CSV.ZIP -d /opt/nfcollector/vendors/ip2location/db/IP2PROXY-LITE-PX10.IPV6.CSV/ \
+    && unzip IP2LOCATION-LITE-ASN.IPV6.CSV.ZIP -d /opt/nfcollector/vendors/ip2location/db/IP2LOCATION-LITE-ASN.IPV6.CSV/ \
+    && touch /opt/nfcollector/vendors/ip2location/local-db/local.csv
+&&
+
+
 
 
