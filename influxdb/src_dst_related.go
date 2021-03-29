@@ -78,7 +78,7 @@ func (i *InfluxDBv2) measureSrcDstRelatedMetrics(metrics []common.Metric, kind s
 			time.Now().Add(-time.Duration(m.Time.Second())).UnixNano(),
 		)
 
-		protoLineReverseLookup := fmt.Sprintf("%vHost,device=%v,domain=%v,countryLong=%v,countryShort=%v,region=%v,city=%v bytes=%vu,packets=%vu %v",
+		protoLineReverseLookup := fmt.Sprintf("%vDnsLookup,device=%v,domain=%v,countryLong=%v,countryShort=%v,region=%v,city=%v bytes=%vu,packets=%vu %v",
 			kind,
 			m.Device,
 			i.revereseDNS(host),
