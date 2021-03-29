@@ -7,6 +7,7 @@ import (
 	"github.com/goNfCollector/configurations"
 	"github.com/goNfCollector/debugger"
 	"github.com/goNfCollector/location"
+	"github.com/goNfCollector/reputation"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/sirupsen/logrus"
 )
@@ -35,8 +36,8 @@ type InfluxDBv2 struct {
 	// influxdb client
 	client influxdb2.Client
 
-	// alienvault otx client
-	// otxClient *alienVault.AVLabAPI
+	// reputation
+	reputations []reputation.Reputation
 
 	// IP2locaion instance
 	iplocation *location.IPLocation
@@ -58,6 +59,17 @@ func New(token, bucket, org, host string, ipReputationConf configurations.IpRepu
 		token,
 	)
 
+	// add reputation kind to reputation array
+	var reputs []reputation.Reputation
+	rptIpSum, err := reputation.NewIPSum(ipReputationConf.IPSumPath)
+	if err == nil {
+		reput, err := reputation.New(rptIpSum, d)
+
+		if err == nil {
+			reputs = append(reputs, *reput)
+		}
+	}
+
 	// // alien vault otx client
 	// atxClient := alienVault.New(atxToken)
 
@@ -74,6 +86,8 @@ func New(token, bucket, org, host string, ipReputationConf configurations.IpRepu
 		client:   client,
 
 		iplocation: ip2location,
+
+		reputations: reputs,
 
 		WaitGroup: wg,
 	}

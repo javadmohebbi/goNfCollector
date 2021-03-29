@@ -21,6 +21,9 @@ func (i *InfluxDBv2) measureSrcDstRelatedMetrics(metrics []common.Metric, kind s
 	wapi := i.client.WriteAPI(i.Org, i.Bucket)
 
 	for _, m := range metrics {
+
+		t := time.Now().Add(-time.Duration(m.Time.Second())).UnixNano()
+
 		// ip2location recored
 		var i2l *ip2location.IP2Locationrecord
 
@@ -48,7 +51,7 @@ func (i *InfluxDBv2) measureSrcDstRelatedMetrics(metrics []common.Metric, kind s
 			i2l.Region,
 			i2l.City,
 			m.Bytes, m.Packets,
-			time.Now().Add(-time.Duration(m.Time.Second())).UnixNano(),
+			t,
 		)
 
 		// src & dst port protoline
@@ -61,7 +64,7 @@ func (i *InfluxDBv2) measureSrcDstRelatedMetrics(metrics []common.Metric, kind s
 			i2l.Region,
 			i2l.City,
 			m.Bytes, m.Packets,
-			time.Now().Add(-time.Duration(m.Time.Second())).UnixNano(),
+			t,
 		)
 
 		// protocol protoline
@@ -75,7 +78,7 @@ func (i *InfluxDBv2) measureSrcDstRelatedMetrics(metrics []common.Metric, kind s
 			i2l.City,
 			m.Bytes, m.Packets,
 
-			time.Now().Add(-time.Duration(m.Time.Second())).UnixNano(),
+			t,
 		)
 
 		// DNS REverse Looup
@@ -88,7 +91,7 @@ func (i *InfluxDBv2) measureSrcDstRelatedMetrics(metrics []common.Metric, kind s
 			i2l.Region,
 			i2l.City,
 			m.Bytes, m.Packets,
-			time.Now().Add(-time.Duration(m.Time.Second())).UnixNano(),
+			t,
 		)
 
 		// ASN Name
@@ -101,7 +104,7 @@ func (i *InfluxDBv2) measureSrcDstRelatedMetrics(metrics []common.Metric, kind s
 			i2l.Region,
 			i2l.City,
 			m.Bytes, m.Packets,
-			time.Now().Add(-time.Duration(m.Time.Second())).UnixNano(),
+			t,
 		)
 
 		// write proto line records
@@ -119,14 +122,24 @@ func (i *InfluxDBv2) measureSrcDstRelatedMetrics(metrics []common.Metric, kind s
 		// asn
 		wapi.WriteRecord(protoLineASN)
 
-		// check if has proxy
-		// and write proto line
-		// if hasProxy, proxyProtoLine := i.measureProxy(host, i2l, m); hasProxy {
-		// 	wapi.WriteRecord(proxyProtoLine)
-		// }
-
-		// ipHost := net.ParseIP(host)
-		// i.otxClient.Malware(ipHost)
+		// host reputation
+		for _, rpu := range i.reputations {
+			if resp := rpu.Get(host); resp.Current > 0 {
+				protoLineReputation := fmt.Sprintf("reputation,device=%v,host=%v,source=%v,countryLong=%v,countryShort=%v,region=%v,city=%v score=%v %v",
+					m.Device,
+					host,
+					rpu.GetType(),
+					i2l.Country_long,
+					i2l.Country_short,
+					i2l.Region,
+					i2l.City,
+					resp.Current,
+					time.Now().Add(-time.Duration(m.Time.Second())).UnixNano(),
+				)
+				// write reputation
+				wapi.WriteRecord(protoLineReputation)
+			}
+		}
 
 	}
 

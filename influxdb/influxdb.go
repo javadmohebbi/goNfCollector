@@ -76,6 +76,9 @@ func (i *InfluxDBv2) Close() error {
 	// close influxdb client
 	i.client.Close()
 
+	// close location
+	i.iplocation.Close()
+
 	i.Debuuger.Verbose(fmt.Sprintf("Closing  %v:%v bucket:%v org:%v", i.Host, i.Port, i.Bucket, i.Org), logrus.DebugLevel)
 
 	// because influx db returns nithing on close :-D

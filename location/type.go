@@ -7,6 +7,7 @@ import (
 
 	"github.com/goNfCollector/configurations"
 	"github.com/goNfCollector/debugger"
+	"github.com/ip2location/ip2location-go"
 	"github.com/sirupsen/logrus"
 )
 
@@ -34,13 +35,17 @@ type IPLocation struct {
 	// Proxy DB Path
 	Proxy string `json:"proxy"`
 
-	// LOCAL CSV DB Path
-	Local string `json:"local"`
+	// ip2location db
+	ip2lDB *ip2location.DB
 
 	// read huge proxy db
 	allProxies [][]string
 
+	// asn records
 	allASN [][]string
+
+	// local records
+	locals [][]string
 
 	d *debugger.Debugger
 }
@@ -56,6 +61,8 @@ func New(c *configurations.IP2Location, debugger *debugger.Debugger) *IPLocation
 			configurations.ERROR_CAN_T_OPEN_PROXY_DB, err),
 			logrus.ErrorLevel,
 		)
+	} else {
+		defer file.Close()
 	}
 	parser := csv.NewReader(file)
 	records, err := parser.ReadAll()
@@ -75,6 +82,8 @@ func New(c *configurations.IP2Location, debugger *debugger.Debugger) *IPLocation
 			configurations.ERROR_CAN_T_OPEN_ASN_DB, err),
 			logrus.ErrorLevel,
 		)
+	} else {
+		defer fileASN.Close()
 	}
 	parserASN := csv.NewReader(fileASN)
 	recordsASN, err := parserASN.ReadAll()
@@ -86,16 +95,55 @@ func New(c *configurations.IP2Location, debugger *debugger.Debugger) *IPLocation
 		)
 	}
 
+	// read csv file
+	csvFile, err := os.Open(c.Local)
+	if err != nil {
+		debugger.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
+			configurations.ERROR_CAN_T_OPEN_LOCAL_DB.Int(),
+			configurations.ERROR_CAN_T_OPEN_LOCAL_DB, err),
+			logrus.ErrorLevel,
+		)
+	} else {
+		defer csvFile.Close()
+	}
+	r := csv.NewReader(csvFile)
+	recordsLocal, err := r.ReadAll()
+	if err != nil {
+		debugger.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
+			configurations.ERROR_CAN_T_READ_LOCAL_DB.Int(),
+			configurations.ERROR_CAN_T_READ_LOCAL_DB, err),
+			logrus.ErrorLevel,
+		)
+	}
+
+	// open db
+	db, err := ip2location.OpenDB(c.IP)
+	// check for error
+	if err != nil {
+		debugger.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
+			configurations.ERROR_OPEN_IP2LOCATION_DB.Int(),
+			configurations.ERROR_OPEN_IP2LOCATION_DB, err),
+			logrus.ErrorLevel,
+		)
+		os.Exit(configurations.ERROR_OPEN_IP2LOCATION_DB.Int())
+	}
+
 	return &IPLocation{
 		ASN:   c.ASN,
 		IP:    c.IP,
 		Proxy: c.Proxy,
-		Local: c.Local,
 
 		d:          debugger,
 		allProxies: records,
 		allASN:     recordsASN,
+		locals:     recordsLocal,
+		ip2lDB:     db,
 	}
+}
+
+func (l *IPLocation) Close() {
+	// close ip 2 location db
+	l.ip2lDB.Close()
 }
 
 // proxy info struct, needed info

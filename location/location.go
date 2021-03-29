@@ -2,13 +2,10 @@ package location
 
 import (
 	"bytes"
-	"encoding/csv"
 	"errors"
 	"fmt"
-	"io"
 	"math/big"
 	"net"
-	"os"
 	"strconv"
 
 	"github.com/goNfCollector/configurations"
@@ -28,21 +25,8 @@ func (i *IPLocation) GetAll(addr string) (*ip2location.IP2Locationrecord, error)
 		return &ip2location.IP2Locationrecord{}, errors.New(fmt.Sprintf("%v", configurations.ERROR_OPEN_IP2LOCATION_DB))
 	}
 
-	// open db
-	db, err := ip2location.OpenDB(i.IP)
-
-	// check for error
-	if err != nil {
-		i.d.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
-			configurations.ERROR_OPEN_IP2LOCATION_DB.Int(),
-			configurations.ERROR_OPEN_IP2LOCATION_DB, err),
-			logrus.ErrorLevel,
-		)
-		return nil, err
-	}
-
 	// get information
-	lr, err := db.Get_all(addr)
+	lr, err := i.ip2lDB.Get_all(addr)
 
 	// check for error
 	if err != nil {
@@ -86,24 +70,7 @@ func (i *IPLocation) GetAllPrivate(ip string) (*ip2location.IP2Locationrecord, b
 		Usagetype:          "-",
 	}
 
-	csvFile, err := os.Open(i.Local)
-	if err != nil {
-		fmt.Println("Couldn't open the csv file", err)
-		return ip2lRec, false
-		// os.Exit(1)
-	}
-	r := csv.NewReader(csvFile)
-	for {
-		// Read each record from csv
-		record, err := r.Read()
-		if err == io.EOF {
-			return ip2lRec, false
-		}
-		if err != nil {
-			// fmt.Printf("Can not read %s file", i.Local)
-			return ip2lRec, false
-		}
-
+	for _, record := range i.locals {
 		// check if the provided IP is in the range
 		if i.isItInTheRangeIPv4(ip, record[StartIP], record[EndIP]) {
 			tmpLat, _ := strconv.ParseFloat(record[Lati], 32)
@@ -120,6 +87,8 @@ func (i *IPLocation) GetAllPrivate(ip string) (*ip2location.IP2Locationrecord, b
 			return ip2lRec, true
 		}
 	}
+
+	return ip2lRec, false
 }
 
 // IsItInTheRangeIPv4 return true if its in the range

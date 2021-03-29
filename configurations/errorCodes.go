@@ -47,6 +47,12 @@ const (
 	// Can not Read proxy CSV DB
 	ERROR_CAN_T_READ_PROXY_DB
 
+	// Can not open local CSV DB
+	ERROR_CAN_T_OPEN_LOCAL_DB
+
+	// Can not Read Local CSV DB
+	ERROR_CAN_T_READ_LOCAL_DB
+
 	// UNKOWN ERORR
 	ERROR_UKNOWN
 )
@@ -74,6 +80,9 @@ func (e ErrorCodes) String() string {
 		"Can not read ASN CSV DB",
 		"Can not open PROXY CSV DB",
 		"Can not read PROXY CSV DB",
+
+		"Can not open Local CSV DB",
+		"Can not read Local CSV DB",
 
 		"Unknown error",
 	}[e]
