@@ -15,6 +15,8 @@ type Collector struct {
 	Forwarder forwarder `json:"forwarder"`
 	LogFile   string    `json:"logFile"`
 
+	AlienVault alienVault `json:"alienVault"`
+
 	// netflow collector exporter
 	Exporter exporter `json:"exporter"`
 }
@@ -102,4 +104,9 @@ type influxDB struct {
 
 	// Influx DB Database Org
 	Org string `json:"org"`
+}
+
+// alienVault conf struct
+type alienVault struct {
+	APIToken string `json:"apiToken"`
 }

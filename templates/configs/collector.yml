@@ -28,6 +28,11 @@ forwarder:
   # Port to forward
   port: 7161
 
+# AlienVault configuration
+alienVault:
+  # AlienVault API Token
+  apiToken: 6dcc647a883efb040bcb92f31cdd55a2b24e73da2f8cba4dc2174183a2f28f83
+
 # Exporters
 exporter:
   # InfluxDB exporter
