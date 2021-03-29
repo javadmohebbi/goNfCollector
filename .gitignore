@@ -3,3 +3,5 @@ test-docker-container.sh
 flux-qry/**
 
 grafana-dashboard-json-model/**
+
+BUILD**
