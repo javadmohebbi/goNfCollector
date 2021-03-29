@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/goNfCollector/configurations"
 	"github.com/goNfCollector/debugger"
 	"github.com/goNfCollector/location"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
@@ -34,6 +35,9 @@ type InfluxDBv2 struct {
 	// influxdb client
 	client influxdb2.Client
 
+	// alienvault otx client
+	// otxClient *alienVault.AVLabAPI
+
 	// IP2locaion instance
 	iplocation *location.IPLocation
 
@@ -46,13 +50,16 @@ func (i InfluxDBv2) String() string {
 }
 
 // create new instance of influxDB
-func New(token, bucket, org, host string, port int, d *debugger.Debugger, ip2location *location.IPLocation, wg *sync.WaitGroup) InfluxDBv2 {
+func New(token, bucket, org, host string, ipReputationConf configurations.IpReputation, port int, d *debugger.Debugger, ip2location *location.IPLocation, wg *sync.WaitGroup) InfluxDBv2 {
 
 	// create new influx db client
 	client := influxdb2.NewClient(
 		fmt.Sprintf("http://%v:%v", host, port),
 		token,
 	)
+
+	// // alien vault otx client
+	// atxClient := alienVault.New(atxToken)
 
 	d.Verbose(fmt.Sprintf("new influxDB exporter %v:%v bucket:%v org:%v is created", host, port, bucket, org), logrus.DebugLevel)
 

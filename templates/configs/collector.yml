@@ -28,11 +28,13 @@ forwarder:
   # Port to forward
   port: 7161
 
-# AlienVault configuration
-alienVault:
-  # AlienVault API Token
-  apiToken: 6dcc647a883efb040bcb92f31cdd55a2b24e73da2f8cba4dc2174183a2f28f83
+# ipReputation configuration
+ipReputation:
+  # IPSum DB Path
+  # https://raw.githubusercontent.com/stamparm/ipsum/master/ipsum.txt
+  iPSumPath: /opt/nfcollector/vendors/ipsum/ipsum.txt
 
+# Exporter
 # Exporters
 exporter:
   # InfluxDB exporter

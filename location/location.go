@@ -25,7 +25,7 @@ func (i *IPLocation) GetAll(addr string) (*ip2location.IP2Locationrecord, error)
 			configurations.ERROR_OPEN_IP2LOCATION_DB, "empty path for the DB"),
 			logrus.ErrorLevel,
 		)
-		return nil, errors.New(fmt.Sprintf("%v", configurations.ERROR_OPEN_IP2LOCATION_DB))
+		return &ip2location.IP2Locationrecord{}, errors.New(fmt.Sprintf("%v", configurations.ERROR_OPEN_IP2LOCATION_DB))
 	}
 
 	// open db
@@ -144,20 +144,16 @@ func (i *IPLocation) isItInTheRangeIPv4(ip string, startIP string, endIP string)
 // GetAsnName with AS Number
 func (i *IPLocation) GetAsnName(asNumber string) string {
 
-	// returning asn name
-	asn := "NA"
-
 	// find asn name
 	for _, record := range i.allASN {
 
 		if "AS"+record[ASN_DB_NUMBER_INDEX] == asNumber {
-			asn = record[ASN_DB_NAME_INDEX]
-			break
+			return record[ASN_DB_NAME_INDEX]
 		}
 
 	}
 
-	return asn
+	return "NA"
 }
 
 // GetProxy Info

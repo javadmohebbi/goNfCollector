@@ -296,7 +296,7 @@ func (nf *Collector) getExporters() []exporters.Exporter {
 	for _, ex := range nf.c.Exporter.InfluxDBs {
 
 		// create new influxDB
-		ifl := influxdb.New(ex.Token, ex.Bucket, ex.Org, ex.Host, ex.Port, nf.d, nf.iploc, nf.waitGroup)
+		ifl := influxdb.New(ex.Token, ex.Bucket, ex.Org, ex.Host, nf.c.IPReputation, ex.Port, nf.d, nf.iploc, nf.waitGroup)
 
 		// create new influxDB exporter
 		influxExporter, err := exporters.New(ifl, ifl.Debuuger)

@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	ASN_DB_NUMBER_INDEX int = 3 // index of as number in csv db
-	ASN_DB_NAME_INDEX   int = 4 // index of as name in csv db
+	ASN_DB_NUMBER_INDEX int = 10 // index of as number in csv db
+	ASN_DB_NAME_INDEX   int = 11 // index of as name in csv db
 
 	PRX_IP_FROM    int = 0  // index of IP_FROM in csv db
 	PRX_IP_TO      int = 1  // index of IP_TO in csv db

@@ -15,7 +15,7 @@ type Collector struct {
 	Forwarder forwarder `json:"forwarder"`
 	LogFile   string    `json:"logFile"`
 
-	AlienVault alienVault `json:"alienVault"`
+	IPReputation IpReputation `json:"ipReputation"`
 
 	// netflow collector exporter
 	Exporter exporter `json:"exporter"`
@@ -106,7 +106,7 @@ type influxDB struct {
 	Org string `json:"org"`
 }
 
-// alienVault conf struct
-type alienVault struct {
-	APIToken string `json:"apiToken"`
+// ipReputation conf struct
+type IpReputation struct {
+	IPSumPath string `json:"ipSumPath"`
 }

@@ -125,6 +125,9 @@ func (i *InfluxDBv2) measureSrcDstRelatedMetrics(metrics []common.Metric, kind s
 		// 	wapi.WriteRecord(proxyProtoLine)
 		// }
 
+		// ipHost := net.ParseIP(host)
+		// i.otxClient.Malware(ipHost)
+
 	}
 
 	// write to influx
