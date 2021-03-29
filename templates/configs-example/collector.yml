@@ -1,0 +1,55 @@
+# Collector Configurations
+
+# Debug mode
+debug: true
+
+# LogFile
+logFile: /opt/nfcollector/var/log/collector.log
+
+# Listen on address & port
+listen:
+  # Listen Address
+  address: 0.0.0.0
+
+  # Listen Port
+  port: 6859
+
+# Forwarder configuration
+forwarder:
+  # Enable
+  enabled: false
+
+  # Host to forward
+  hosts:
+    #- 127.0.0.1
+    #- 192.168.1.1
+    #- 10.20.3.15
+
+  # Port to forward
+  port: 7161
+
+# ipReputation configuration
+ipReputation:
+  # IPSum DB Path
+  # https://raw.githubusercontent.com/stamparm/ipsum/master/ipsum.txt
+  iPSumPath: /opt/nfcollector/vendors/ipsum/ipsum.txt
+
+# Exporters
+exporter:
+  # InfluxDB exporter
+  # you can config as many as you want
+  influxDBs:
+    # influxDB host
+    - host: 127.0.0.1
+
+      # influxDB port
+      port: 8086
+
+      # Your API token
+      token: JAD5kZ0n3GAQ3jdpe17NT5_NUg73GOvdjZjhxOMiJMx1cZyvLz-4DuR7K8xyRGlPcNQXLqrUTY20lWqbRiK--w==
+
+      # your bucket
+      bucket: nfCollector
+
+      # your organization name (influxDB)
+      org: MJMOHEBBI
