@@ -5,3 +5,5 @@ flux-qry/**
 grafana-dashboard-json-model/**
 
 BUILD**
+
+templates/configs/**

@@ -4,33 +4,51 @@ FROM ubuntu:focal
 
 
 # creating needed directories
-RUN mkdir /opt/nfcollector/vendors/ip2location/db
-RUN mkdir /opt/nfcollector/vendors/ip2location/local-db
-RUN mkdir /opt/nfcollector/vendors/ipsum
-RUN mkdir /opt/nfcollector/var/log
-RUN mkdir /opt/nfcollector/etc
-RUN mkdir /opt/nfcollector/bin
+RUN mkdir -pv /opt/nfcollector/vendors/ip2location/db
+RUN mkdir -pv /opt/nfcollector/vendors/ip2location/local-db
+RUN mkdir -pv /opt/nfcollector/vendors/ipsum
+RUN mkdir -pv /opt/nfcollector/var/log
+RUN mkdir -pv /opt/nfcollector/etc
+RUN mkdir -pv /opt/nfcollector/bin
 
 
 # copy executable file
-COPY build/linux/amd64/nfcollector /opt/nfcollector/bin/nfcollector
+COPY ./build/linux/amd64/nfcollector /opt/nfcollector/bin/nfcollector
 
 # copy templates/
-COPY templates/configs/*.yml /opt.nfcollector/etc/
+COPY ./templates/configs-example/*.yml /opt/nfcollector/etc/
 
 
 # allow nfcollector to run
 RUN chmod +x /opt/nfcollector/bin/nfcollector
 
-# get ip2location dbs
-RUN sudo apt-get install unzip && wget https://github.com/javadmohebbi/goNfCollector/raw/main/updates/IP2LOCATION-LITE-ASN.IPV6.CSV.ZIP \
+# prepare apt-get
+RUN apt-get update && apt-get install apt-utils -y && apt-get install unzip -y
+
+# wget installation
+RUN apt-get install wget -y
+
+# download ip2location db
+RUN wget https://github.com/javadmohebbi/goNfCollector/raw/main/updates/IP2LOCATION-LITE-ASN.IPV6.CSV.ZIP \
     && wget https://github.com/javadmohebbi/goNfCollector/raw/main/updates/IP2LOCATION-LITE-DB11.IPV6.BIN.ZIP \
-    && wget https://github.com/javadmohebbi/goNfCollector/raw/main/updates/IP2PROXY-LITE-PX10.IPV6.CSV.ZIP \
-    && unzip IP2LOCATION-LITE-DB11.IPV6.BIN.ZIP -d /opt/nfcollector/vendors/ip2location/db/IP2LOCATION-LITE-DB11.IPV6.BIN/ \
+    && wget https://github.com/javadmohebbi/goNfCollector/raw/main/updates/IP2PROXY-LITE-PX10.IPV6.CSV.ZIP
+
+# extract them
+RUN unzip IP2LOCATION-LITE-DB11.IPV6.BIN.ZIP -d /opt/nfcollector/vendors/ip2location/db/IP2LOCATION-LITE-DB11.IPV6.BIN/ \
     && unzip IP2PROXY-LITE-PX10.IPV6.CSV.ZIP -d /opt/nfcollector/vendors/ip2location/db/IP2PROXY-LITE-PX10.IPV6.CSV/ \
-    && unzip IP2LOCATION-LITE-ASN.IPV6.CSV.ZIP -d /opt/nfcollector/vendors/ip2location/db/IP2LOCATION-LITE-ASN.IPV6.CSV/ \
-    && touch /opt/nfcollector/vendors/ip2location/local-db/local.csv
-&&
+    && unzip IP2LOCATION-LITE-ASN.IPV6.CSV.ZIP -d /opt/nfcollector/vendors/ip2location/db/IP2LOCATION-LITE-ASN.IPV6.CSV/
+
+# download ipsum db
+RUN wget https://raw.githubusercontent.com/javadmohebbi/goNfCollector/main/templates/ipsum/ipsum.txt
+
+RUN mv ./ipsum.txt /opt/nfcollector/vendors/ipsum/ipsum.txt -v
+
+RUN cat /opt/nfcollector/etc/collector.yml
+RUN cat /opt/nfcollector/etc/ip2location.yml
+
+# run the command
+CMD [ "/opt/nfcollector/bin/nfcollector" ]
+
 
 
 
