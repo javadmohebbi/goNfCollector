@@ -2,6 +2,8 @@ package configurations
 
 import (
 	"log"
+	"os"
+	"strconv"
 
 	"github.com/spf13/viper"
 )
@@ -38,6 +40,14 @@ func (c *Collector) Read() (interface{}, error) {
 
 	// Read config file and check for errors
 	if err := viper.ReadInConfig(); err != nil {
+
+		// get from os.GetEnv in case of error
+		if ok := c.getMinialConfigsFromOSEnv(); ok {
+			log.Println("can not read config from: ", c.confFile.path+c.confFile.file+"."+c.confFile.ext)
+			log.Println("Minimal configuration will be read using OS environment")
+			return c, nil
+		}
+
 		// if file not found set default fallback values
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			log.Fatalf("Logfile %v.%v not found in path %v", c.confFile.path, c.confFile.file, c.confFile.ext)
@@ -52,11 +62,56 @@ func (c *Collector) Read() (interface{}, error) {
 
 	// check foe unmarshal errors
 	if err != nil {
+
+		// get from os.GetEnv in case of error
+		if ok := c.getMinialConfigsFromOSEnv(); ok {
+			log.Println("Unable to unmarshal configs into struct due to error: ", err)
+			log.Println("Minimal configuration will be read using OS environment")
+			return c, nil
+		}
+
 		log.Fatalln("Unable to unmarshal configs into struct due to error: ", err)
 		return c, err
 	}
 
 	return c, nil
+}
+
+// read minimal configs from OS ENV
+func (c *Collector) getMinialConfigsFromOSEnv() bool {
+
+	c.Debug, _ = strconv.ParseBool(os.Getenv("NFC_DEBUG"))
+
+	c.Listen.Address = os.Getenv("NFC_LISTEN_ADDRESS")
+
+	c.Listen.Port, _ = strconv.Atoi(os.Getenv("NFC_LISTEN_PORT"))
+
+	c.IPReputation.IPSumPath = os.Getenv("NFC_IP_REPTATION_IPSUM")
+
+	if len(c.Exporter.InfluxDBs) == 0 {
+
+		tp, _ := strconv.Atoi(os.Getenv("NFC_INFLUX_PORT"))
+
+		c.Exporter.InfluxDBs = append(c.Exporter.InfluxDBs, influxDB{
+			Host:   os.Getenv("NFC_INFLUXDB_HOST"),
+			Port:   tp,
+			Token:  os.Getenv("NFC_INFLUXDB_TOKEN"),
+			Bucket: os.Getenv("NFC_INFLUXDB_BUCKET"),
+			Org:    os.Getenv("NFC_INFLUXDB_ORG"),
+		})
+	}
+
+	if c.Listen.Address != "" && (c.Listen.Port > 0 && c.Listen.Port <= 65535) &&
+		c.Exporter.InfluxDBs[0].Host != "" &&
+		(c.Exporter.InfluxDBs[0].Port > 0 && c.Exporter.InfluxDBs[0].Port <= 65535) &&
+		c.Exporter.InfluxDBs[0].Token != "" && c.Exporter.InfluxDBs[0].Bucket != "" &&
+		c.Exporter.InfluxDBs[0].Org != "" {
+
+		return true
+	}
+
+	return false
+
 }
 
 // Server listen configuration
