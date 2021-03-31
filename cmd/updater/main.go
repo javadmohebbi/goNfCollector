@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"os"
 	"path/filepath"
@@ -11,44 +12,61 @@ import (
 
 func main() {
 
-	// download ip sum
-	downloadIPSum()
+	ips := flag.Bool("ipsum", false, "Downlaod IPSum")
+
+	ipl := flag.Bool("ip2l", false, "Downlaod IP2Location")
+	iplAsn := flag.Bool("ip2l-asn", false, "Downlaod IP2Location ASN")
+	iplProx := flag.Bool("ip2l-proxy", false, "Downlaod IP2Location Proxy")
+
+	flag.Parse()
+
+	if *ips {
+		// download ip sum
+		downloadIPSum()
+	}
 
 	// download ip2location
-	downloadIP2Location()
+	downloadIP2Location(*ipl, *iplAsn, *iplProx)
 
 }
 
-func downloadIP2Location() {
+func downloadIP2Location(ipl, iplASN, iplProx bool) {
 	// download IP2location lite db
 	i2lConf := getIP2LocationCof()
 
-	// download asn
-	updater.DownloadDatabase(
-		filepath.Base(i2lConf.ASN),    // file name
-		filepath.Dir(i2lConf.ASN)+"/", // directory
-		"/tmp/",                       // tmp file path
-		"https://github.com/javadmohebbi/goNfCollector/raw/main/updates/IP2LOCATION-LITE-ASN.IPV6.CSV.ZIP", // url to download
-		true, // need unzip
-	)
+	if ipl {
+		// download lite
+		updater.DownloadDatabase(
+			filepath.Base(i2lConf.IP),    // file name
+			filepath.Dir(i2lConf.IP)+"/", // directory
+			"/tmp/",                      // tmp file path
+			"https://github.com/javadmohebbi/goNfCollector/raw/main/updates/IP2LOCATION-LITE-DB11.IPV6.BIN.ZIP", // url to download
+			true, // need unzip
+		)
 
-	// download lite
-	updater.DownloadDatabase(
-		filepath.Base(i2lConf.IP),    // file name
-		filepath.Dir(i2lConf.IP)+"/", // directory
-		"/tmp/",                      // tmp file path
-		"https://github.com/javadmohebbi/goNfCollector/raw/main/updates/IP2LOCATION-LITE-DB11.IPV6.BIN.ZIP", // url to download
-		true, // need unzip
-	)
+	}
 
-	// download proxy
-	updater.DownloadDatabase(
-		filepath.Base(i2lConf.Proxy),    // file name
-		filepath.Dir(i2lConf.Proxy)+"/", // directory
-		"/tmp/",                         // tmp file path
-		"https://github.com/javadmohebbi/goNfCollector/raw/main/updates/IP2PROXY-LITE-PX10.IPV6.CSV.ZIP", // url to download
-		true, // need unzip
-	)
+	if iplASN {
+		// download asn
+		updater.DownloadDatabase(
+			filepath.Base(i2lConf.ASN),    // file name
+			filepath.Dir(i2lConf.ASN)+"/", // directory
+			"/tmp/",                       // tmp file path
+			"https://github.com/javadmohebbi/goNfCollector/raw/main/updates/IP2LOCATION-LITE-ASN.IPV6.CSV.ZIP", // url to download
+			true, // need unzip
+		)
+	}
+
+	if iplProx {
+		// download proxy
+		updater.DownloadDatabase(
+			filepath.Base(i2lConf.Proxy),    // file name
+			filepath.Dir(i2lConf.Proxy)+"/", // directory
+			"/tmp/",                         // tmp file path
+			"https://github.com/javadmohebbi/goNfCollector/raw/main/updates/IP2PROXY-LITE-PX10.IPV6.CSV.ZIP", // url to download
+			true, // need unzip
+		)
+	}
 
 }
 
