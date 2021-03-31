@@ -15,6 +15,8 @@ func (i *InfluxDBv2) Write(metrics []common.Metric) error {
 	// device measurement
 	go i.measureDevice(metrics)
 
+	go i.measureDetailsRelatedMetrics(metrics)
+
 	// write src host
 	go i.measureSrcDstRelatedMetrics(metrics, "src")
 

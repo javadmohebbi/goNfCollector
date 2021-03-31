@@ -34,17 +34,20 @@ func (i *InfluxDBv2) measureSrcDstRelatedMetrics(metrics []common.Metric, kind s
 		if kind == "src" {
 			host = m.SrcIP
 			port = m.SrcPortName
+
 		} else {
 			host = m.DstIP
 			port = m.DstPortName
+
 		}
 
 		// get location information for host
 		i2l = i.getLocation(host)
 
-		protoLine := fmt.Sprintf("%vHost,device=%v,host=%v,countryLong=%v,countryShort=%v,region=%v,city=%v bytes=%vu,packets=%vu %v",
+		protoLine := fmt.Sprintf("%vHost,device=%v,ASN=%v,host=%v,countryLong=%v,countryShort=%v,region=%v,city=%v bytes=%vu,packets=%vu %v",
 			kind,
 			m.Device,
+			i.asnLookup(host),
 			host,
 			i2l.Country_long,
 			i2l.Country_short,
@@ -82,9 +85,10 @@ func (i *InfluxDBv2) measureSrcDstRelatedMetrics(metrics []common.Metric, kind s
 		)
 
 		// DNS REverse Looup
-		protoLineReverseLookup := fmt.Sprintf("%vDnsLookup,device=%v,domain=%v,countryLong=%v,countryShort=%v,region=%v,city=%v bytes=%vu,packets=%vu %v",
+		protoLineReverseLookup := fmt.Sprintf("%vDnsLookup,device=%v,host=%v,domain=%v,countryLong=%v,countryShort=%v,region=%v,city=%v bytes=%vu,packets=%vu %v",
 			kind,
 			m.Device,
+			host,
 			i.revereseDNS(host),
 			i2l.Country_long,
 			i2l.Country_short,
