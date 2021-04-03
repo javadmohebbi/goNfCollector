@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -10,6 +11,10 @@ import (
 	"github.com/goNfCollector/updater"
 )
 
+var Version = "development"
+
+var BuildTime = "build date time"
+
 func main() {
 
 	ips := flag.Bool("ipsum", false, "Downlaod IPSum")
@@ -17,6 +22,18 @@ func main() {
 	ipl := flag.Bool("ip2l", false, "Downlaod IP2Location")
 	iplAsn := flag.Bool("ip2l-asn", false, "Downlaod IP2Location ASN")
 	iplProx := flag.Bool("ip2l-proxy", false, "Downlaod IP2Location Proxy")
+
+	// version
+	version := flag.Bool("version", false, "Print version")
+
+	// parse the flags
+	flag.Parse()
+
+	if *version {
+		fmt.Printf("\n'%v'\n\tVersion: %v\n", filepath.Base(os.Args[0]), Version)
+		fmt.Printf("\tBuild Date: %v\n\n", BuildTime)
+		os.Exit(0)
+	}
 
 	flag.Parse()
 

@@ -2,9 +2,12 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"io"
 	"log"
 	"os"
+	"path/filepath"
+	"runtime"
 
 	"github.com/gookit/color"
 	"github.com/sirupsen/logrus"
@@ -14,7 +17,13 @@ import (
 	"github.com/goNfCollector/debugger"
 )
 
+var Version = "development"
+
+var BuildTime = "build date time"
+
 func main() {
+
+	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	// listen address
 	addr := flag.String("address", "0.0.0.0", "Collector listen address")
@@ -25,8 +34,17 @@ func main() {
 	// debug
 	debug := flag.Bool("debug", false, "Enable/Disable debug mode")
 
+	// version
+	version := flag.Bool("version", false, "Print version")
+
 	// parse the flags
 	flag.Parse()
+
+	if *version {
+		fmt.Printf("\n'%v'\n\tVersion: %v\n", filepath.Base(os.Args[0]), Version)
+		fmt.Printf("\tBuild Date: %v\n\n", BuildTime)
+		os.Exit(0)
+	}
 
 	// create new instance of configurations interface
 	cfg, err := configurations.New(configurations.CONF_TYPE_COLLECTOR)
