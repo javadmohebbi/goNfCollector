@@ -1,4 +1,4 @@
-# Go Netflow Collector
+<!-- # Go Netflow Collector
 Is a go module that collect netflows from version 1 to 9 and also IPFIX.
 
 It can export it to many other services like InfluxDB
@@ -27,4 +27,26 @@ docker exec -it influxdb influx delete --org MJMOHEBBI --bucket nfCollector --st
 
 ```
 docker build --pull --rm -f "DockerFile" -t gonfcollector:beta "."
-```
+``` -->
+
+
+# Go Netflow Collector (goNfCollector)
+This repo will help you collect **Netflow** (version 1,5,6,7,9 and IPFIX) from network devices. It stores all the required information needed for further analysis in **InfluxDB** and visualize them using **Grafna**.
+
+Currently we are using InfluxDB v2+ for stroring data. If You need older version, you can see [this repository](https://github.com/javadmohebbi/nfCollector).
+
+
+### Features
+- [X] **Supports almost all Netflow versions**: In order to decode Netflow we are using [tehmaze](https://github.com/tehmaze/netflow) go module. this module supports netflow version 1,5,6,7,9 & IPFIX.
+- [X] **Container ready**: Just run a simple shell script to prepare your environment & run the containerized netflow collector
+- [X] **IP Reputation check**: Check source & destination IPs for the reputation & potential threats.
+    - [X] Currently we are using **IPSum** from [this repo](https://github.com/stamparm/ipsum)
+    - [ ] [OpenIntelligence24.com](https://openIntelligence24.com) will be available soon. this will be a community based intelligence for checking IP, domains, ... reputatition.
+- [ ] Machine Learning models & techniques to find threats like DDoS attacks through packet meta data
+- [X] Get Geo Locations using IP2Location free lite database (IPv4 & IPv6)
+- [X] Fetch AS Numebr & Name if possible from IP
+- [X] Fetch Domain Name from IP if Possible (using PTR record)
+- [ ] Define multiple data exporter:
+  - [X] InfluxDB
+  - [ ] Splunk (CEF)
+  - [ ] Zabbix
