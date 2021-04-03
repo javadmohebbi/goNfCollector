@@ -126,12 +126,6 @@ func New(h string, p int, l *logrus.Logger, c *configurations.Collector, d *debu
 	return nf
 }
 
-func (nf *Collector) reusePort(network, address string, conn syscall.RawConn) error {
-	return conn.Control(func(descriptor uintptr) {
-		syscall.SetsockoptInt(int(descriptor), syscall.SOL_SOCKET, syscall.SO_REUSEADDR, 1)
-	})
-}
-
 // /**
 // new approach to listen udp for handling many request
 // **/
@@ -201,7 +195,11 @@ func (nf *Collector) reusePort(network, address string, conn syscall.RawConn) er
 // 	// 		}
 // 	// 	}
 // 	// }
+//buil
+// }
 
+// func (nf *Collector) socketListen() {
+// 	listen, err := net.Listen("udp4")
 // }
 
 // listen to the provided configuration
