@@ -88,6 +88,8 @@ func (c *Collector) getMinialConfigsFromOSEnv() bool {
 
 	c.IPReputation.IPSumPath = os.Getenv("NFC_IP_REPTATION_IPSUM")
 
+	c.LogFile = os.Getenv("NFC_LOG_FILE")
+
 	if len(c.Exporter.InfluxDBs) == 0 {
 
 		tp, _ := strconv.Atoi(os.Getenv("NFC_INFLUX_PORT"))

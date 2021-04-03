@@ -20,3 +20,11 @@ NFC_DEBUG="true" NFC_LISTEN_ADDRESS="0.0.0.0" NFC_LISTEN_PORT="6859" NFC_INFLUXD
 ```
 docker exec -it influxdb influx delete --org MJMOHEBBI --bucket nfCollector --start '2021-03-01T00:00:00.00Z' --stop '2021-05-29T00:00:00.00Z' --token VL-OzGDlxHlPjMUJM9nQeTWDQ5vcChicnXkVl_vowLud631Exc_seL62sLjq_9Pj5I5KO0i-5EfFdcspElV63A==
 ```
+
+
+
+# build image
+
+```
+docker build --pull --rm -f "DockerFile" -t gonfcollector:beta "."
+```

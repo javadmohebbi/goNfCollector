@@ -35,6 +35,8 @@ import (
 
 const bufferSize int = 8960
 
+const maxQueueSize int = 20480
+
 // Collector
 type Collector struct {
 
@@ -63,6 +65,14 @@ type Collector struct {
 	waitGroup *sync.WaitGroup
 
 	exporters []exporters.Exporter
+
+	// bytes
+	outgoingMessage outgoingMessage
+}
+
+type outgoingMessage struct {
+	recipient *net.UDPAddr
+	data      []byte
 }
 
 // create new netflow collector
@@ -115,6 +125,84 @@ func New(h string, p int, l *logrus.Logger, c *configurations.Collector, d *debu
 
 	return nf
 }
+
+func (nf *Collector) reusePort(network, address string, conn syscall.RawConn) error {
+	return conn.Control(func(descriptor uintptr) {
+		syscall.SetsockoptInt(int(descriptor), syscall.SOL_SOCKET, syscall.SO_REUSEADDR, 1)
+	})
+}
+
+// /**
+// new approach to listen udp for handling many request
+// **/
+// func (nf *Collector) beginListen(c chan os.Signal) {
+
+// 	// Resolve Address
+// 	sAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("%v:%v", nf.host, nf.port))
+// 	if err != nil {
+// 		nf.d.Verbose(fmt.Sprintf("[%d]-%s: (%v)", configurations.ERROR_LISTEN_RESOLVE_UDP_ADDRESS.Int(), configurations.ERROR_LISTEN_RESOLVE_UDP_ADDRESS, err), logrus.ErrorLevel)
+// 		// return nil, configurations.ERROR_LISTEN_RESOLVE_UDP_ADDRESS, err
+// 		os.Exit(configurations.ERROR_LISTEN_RESOLVE_UDP_ADDRESS.Int())
+// 	}
+
+// 	config := &net.ListenConfig{Control: nf.reusePort}
+
+// 	connection, err := config.Listen(
+// 		context.Background(), "upd", sAddr.String(),
+// 	)
+
+// 	if err != nil {
+// 		nf.d.Verbose(fmt.Sprintf("[%d]-%s: (%v)", configurations.ERROR_LISTEN_ON_UDP.Int(), configurations.ERROR_LISTEN_ON_UDP, err), logrus.ErrorLevel)
+// 		// return nil, configurations.ERROR_LISTEN_RESOLVE_UDP_ADDRESS, err
+// 		os.Exit(configurations.ERROR_LISTEN_ON_UDP.Int())
+// 	}
+
+// 	outbox := make(chan outgoingMessage, maxQueueSize)
+
+// 	sendFromOutbox := func() {
+// 		n, err := 0, error(nil)
+// 		for msg := range outbox {
+
+// 			skt, _ := connection.Accept()
+
+// 			skt.
+
+// 			defer skt.Close()
+
+// 			n, err = connection.(*net.UDPConn).WriteToUDP(msg.data, msg.recipient)
+// 			if err != nil {
+// 				panic(err)
+// 			}
+// 			if n != len(msg.data) {
+// 				log.Println("Tried to send", len(msg.data), "bytes but only sent ", n)
+// 			}
+// 		}
+// 	}
+
+// 	// connection, err := reuseport.Listen("udp", sAddr.String())
+
+// 	// if err != nil {
+// 	// 	nf.d.Verbose(fmt.Sprintf("[%d]-%s: (%v)", configurations.ERROR_LISTEN_ON_UDP.Int(), configurations.ERROR_LISTEN_ON_UDP, err), logrus.ErrorLevel)
+// 	// 	// return nil, configurations.ERROR_LISTEN_RESOLVE_UDP_ADDRESS, err
+// 	// 	os.Exit(configurations.ERROR_LISTEN_ON_UDP.Int())
+// 	// }
+
+// 	// outbox := make(chan outgoingMessage, maxQueueSize)
+
+// 	// sendFromOutbox := func() {
+// 	// 	n, err := 0, error(nil)
+// 	// 	for msg := range outbox {
+// 	// 		n, err = connection.(*net.UDPConn).WriteToUDP(msg.data, msg.recipient)
+// 	// 		if err != nil {
+// 	// 			panic(err)
+// 	// 		}
+// 	// 		if n != len(msg.data) {
+// 	// 			log.Println("Tried to send", len(msg.data), "bytes but only sent ", n)
+// 	// 		}
+// 	// 	}
+// 	// }
+
+// }
 
 // listen to the provided configuration
 func (nf *Collector) listen() (*net.UDPConn, configurations.ErrorCodes, error) {

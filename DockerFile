@@ -3,6 +3,26 @@
 FROM ubuntu:focal
 
 
+
+ENV NFC_DEBUG="true"
+ENV NFC_LISTEN_ADDRESS="0.0.0.0"
+ENV NFC_LISTEN_PORT="6859"
+ENV NFC_LOG_FILE="/opt/nfcollector/var/log/collector.log"
+
+ENV NFC_INFLUXDB_HOST="127.0.0.1"
+ENV NFC_INFLUX_PORT="8086"
+ENV NFC_INFLUXDB_TOKEN="JAD5kZ0n3GAQ3jdpe17NT5_NUg73GOvdjZjhxOMiJMx1cZyvLz-4DuR7K8xyRGlPcNQXLqrUTY20lWqbRiK--w=="
+ENV NFC_INFLUXDB_BUCKET="nfCollector"
+ENV NFC_INFLUXDB_ORG="MJMOHEBBI"
+
+ENV NFC_IP_REPTATION_IPSUM="/opt/nfcollector/vendors/ipsum/ipsum.txt"
+ENV NFC_IP2L_ASN="/opt/nfcollector/vendors/ip2location/db/IP2LOCATION-LITE-ASN.IPV6.CSV/IP2LOCATION-LITE-ASN.IPV6.CSV"
+ENV NFC_IP2L_IP="/opt/nfcollector/vendors/ip2location/db/IP2LOCATION-LITE-DB11.IPV6.BIN/IP2LOCATION-LITE-DB11.IPV6.BIN"
+ENV NFC_IP2L_PROXY="/opt/nfcollector/vendors/ip2location/db/IP2PROXY-LITE-PX10.IPV6.CSV/IP2PROXY-LITE-PX10.IPV6.CSV"
+ENV NFC_IP2L_LOCAL="/opt/nfcollector/vendors/ip2location/local-db/local.csv"
+
+
+
 # creating needed directories
 RUN mkdir -pv /opt/nfcollector/vendors/ip2location/db
 RUN mkdir -pv /opt/nfcollector/vendors/ip2location/local-db
@@ -14,13 +34,16 @@ RUN mkdir -pv /opt/nfcollector/bin
 
 # copy executable file
 COPY ./build/linux/amd64/nfcollector /opt/nfcollector/bin/nfcollector
+COPY ./build/linux/amd64/nfupdater /opt/nfcollector/bin/nfupdater
 
-# copy templates/
-COPY ./templates/configs-example/*.yml /opt/nfcollector/etc/
-
+# # copy templates/
+# COPY ./templates/configs-example/*.yml /opt/nfcollector/etc/
 
 # allow nfcollector to run
 RUN chmod +x /opt/nfcollector/bin/nfcollector
+
+# allow nfupdater to run
+RUN chmod +x /opt/nfcollector/bin/nfupdater
 
 # prepare apt-get
 RUN apt-get update && apt-get install apt-utils -y && apt-get install unzip -y
@@ -43,11 +66,13 @@ RUN wget https://raw.githubusercontent.com/javadmohebbi/goNfCollector/main/templ
 
 RUN mv ./ipsum.txt /opt/nfcollector/vendors/ipsum/ipsum.txt -v
 
-RUN cat /opt/nfcollector/etc/collector.yml
-RUN cat /opt/nfcollector/etc/ip2location.yml
+# RUN cat /opt/nfcollector/etc/collector.yml
+# RUN cat /opt/nfcollector/etc/ip2location.yml
 
 # run the command
 CMD [ "/opt/nfcollector/bin/nfcollector" ]
+
+
 
 
 
