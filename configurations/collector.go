@@ -92,7 +92,7 @@ func (c *Collector) getMinialConfigsFromOSEnv() bool {
 
 	if len(c.Exporter.InfluxDBs) == 0 {
 
-		tp, _ := strconv.Atoi(os.Getenv("NFC_INFLUX_PORT"))
+		tp, _ := strconv.Atoi(os.Getenv("NFC_INFLUXDB_PORT"))
 
 		c.Exporter.InfluxDBs = append(c.Exporter.InfluxDBs, influxDB{
 			Host:   os.Getenv("NFC_INFLUXDB_HOST"),
