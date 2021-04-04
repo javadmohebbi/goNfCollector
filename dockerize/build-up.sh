@@ -19,20 +19,28 @@ export NFC_IP2L_LOCAL="$PROJECT_DIR/vendors/ip2location/local-db/local.csv"
 
 
 # InfluxDB DIR
-INFLUX_DIR=$PROJECT_DIR/INFLUX_DIR
+INFLUX_DIR=$PROJECT_DIR/vendors/influxdb
 
 # Grafana DIR
-GRAFANA_DIR=$PROJECT_DIR/INFLUX_DIR
+GRAFANA_DIR=$PROJECT_DIR/vendors/grafana
 
 # downlaod latest version of binnary amd64
 download_latest_version() {
-    wget -O $PROJECT_DIR/bin/nfcollector https://download.openintelligence24.com/nf/bin/nfcollector
-    chmod +x $PROJECT_DIR/bin/nfcollector
 
-    wget -O $PROJECT_DIR/bin/nfupdater https://download.openintelligence24.com/nf/bin/nfupdater
-    chmod +x $PROJECT_DIR/bin/nfupdater
+    # download nfcollector
+    # wget -O $PROJECT_DIR/bin/nfcollector https://download.openintelligence24.com/nf/bin/nfcollector
+    # chmod +x $PROJECT_DIR/bin/nfcollector
 
-    $PROJECT_DIR/bin/nfupdater -ipsum -ip2l -ip2l-asn -ip2l-proxy
+    # # download nfupdater
+    # wget -O $PROJECT_DIR/bin/nfupdater https://download.openintelligence24.com/nf/bin/nfupdater
+    # chmod +x $PROJECT_DIR/bin/nfupdater
+
+    # download databases
+    # $PROJECT_DIR/bin/nfupdater -ipsum -ip2l -ip2l-asn -ip2l-proxy
+
+    # download grafana dashboards & conf
+    wget https://download.openintelligence24.com/vendors/grafana/grafana.tar.gz  -O - | tar -xfv -C $GRAFANA_DIR
+
 
 
 }
