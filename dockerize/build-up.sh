@@ -5,9 +5,9 @@
 PROJECT_DIR=$HOME/oi24/nfcollector
 
 export NFC_LISTEN_ADDRESS="0.0.0.0"
-export NFC_LISTENDB_PORT="6859"
+export NFC_LISTEN_PORT="6859"
 export NFC_INFLUXDB_HOST="influxdb"
-export NFC_INFLUX_PORT="8086"
+export NFC_INFLUXDB_PORT="8086"
 export NFC_INFLUXDB_TOKEN="TOKEN"
 export NFC_INFLUXDB_BUCKET="nfCollector"
 export NFC_INFLUXDB_ORG="OPENINTELLIGENCE"
@@ -26,11 +26,11 @@ GRAFANA_DIR=$PROJECT_DIR/INFLUX_DIR
 
 # downlaod latest version of binnary amd64
 download_latest_version() {
-    # wget -O $PROJECT_DIR/bin/nfcollector https://download.openintelligence24.com/nf/bin/nfcollector
-    # chmod +x $PROJECT_DIR/bin/nfcollector
+    wget -O $PROJECT_DIR/bin/nfcollector https://download.openintelligence24.com/nf/bin/nfcollector
+    chmod +x $PROJECT_DIR/bin/nfcollector
 
-    # wget -O $PROJECT_DIR/bin/nfupdater https://download.openintelligence24.com/nf/bin/nfupdater
-    # chmod +x $PROJECT_DIR/bin/nfupdater
+    wget -O $PROJECT_DIR/bin/nfupdater https://download.openintelligence24.com/nf/bin/nfupdater
+    chmod +x $PROJECT_DIR/bin/nfupdater
 
     $PROJECT_DIR/bin/nfupdater -ipsum -ip2l -ip2l-asn -ip2l-proxy
 
