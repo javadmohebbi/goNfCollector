@@ -1,0 +1,75 @@
+version: "3.9"
+
+services:
+
+    # Influx DB
+    influxdb:
+
+        image: influxdb:2.0
+
+        volumes:
+            - ${INFLUX_DIR}:/var/lib/influxdb2
+
+        ports:
+            - "8086:8086"
+            - "8082:8082"
+            - "8089:8089"
+
+        networks:
+            - tick-graf
+
+        restart: on-failure
+
+    # Grafna
+    grafana:
+
+        image: grafana/grafana
+
+        volumes:
+            - ${GRAFANA_DIR}:/var/lib/grafana
+
+        ports:
+            - "3000:3000"
+
+        networks:
+            - tick-graf
+
+
+    nfcolector:
+
+        image: javadmohebbi/gonfcollector
+
+        network_mode: none
+
+        ports:
+            - "6859:6859/udp"
+
+        volumes:
+            - ${PROJECT_DIR}/etc:/opt/nfcollector/etc
+            - ${PROJECT_DIR}/var:/opt/nfcollector/var
+            - ${PROJECT_DIR}/vendors:/opt/nfcollector/vendors
+
+        networks:
+            - tick-graf
+
+        environment:
+            - NFC_DEBUG=false
+            - NFC_LISTEN_ADDRESS=${NFC_LISTEN_ADDRESS}
+            - NFC_LISTEN_PORT=${NFC_LISTEN_PORT}
+            - NFC_INFLUXDB_HOST=${NFC_INFLUXDB_HOST}
+            - NFC_INFLUXDB_PORT=${NFC_INFLUXDB_PORT}
+            - NFC_INFLUXDB_TOKEN=${NFC_INFLUXDB_TOKEN}
+            - NFC_INFLUXDB_BUCKET=${NFC_INFLUXDB_BUCKET}
+            - NFC_INFLUXDB_ORG=${NFC_INFLUXDB_ORG}
+            - NFC_IP_REPTATION_IPSUM=${NFC_IP_REPTATION_IPSUM}
+            - NFC_IP2L_ASN=${NFC_IP2L_ASN}
+            - NFC_IP2L_IP=${NFC_IP2L_IP}
+            - NFC_IP2L_PROXY=${NFC_IP2L_PROXY}
+            - NFC_IP2L_LOCAL=${NFC_IP2L_LOCAL}
+
+
+
+
+
+
+
