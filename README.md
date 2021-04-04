@@ -45,8 +45,11 @@ Currently we are using InfluxDB v2+ for stroring data. If You need older version
 - [ ] Machine Learning models & techniques to find threats like DDoS attacks through packet meta data
 - [X] Get Geo Locations using IP2Location free lite database (IPv4 & IPv6)
 - [X] Fetch AS Numebr & Name if possible from IP
-- [X] Fetch Domain Name from IP if Possible (using PTR record)
+- [X] Fetch Domain Name from IP if Possible (using **PTR** record)
 - [ ] Define multiple data exporter:
   - [X] InfluxDB
   - [ ] Splunk (CEF)
   - [ ] Zabbix
+
+
+# Quick Start

@@ -1,4 +1,4 @@
-# How to deploy TICK inside docker
+<!-- # How to deploy TICK inside docker
 1. Create `tick` network
    - ```docker network create --driver bridge tick-net```
 
@@ -16,4 +16,4 @@
     -v /opt/nfcollector/vendors/influxdb2:/var/lib/influxdb2 \
     --name influxdb \
     influxdb:latest
-    ```
+    ``` -->
