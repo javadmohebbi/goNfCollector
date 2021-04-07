@@ -7,8 +7,6 @@ services:
 
         image: influxdb:2.0
 
-        user: _USER_ID_
-
         volumes:
             - _INFLUX_DIR_:/var/lib/influxdb2
 
@@ -26,8 +24,6 @@ services:
     grafana:
 
         image: grafana/grafana
-
-        user: _USER_ID_
 
         volumes:
             - _GRAFANA_DIR_:/var/lib/grafana
