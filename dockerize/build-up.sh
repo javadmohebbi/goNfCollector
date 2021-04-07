@@ -1,4 +1,4 @@
-#!/bin/bash -i
+#!/bin/bash
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -60,6 +60,11 @@ download_latest_version() {
 
     wget -O ./docker-compose.yml https://download.openintelligence24.com/vendors/docker-compose/docker-compose.yml
 
+
+    # download templates
+    # wget -O $PROJECT_DIR/etc/collector.yml https://download.openintelligence24.com/nf/etc/nfcol-bash.yml
+    # wget -O $PROJECT_DIR/etc/ip2location.yml https://download.openintelligence24.com/nf/etc/nfloc-bash.yml
+
     echo -e "${GREEN}...done!${NC}"
 }
 
@@ -112,7 +117,7 @@ get_influx_db_info() {
     docker stop $CONTAINERID > /dev/null 2>&1
     docker container rm $CONTAINERID > /dev/null 2>&1
 
-    # docker network create --driver bridge tick-graf > /dev/null 2>&1
+    docker network create --driver bridge tick-graf > /dev/null 2>&1
 
     echo -e "${GREEN}...done!${NC}"
 
@@ -132,7 +137,7 @@ get_influx_db_info() {
 
     # wait until command finished; mean
     echo ""
-    echo -e "${YELLOW} Waiting for InfluxDB ($CONTAINERID) to be ready...!${NC}"
+    echo -e "${YELLOW} Waiting for InfluxDB (${CONTAINERID}) to be ready...!${NC}"
     docker exec -it $CONTAINERID wget http://localhost:8086 > /dev/null
     echo -e "${GREEN}...done!${NC}"
 
@@ -181,9 +186,44 @@ print_info(){
     echo -e "\n\t${GREEN} nfcollector:"
     echo -e "\t\t${NC} address:${YELLOW}${NFC_LISTEN_ADDRESS}:${NFC_LISTEN_PORT}(udp)"
 
+
+    echo -e "- - - - - - - - - - - - - - - - "
+    echo -e " ${YELLOW}To start containers:"
+    echo -e " ${GREEN}cd ${PROJECT_DIR} && docker-compose up -d${NC}"
+    echo -e " ${YELLOW}To stop containers:"
+    echo -e " ${GREEN}cd ${PROJECT_DIR} && docker-compose down${NC}"
+    echo -e "- - - - - - - - - - - - - - - - "
+
     echo -e "${NC}"
 }
 
+
+replace_compose_template() {
+    echo ""
+    echo -e "${YELLOW} Preparing docker-compose.yml file...${NC}"
+
+    PWD_ESCP=$(echo $INFLUX_DIR | sed 's_/_\\/_g')
+    sed -i "s/_INFLUX_DIR_/$PWD_ESCP/g" ./docker-compose.yml
+
+    PWD_ESCP=$(echo $GRAFANA_DIR | sed 's_/_\\/_g')
+    sed -i "s/_GRAFANA_DIR_/$PWD_ESCP/g" ./docker-compose.yml
+
+    PWD_ESCP=$(echo $PROJECT_DIR | sed 's_/_\\/_g')
+    sed -i "s/_PROJECT_DIR_/$PWD_ESCP/g" ./docker-compose.yml
+
+    sed -i "s/_NFC_LISTEN_ADDRESS_/$NFC_LISTEN_ADDRESS/g" ./docker-compose.yml
+    sed -i "s/_NFC_LISTEN_PORT_/$NFC_LISTEN_PORT/g" ./docker-compose.yml
+    sed -i "s/_NFC_INFLUXDB_HOST_/$NFC_INFLUXDB_HOST/g" ./docker-compose.yml
+    sed -i "s/_NFC_INFLUXDB_PORT_/$NFC_INFLUXDB_PORT/g" ./docker-compose.yml
+    sed -i "s/_NFC_INFLUXDB_TOKEN_/$NFC_INFLUXDB_TOKEN/g" ./docker-compose.yml
+    sed -i "s/_NFC_INFLUXDB_BUCKET_/$NFC_INFLUXDB_BUCKET/g" ./docker-compose.yml
+    sed -i "s/_NFC_INFLUXDB_ORG_/$NFC_INFLUXDB_ORG/g" ./docker-compose.yml
+
+
+    mv ./docker-compose.yml $PROJECT_DIR/docker-compose.yml -v
+
+    echo -e "${GRREN}...done!${NC}"
+}
 
 
 
@@ -197,9 +237,11 @@ download_latest_version
 get_influx_db_info
 
 
-# run docker containers
-docker-compose up -d
+#rename compose
+replace_compose_template
+
 
 
 # print info
 print_info
+
