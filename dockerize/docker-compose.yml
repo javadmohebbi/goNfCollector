@@ -51,7 +51,8 @@ services:
         volumes:
             - ${PROJECT_DIR}/etc:/opt/nfcollector/etc
             - ${PROJECT_DIR}/var:/opt/nfcollector/var
-            - ${PROJECT_DIR}/vendors:/opt/nfcollector/vendors
+            - ${PROJECT_DIR}/vendors/ip2location:/opt/nfcollector/vendors/ip2location
+            - ${PROJECT_DIR}/vendors/ipsum:/opt/nfcollector/vendors/ipsum
 
         # networks:
         #     - tick-graf
