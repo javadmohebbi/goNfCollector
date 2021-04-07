@@ -16,7 +16,7 @@ services:
             - "8089:8089"
 
         networks:
-            - bridge
+            - tick-graf
 
         restart: on-failure
 
@@ -32,7 +32,7 @@ services:
             - "3000:3000"
 
         networks:
-            - bridge
+            - tick-graf
 
 
     nfcolector:
