@@ -46,7 +46,7 @@ download_latest_version() {
 
     # download grafana dashboards & conf
     wget -O /tmp/grafana.tar.gz https://download.openintelligence24.com/vendors/grafana/grafana.tar.gz && tar -vxf /tmp/grafana.tar.gz -C $GRAFANA_DIR/
-    chmod +r $GRAFANA_DIR/ -Rv
+    # chmod +r $GRAFANA_DIR/ -Rv
 
     wget -O ./docker-compose.yml https://download.openintelligence24.com/vendors/docker-compose/docker-compose.yml
 
