@@ -1,0 +1,55 @@
+# Collector Configurations
+
+# Debug mode
+debug: false
+
+# LogFile
+logFile: LOG_PATH`
+
+# Listen on address & port
+listen:
+  # Listen Address
+  address: NFC_LISTEN_ADDRESS
+
+  # Listen Port
+  port: NFC_LISTEN_PORT
+
+# Forwarder configuration
+forwarder:
+  # Enable
+  enabled: false
+
+  # Host to forward
+  hosts:
+    #- 127.0.0.1
+    #- 192.168.1.1
+    #- 10.20.3.15
+
+  # Port to forward
+  port: 7161
+
+# ipReputation configuration
+ipReputation:
+  # IPSum DB Path
+  # https://raw.githubusercontent.com/stamparm/ipsum/master/ipsum.txt
+  iPSumPath: NFC_IP_REPTATION_IPSUM
+
+# Exporters
+exporter:
+  # InfluxDB exporter
+  # you can config as many as you want
+  influxDBs:
+    # influxDB host
+    - host: NFC_INFLUXDB_HOST
+
+      # influxDB port
+      port: NFC_INFLUXDB_PORT
+
+      # Your API token
+      token: NFC_INFLUXDB_TOKEN
+
+      # your bucket
+      bucket: NFC_INFLUXDB_BUCKET
+
+      # your organization name (influxDB)
+      org: NFC_INFLUXDB_ORG

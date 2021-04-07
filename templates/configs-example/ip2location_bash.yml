@@ -1,0 +1,13 @@
+# IP2Location configuration
+
+# ASN database (for future usage)
+asn: NFC_IP2L_ASN
+
+# IP Location database (ONLY *.BIN is supported)
+ip: NFC_IP2L_IP
+
+# Proxy database (for future usage)
+proxy: NFC_IP2L_PROXY
+
+# LOCAL CSV DB
+local: NFC_IP2L_LOCAL
