@@ -11,7 +11,7 @@ export NFC_LISTEN_ADDRESS="0.0.0.0"
 export NFC_LISTEN_PORT="6859"
 export NFC_INFLUXDB_HOST="127.0.0.1"
 export NFC_INFLUXDB_PORT="8086"
-export NFC_INFLUXDB_TOKEN="TOKEN"
+export NFC_INFLUXDB_TOKEN="5vqt0q0b4g_lZwNgp7-8GgPq5Nxf3YY37xbVZP_ypeK_G3dwdNlTrAkcKN_Q6QzbmG-Th96lT_65Kp0j2UD1HA=="
 export NFC_INFLUXDB_BUCKET="nfCollector"
 export NFC_INFLUXDB_ORG="OPENINTELLIGENCE"
 export NFC_IP_REPTATION_IPSUM="$PROJECT_DIR/vendors/ipsum/ipsum.txt"
@@ -116,7 +116,7 @@ get_influx_db_info() {
     influxdb:latest  > /dev/null 2>&1
     echo "...done!"
 
-    NFC_INFLUXDB_TOKEN=`echo $CONTAINERID$(date)$USER | base64 -w 0`
+    # NFC_INFLUXDB_TOKEN=`echo $CONTAINERID$(date)$USER | base64 -w 0`
     echo ""
     echo "InfluxDB Token is: $NFC_INFLUXDB_TOKEN"
 

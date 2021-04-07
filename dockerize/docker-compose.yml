@@ -1,1 +1,80 @@
-404: Not Found
+version: "3"
+
+services:
+
+    # Influx DB
+    influxdb:
+
+        image: influxdb:2.0
+
+        user: ${USER_ID}
+
+        volumes:
+            - ${INFLUX_DIR}:/var/lib/influxdb2
+
+        ports:
+            - "8086:8086"
+            - "8082:8082"
+            - "8089:8089"
+
+        networks:
+            - tick-graf
+
+        restart: on-failure
+
+    # Grafna
+    grafana:
+
+        image: grafana/grafana
+
+        user: ${USER_ID}
+
+        volumes:
+            - ${GRAFANA_DIR}:/var/lib/grafana
+
+        ports:
+            - "3000:3000"
+
+        networks:
+            - tick-graf
+
+
+    nfcolector:
+
+        image: javadmohebbi/gonfcollector
+
+        network_mode: host
+
+        ports:
+            - "6859:6859/udp"
+
+        volumes:
+            - ${PROJECT_DIR}/etc:/opt/nfcollector/etc
+            - ${PROJECT_DIR}/var:/opt/nfcollector/var
+            - ${PROJECT_DIR}/vendors:/opt/nfcollector/vendors
+            # - ${PROJECT_DIR}/vendors/ipsum:/opt/nfcollector/vendors/ipsum
+
+        # networks:
+        #     - tick-graf
+
+        environment:
+            - NFC_DEBUG=true
+            - NFC_LISTEN_ADDRESS=${NFC_LISTEN_ADDRESS}
+            - NFC_LISTEN_PORT=${NFC_LISTEN_PORT}
+            - NFC_INFLUXDB_HOST=${NFC_INFLUXDB_HOST}
+            - NFC_INFLUXDB_PORT=${NFC_INFLUXDB_PORT}
+            - NFC_INFLUXDB_TOKEN=${NFC_INFLUXDB_TOKEN}
+            - NFC_INFLUXDB_BUCKET=${NFC_INFLUXDB_BUCKET}
+            - NFC_INFLUXDB_ORG=${NFC_INFLUXDB_ORG}
+            - NFC_IP_REPTATION_IPSUM=/opt/nfcollector/vendors/ipsum/ipsum.txt
+            - NFC_IP2L_ASN=/opt/nfcollector/vendors/ip2location/db/IP2LOCATION-LITE-ASN.IPV6.CSV/IP2LOCATION-LITE-ASN.IPV6.CSV
+            - NFC_IP2L_IP=/opt/nfcollector/vendors/ip2location/db/IP2LOCATION-LITE-DB11.IPV6.BIN/IP2LOCATION-LITE-DB11.IPV6.BIN
+            - NFC_IP2L_PROXY=/opt/nfcollector/vendors/ip2location/db/IP2PROXY-LITE-PX10.IPV6.CSV/IP2PROXY-LITE-PX10.IPV6.CSV
+            - NFC_IP2L_LOCAL=/opt/nfcollector/vendors/ip2location/local-db/local.csv
+
+
+
+
+networks:
+    tick-graf:
+        external: true
