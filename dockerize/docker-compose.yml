@@ -39,7 +39,7 @@ services:
 
         image: javadmohebbi/gonfcollector
 
-        network_mode: none
+        network_mode: host
 
         ports:
             - "6859:6859/udp"
