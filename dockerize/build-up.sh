@@ -63,8 +63,8 @@ prepare_dir()
     mkdir -pv $PROJECT_DIR/etc
 
     # vendors dir & files
-    mkdir -pv $PROJECT_DIR/vendors/i2location
-    mkdir -pv $PROJECT_DIR/vendors/i2location/local-db
+    mkdir -pv $PROJECT_DIR/vendors/ip2location
+    mkdir -pv $PROJECT_DIR/vendors/ip2location/local-db
     mkdir -pv $PROJECT_DIR/vendors/ipsum
 
     # influxDB directory

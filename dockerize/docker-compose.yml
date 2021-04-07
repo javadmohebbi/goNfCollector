@@ -61,11 +61,11 @@ services:
             - NFC_INFLUXDB_TOKEN=${NFC_INFLUXDB_TOKEN}
             - NFC_INFLUXDB_BUCKET=${NFC_INFLUXDB_BUCKET}
             - NFC_INFLUXDB_ORG=${NFC_INFLUXDB_ORG}
-            - NFC_IP_REPTATION_IPSUM=/opt/
-            - NFC_IP2L_ASN=${NFC_IP2L_ASN}
-            - NFC_IP2L_IP=${NFC_IP2L_IP}
-            - NFC_IP2L_PROXY=${NFC_IP2L_PROXY}
-            - NFC_IP2L_LOCAL=${NFC_IP2L_LOCAL}
+            - NFC_IP_REPTATION_IPSUM=/opt/nfcollector/vendors/ipsum/ipsum.txt
+            - NFC_IP2L_ASN=/opt/nfcollector/vendors/ip2location/db/IP2LOCATION-LITE-ASN.IPV6.CSV/IP2LOCATION-LITE-ASN.IPV6.CSV
+            - NFC_IP2L_IP=/opt/nfcollector/vendors/ip2location/db/IP2LOCATION-LITE-DB11.IPV6.BIN/IP2LOCATION-LITE-DB11.IPV6.BIN
+            - NFC_IP2L_PROXY=/opt/nfcollector/vendors/ip2location/db/IP2PROXY-LITE-PX10.IPV6.CSV/IP2PROXY-LITE-PX10.IPV6.CSV
+            - NFC_IP2L_LOCAL=/opt/nfcollector/vendors/ip2location/local-db/local.csv
 
 
 

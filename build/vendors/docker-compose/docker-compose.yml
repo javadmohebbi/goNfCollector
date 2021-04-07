@@ -53,7 +53,7 @@ services:
         #     - tick-graf
 
         environment:
-            - NFC_DEBUG=false
+            - NFC_DEBUG=true
             - NFC_LISTEN_ADDRESS=${NFC_LISTEN_ADDRESS}
             - NFC_LISTEN_PORT=${NFC_LISTEN_PORT}
             - NFC_INFLUXDB_HOST=${NFC_INFLUXDB_HOST}
