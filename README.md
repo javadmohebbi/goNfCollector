@@ -54,7 +54,9 @@ Currently we are using InfluxDB v2+ for stroring data. If You need older version
 
 # Quick Start
 There are multiple ways to deploy "**netflow collector**" app & easiest ways is **all-in-one** deployment. This method will run `influxdb`, `grafana` & `gonfcollector` docker container using a shell script. No more further configuration are needed & everythings will be downloaded/configured using a `shell script`.
-1. Downlaod the latest version:
+
+## ALL-IN-ONE deployment using docker-compose
+1. Download the latest version:
   ```wget https://download.openintelligence24.com/latest.sh```
 2. Make this shell script executable
   ```chmod +x latest.sh```
@@ -64,5 +66,18 @@ There are multiple ways to deploy "**netflow collector**" app & easiest ways is 
    - At the end, it will let you know how to run the container.
    - **REQUIREMENTS**: `docker`, `docker-compose`, `wget` are required!
 
+### ALL-IN-ONE defaults
+- **InfluxDB default passwords**:
+  - Username: admin
+  - Password: influx_admin_secret
 
+- **Grafana default passwords**:
+  - Username: admin
+  - Password: secret
 
+- **Project path**: The shel script will create a directory called `oi24` (abbr. of openintelligence24.com) and a subdirectory `nfcollector` inside your HOME directory. InfluxDB database, grafana dashboards & plugins & ... are in `vendors` sub-directory.
+  - To open this directory run `cd $HOME/oi24/nfcollector`
+
+- **Start & Stop Container**:
+  - **Start Container**:  `cd $HOME/oi24/nfcollector && docker-compose up -d`
+  - **Stop Container**:  `cd $HOME/oi24/nfcollector && docker-compose down`
