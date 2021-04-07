@@ -53,5 +53,14 @@ Currently we are using InfluxDB v2+ for stroring data. If You need older version
 
 
 # Quick Start
-
+There are multiple ways to deploy "**netflow collector**" app & easiest ways is **all-in-one** deployment. This method will run `influxdb`, `grafana` & `gonfcollector` docker container using a shell script. No more further configuration are needed & everythings will be downloaded/configured using a `shell script`.
+1. Downlaod the latest version:
+  `wget https://download.openintelligence24.com/latest.sh`
+2. Make this shell script executable
+  `chmod +x latest.sh`
+3. Run the downloaded shellscript.
+  `./latest.sh`
+   - You might be asked to enter your user's password during the execution.
+   - At the end, it will let you know how to run the container.
+   - **REQUIREMENTS**: `docker`, `docker-compose`, `wget` are required!
 
