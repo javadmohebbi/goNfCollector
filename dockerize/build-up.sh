@@ -62,6 +62,9 @@ prepare_dir()
     # config files
     mkdir -pv $PROJECT_DIR/etc
 
+    # ibn
+    mkdir -pv $PROJECT_DIR/bin
+
     # vendors dir & files
     mkdir -pv $PROJECT_DIR/vendors/ip2location
     mkdir -pv $PROJECT_DIR/vendors/ip2location/local-db
