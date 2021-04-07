@@ -57,7 +57,7 @@ services:
         # networks:
         #     - tick-graf
 
-        #environment:
+        environment:
            - NFC_DEBUG=true
            - NFC_LISTEN_ADDRESS=_NFC_LISTEN_ADDRESS_
            - NFC_LISTEN_PORT=_NFC_LISTEN_PORT_
