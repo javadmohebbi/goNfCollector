@@ -72,7 +72,7 @@ func GetServices() (PortMap, error) {
 func GetPortName(port string, protocol string) string {
 	s, err := GetServices()
 	if err != nil {
-		return "N/A"
+		return fmt.Sprintf("%v/%v", port, protocol)
 	}
 	protocol = strings.ToLower(protocol)
 	for i, v := range s {
