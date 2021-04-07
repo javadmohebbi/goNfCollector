@@ -16,7 +16,7 @@ services:
             - "8089:8089"
 
         networks:
-            - tick-graf
+            - bridge
 
         restart: on-failure
 
@@ -32,7 +32,7 @@ services:
             - "3000:3000"
 
         networks:
-            - tick-graf
+            - bridge
 
 
     nfcolector:
@@ -49,8 +49,8 @@ services:
             - ${PROJECT_DIR}/var:/opt/nfcollector/var
             - ${PROJECT_DIR}/vendors:/opt/nfcollector/vendors
 
-        networks:
-            - tick-graf
+        # networks:
+        #     - tick-graf
 
         environment:
             - NFC_DEBUG=false
@@ -61,7 +61,7 @@ services:
             - NFC_INFLUXDB_TOKEN=${NFC_INFLUXDB_TOKEN}
             - NFC_INFLUXDB_BUCKET=${NFC_INFLUXDB_BUCKET}
             - NFC_INFLUXDB_ORG=${NFC_INFLUXDB_ORG}
-            - NFC_IP_REPTATION_IPSUM=${NFC_IP_REPTATION_IPSUM}
+            - NFC_IP_REPTATION_IPSUM=/opt/
             - NFC_IP2L_ASN=${NFC_IP2L_ASN}
             - NFC_IP2L_IP=${NFC_IP2L_IP}
             - NFC_IP2L_PROXY=${NFC_IP2L_PROXY}
@@ -70,6 +70,6 @@ services:
 
 
 
-
-
-
+networks:
+    tick-graf:
+        external: true
