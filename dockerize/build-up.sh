@@ -1,11 +1,18 @@
 #!/bin/bash -i
 
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+NC='\033[0m' # No Color
+
 
 # PROJECT DIR
 export PROJECT_DIR=$HOME/oi24/nfcollector
 
+# export PROJECT_DIR=/opt/openintelligence24/nfcollector
 
-export USER_ID=$(id u)
+
+export USER_ID=$(id -u)
 
 export NFC_LISTEN_ADDRESS="0.0.0.0"
 export NFC_LISTEN_PORT="6859"
@@ -31,7 +38,7 @@ export GRAFANA_DIR=$PROJECT_DIR/vendors/grafana
 download_latest_version() {
 
     echo ""
-    echo "Downloading required files..."
+    echo -e "${YELLOW} Downloading required files...${NC}"
 
     # download nfcollector
     wget -O $PROJECT_DIR/bin/nfcollector https://download.openintelligence24.com/nf/bin/nfcollector
@@ -47,10 +54,13 @@ download_latest_version() {
     # download grafana dashboards & conf
     wget -O /tmp/grafana.tar.gz https://download.openintelligence24.com/vendors/grafana/grafana.tar.gz && tar -vxf /tmp/grafana.tar.gz -C $GRAFANA_DIR/
     # chmod +r $GRAFANA_DIR/ -Rv
+    echo -e "${YELLOW} Chaning permissions & owner of grafana directory. Maybe you need to enter 'sudo' password ${NC}"
+    sudo chmod -Rv a+w $GRAFANA_DIR/
+    sudo chown $USER:root $GRAFANA_DIR/ -Rv
 
     wget -O ./docker-compose.yml https://download.openintelligence24.com/vendors/docker-compose/docker-compose.yml
 
-    echo "...done!"
+    echo -e "${GREEN}...done!${NC}"
 }
 
 # prepare needed directories & create if needed
@@ -58,7 +68,7 @@ prepare_dir()
 {
 
     echo ""
-    echo "Creating needed directories..."
+    echo -e "${YELLOW} Creating needed directories...${NC}"
 
     # project directory
     mkdir -pv $PROJECT_DIR
@@ -80,7 +90,7 @@ prepare_dir()
     # grafana directory
     mkdir -pv $GRAFANA_DIR
 
-    echo "...done!"
+    echo -e "${GRREN}...done!${NC}"
 }
 
 
@@ -90,11 +100,11 @@ prepare_dir()
 get_influx_db_info() {
 
     echo ""
-    echo "Renaming old configuraions..."
+    echo -e "${YELLOW} Renaming old configuraions...${NC}"
     unixnan=$(date +%s)
     mv $INFLUX_DIR/engine $INFLUX_DIR/engine.old.$unixnan -f > /dev/null 2>&1
     mv $INFLUX_DIR/influxd.bolt $INFLUX_DIR/influxd.bolt.old.$unixnan > /dev/null 2>&1
-    echo "...done!"
+    echo -e "${GREEN}...done!${NC}"
 
     CONTAINERID=influxdb_tmp
     echo ""
@@ -104,17 +114,17 @@ get_influx_db_info() {
 
     # docker network create --driver bridge tick-graf > /dev/null 2>&1
 
-    echo "...done!"
+    echo -e "${GREEN}...done!${NC}"
 
 
     echo ""
-    echo "Staring temporary InfluxDB container ($CONTAINERID)..."
+    echo -e "${YELLOW} Staring temporary InfluxDB container ($CONTAINERID)...${NC}"
     # create influxdb tmp image
     docker run -d \
     -v $INFLUX_DIR:/var/lib/influxdb2 \
     --name $CONTAINERID \
     influxdb:latest  > /dev/null 2>&1
-    echo "...done!"
+    echo -e "${GREEN}...done!${NC}"
 
     # NFC_INFLUXDB_TOKEN=`echo $CONTAINERID$(date)$USER | base64 -w 0`
     echo ""
@@ -122,18 +132,18 @@ get_influx_db_info() {
 
     # wait until command finished; mean
     echo ""
-    echo "Waiting for InfluxDB ($CONTAINERID) to be ready...!"
+    echo -e "${YELLOW} Waiting for InfluxDB ($CONTAINERID) to be ready...!${NC}"
     docker exec -it $CONTAINERID wget http://localhost:8086 > /dev/null
-    echo "...done!"
+    echo -e "${GREEN}...done!${NC}"
 
     echo ""
     echo ""
-    echo "Initializing InfluxDB with this command...:"
+    echo -e "${YELLOW} Initializing InfluxDB with this command...:${NC}"
     COMMAND_TO_RUN="docker exec -t $CONTAINERID influx setup --org $NFC_INFLUXDB_ORG --bucket $NFC_INFLUXDB_BUCKET --retention 7d --username admin --password influx_admin_secret --token $NFC_INFLUXDB_TOKEN --force "
     echo ""
-    echo " >>> $COMMAND_TO_RUN"
+    echo -e " >>> command to run: ${YELLOW} $COMMAND_TO_RUN ${NC}"
     echo ""
-    echo "...done!"
+    echo -e "${GREEN}...done!${NC}"
 
     echo ""
     echo "------------------------------------------"
@@ -142,15 +152,37 @@ get_influx_db_info() {
     echo "------------------------------------------"
 
     echo ""
-    echo "Stop & remove container $CONTAINERID"
+    echo -e "${YELLOW} Stop & remove container $CONTAINERID ${NC}"
     docker stop $CONTAINERID > /dev/null 2>&1
     docker container rm $CONTAINERID > /dev/null 2>&1
-    echo "...done!"
+    echo -e "${GREEN}...done!${NC}"
 
 }
 
 
 
+print_info(){
+
+    echo -e "${NC}Information you need to know:"
+    echo -e "\n\t${GREEN} Project Directory: ${YELLOW}${PROJECT_DIR}"
+
+    echo -e "\n\t${GREEN} InfluxDB:"
+    echo -e "\t\t${NC} address:${YELLOW}${NFC_INFLUXDB_HOST}:${NFC_INFLUXDB_PORT}"
+    echo -e "\t\t${NC} token:${YELLOW}${NFC_INFLUXDB_TOKEN}"
+    echo -e "\t\t${NC} Web UI Credentials:"
+    echo -e "\t\t\t${NC} username: ${YELLOW}admin"
+    echo -e "\t\t\t${NC} password: ${YELLOW}influx_admin_secret"
+    echo -e "\n\t${GREEN} Grafana:"
+    echo -e "\t\t${NC} address:${YELLOW}127.0.0.1:3000"
+    echo -e "\t\t${NC} Web UI Credentials:"
+    echo -e "\t\t\t${NC} username: ${YELLOW}admin"
+    echo -e "\t\t\t${NC} password: ${YELLOW}secret"
+
+    echo -e "\n\t${GREEN} nfcollector:"
+    echo -e "\t\t${NC} address:${YELLOW}${NFC_LISTEN_ADDRESS}:${NFC_LISTEN_PORT}(udp)"
+
+    echo -e "${NC}"
+}
 
 
 
@@ -165,7 +197,9 @@ download_latest_version
 get_influx_db_info
 
 
-
-
-
+# run docker containers
 docker-compose up -d
+
+
+# print info
+print_info
