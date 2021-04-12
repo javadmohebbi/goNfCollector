@@ -37,8 +37,6 @@ func main() {
 	// version
 	version := flag.Bool("version", false, "Print version")
 
-	runtime.GOMAXPROCS(1)
-
 	// parse the flags
 	flag.Parse()
 
@@ -81,6 +79,15 @@ func main() {
 
 	}
 
+	// set the number of cpu this app can use
+	if collectorConf.CPUNum > 0 && collectorConf.CPUNum <= runtime.NumCPU() {
+		color.Yellow.Printf("set max CPU num to: %v\n", collectorConf.CPUNum)
+		runtime.GOMAXPROCS(collectorConf.CPUNum)
+	} else {
+		color.Yellow.Printf("set max CPU num to all available CPUs: %v\n", runtime.NumCPU())
+		runtime.GOMAXPROCS(runtime.NumCPU())
+	}
+
 	// create & configure logrus
 	logr := logrus.New()
 
@@ -89,10 +96,6 @@ func main() {
 
 	// set log to file and also logfile
 	logr.SetOutput(mw)
-
-	logr.SetFormatter(&logrus.TextFormatter{
-		DisableColors: false,
-	})
 
 	// opening log file for write and append and pass it to io.multiwriter function
 	lfn := collectorConf.LogFile

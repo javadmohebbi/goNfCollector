@@ -13,6 +13,7 @@ type Collector struct {
 	confFile confFile
 
 	Debug     bool      `json:"debug"`
+	CPUNum    int       `json:"cpuNum"`
 	Listen    listen    `json:"listen"`
 	Forwarder forwarder `json:"forwarder"`
 	LogFile   string    `json:"logFile"`
@@ -89,6 +90,8 @@ func (c *Collector) getMinialConfigsFromOSEnv() bool {
 	c.IPReputation.IPSumPath = os.Getenv("NFC_IP_REPTATION_IPSUM")
 
 	c.LogFile = os.Getenv("NFC_LOG_FILE")
+
+	c.CPUNum, _ = strconv.Atoi(os.Getenv("NFC_CPU_NUM"))
 
 	if len(c.Exporter.InfluxDBs) == 0 {
 

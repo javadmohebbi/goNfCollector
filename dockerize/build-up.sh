@@ -15,6 +15,11 @@ export PROJECT_DIR=$HOME/oi24/nfcollector
 export USER_ID=$(id -u)
 
 export NFC_LISTEN_ADDRESS="0.0.0.0"
+
+# total number of used cpu
+export NFC_CPU_NUM="0"
+
+
 export NFC_LISTEN_PORT="6859"
 export NFC_INFLUXDB_HOST="127.0.0.1"
 export NFC_INFLUXDB_PORT="8086"
@@ -210,6 +215,8 @@ replace_compose_template() {
 
     PWD_ESCP=$(echo $PROJECT_DIR | sed 's_/_\\/_g')
     sed -i "s/_PROJECT_DIR_/$PWD_ESCP/g" ./docker-compose.yml
+
+    sed -i "s/_NFC_CPU_NUM_/$NFC_CPU_NUM/g" ./docker-compose.yml
 
     sed -i "s/_NFC_LISTEN_ADDRESS_/$NFC_LISTEN_ADDRESS/g" ./docker-compose.yml
     sed -i "s/_NFC_LISTEN_PORT_/$NFC_LISTEN_PORT/g" ./docker-compose.yml

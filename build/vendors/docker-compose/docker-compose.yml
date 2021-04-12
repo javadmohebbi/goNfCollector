@@ -55,6 +55,8 @@ services:
 
         environment:
            - NFC_DEBUG=true
+           # total number of cpu nfcollector could use
+           - NFC_CPU_NUM=_NFC_CPU_NUM_
            - NFC_LISTEN_ADDRESS=_NFC_LISTEN_ADDRESS_
            - NFC_LISTEN_PORT=_NFC_LISTEN_PORT_
            - NFC_INFLUXDB_HOST=_NFC_INFLUXDB_HOST_
