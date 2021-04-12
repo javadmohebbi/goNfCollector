@@ -6,6 +6,7 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"runtime"
 	"sync"
 	"syscall"
 
@@ -68,6 +69,8 @@ type Collector struct {
 
 	// bytes
 	outgoingMessage outgoingMessage
+
+	isConClosed bool
 }
 
 type outgoingMessage struct {
@@ -261,8 +264,8 @@ func (nf *Collector) collect(conn *net.UDPConn) {
 	decoders := make(map[string]*netflow.Decoder)
 
 	// make notify channel
-	ch := make(chan os.Signal, 1)
-	signal.Notify(ch,
+	nf.ch = make(chan os.Signal, 1)
+	signal.Notify(nf.ch,
 		// https://www.gnu.org/software/libc/manual/html_node/Termination-Signals.html
 		syscall.SIGTERM, // "the normal way to politely ask a program to terminate"
 		syscall.SIGINT,  // Ctrl+C
@@ -273,11 +276,15 @@ func (nf *Collector) collect(conn *net.UDPConn) {
 
 	go func() {
 		// check if channel signal has notified
-		<-ch
+		<-nf.ch
+		// defer close(nf.ch)
 
 		nf.d.Verbose("Stopping netflow collector ...",
 			logrus.InfoLevel,
 		)
+
+		nf.isConClosed = true
+
 		// cleaning up things
 
 		// close all open
@@ -285,7 +292,12 @@ func (nf *Collector) collect(conn *net.UDPConn) {
 			// close exporter clients if needed
 			e.Close()
 		}
+
+		defer nf.d.Verbose(fmt.Sprintf("Please wait until netflow collector finishes pending %v jobs", runtime.NumGoroutine()), logrus.InfoLevel)
+		nf.waitGroup.Wait()
+
 		color.Red.Printf("\nApp Exited due to recieved signal from OS or User!\n")
+
 		os.Exit(0)
 	}()
 
@@ -293,54 +305,55 @@ func (nf *Collector) collect(conn *net.UDPConn) {
 	// get the SIGTERM
 	for {
 
-		nf.waitGroup.Add(1)
-		defer nf.waitGroup.Done()
+		if !nf.isConClosed {
+			// read data recieved from exporter device
+			length, remote, err := conn.ReadFrom(data)
+			if err != nil {
+				nf.d.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
+					configurations.ERROR_CAN_T_READ_DATA.Int(),
+					configurations.ERROR_CAN_T_READ_DATA, err),
+					logrus.DebugLevel,
+				)
 
-		// read data recieved from exporter device
-		length, remote, err := conn.ReadFrom(data)
-		if err != nil {
-			nf.d.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
-				configurations.ERROR_CAN_T_READ_DATA.Int(),
-				configurations.ERROR_CAN_T_READ_DATA, err),
-				logrus.DebugLevel,
-			)
-			continue
+				continue
+			}
+
+			// find the decoders
+			// or if not, make new
+			d, found := decoders[remote.String()]
+			if !found {
+				s := session.New()
+				d = netflow.NewDecoder(s)
+				decoders[remote.String()] = d
+			}
+
+			// use netflow decoder to decode the recieved netflow,
+			// if possible!
+			m, err := d.Read(bytes.NewBuffer(data[:length]))
+			if err != nil {
+				nf.d.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
+					configurations.ERROR_CAN_T_DECODE_NETFLOW_DATA.Int(),
+					configurations.ERROR_CAN_T_DECODE_NETFLOW_DATA, err),
+					logrus.DebugLevel,
+				)
+				continue
+			}
+
+			// write debug info
+			nf.d.Verbose(fmt.Sprintf("received %d bytes from %s\n", length, remote), logrus.DebugLevel)
+
+			// parse netflow
+			nf.waitGroup.Add(1)
+			go nf.parse(m, remote, data)
 		}
-
-		// find the decoders
-		// or if not, make new
-		d, found := decoders[remote.String()]
-		if !found {
-			s := session.New()
-			d = netflow.NewDecoder(s)
-			decoders[remote.String()] = d
-		}
-
-		// use netflow decoder to decode the recieved netflow,
-		// if possible!
-		m, err := d.Read(bytes.NewBuffer(data[:length]))
-		if err != nil {
-			nf.d.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
-				configurations.ERROR_CAN_T_DECODE_NETFLOW_DATA.Int(),
-				configurations.ERROR_CAN_T_DECODE_NETFLOW_DATA, err),
-				logrus.DebugLevel,
-			)
-			continue
-		}
-
-		// write debug info
-		nf.d.Verbose(fmt.Sprintf("received %d bytes from %s\n", length, remote), logrus.DebugLevel)
-
-		// parse netflow
-		go nf.parse(m, remote, data)
 
 	}
+
 }
 
 // parse netflow from traffic
 func (nf *Collector) parse(m interface{}, remote net.Addr, data []byte) {
-	// defer nf.waitGroup.Done()
-	// nf.waitGroup.Add(1)
+	defer nf.waitGroup.Done()
 
 	// metrics to collect
 	var metrics []common.Metric
@@ -382,7 +395,7 @@ func (nf *Collector) getExporters() []exporters.Exporter {
 	for _, ex := range nf.c.Exporter.InfluxDBs {
 
 		// create new influxDB
-		ifl := influxdb.New(ex.Token, ex.Bucket, ex.Org, ex.Host, nf.c.IPReputation, ex.Port, nf.d, nf.iploc, nf.waitGroup)
+		ifl := influxdb.New(ex.Token, ex.Bucket, ex.Org, ex.Host, nf.c.IPReputation, ex.Port, nf.d, nf.iploc)
 
 		// create new influxDB exporter
 		influxExporter, err := exporters.New(ifl, ifl.Debuuger)

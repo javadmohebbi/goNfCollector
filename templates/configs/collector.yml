@@ -6,6 +6,9 @@ debug: true
 # LogFile
 logFile: /opt/nfcollector/var/log/collector.log
 
+# total number of cpu
+cpuNum: 1
+
 # Listen on address & port
 listen:
   # Listen Address
@@ -42,6 +45,6 @@ exporter:
   influxDBs:
     - host: 127.0.0.1
       port: 8086
-      token: JAD5kZ0n3GAQ3jdpe17NT5_NUg73GOvdjZjhxOMiJMx1cZyvLz-4DuR7K8xyRGlPcNQXLqrUTY20lWqbRiK--w==
+      token: 5vqt0q0b4g_lZwNgp7-8GgPq5Nxf3YY37xbVZP_ypeK_G3dwdNlTrAkcKN_Q6QzbmG-Th96lT_65Kp0j2UD1HA==
       bucket: nfCollector
-      org: MJMOHEBBI
+      org: OPENINTELLIGENCE

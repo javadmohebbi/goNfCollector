@@ -12,6 +12,9 @@ import (
 
 func (i *InfluxDBv2) measureDetailsRelatedMetrics(metrics []common.Metric) {
 
+	i.WaitGroup.Add(1)
+	defer i.WaitGroup.Done()
+
 	// define new write api
 	wapi := i.client.WriteAPI(i.Org, i.Bucket)
 

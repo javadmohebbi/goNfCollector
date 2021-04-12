@@ -2,6 +2,7 @@ package influxdb
 
 import (
 	"fmt"
+	"os"
 	"sync"
 
 	"github.com/goNfCollector/configurations"
@@ -42,6 +43,9 @@ type InfluxDBv2 struct {
 	// IP2locaion instance
 	iplocation *location.IPLocation
 
+	// channel
+	ch chan os.Signal
+
 	WaitGroup *sync.WaitGroup
 }
 
@@ -51,7 +55,7 @@ func (i InfluxDBv2) String() string {
 }
 
 // create new instance of influxDB
-func New(token, bucket, org, host string, ipReputationConf configurations.IpReputation, port int, d *debugger.Debugger, ip2location *location.IPLocation, wg *sync.WaitGroup) InfluxDBv2 {
+func New(token, bucket, org, host string, ipReputationConf configurations.IpReputation, port int, d *debugger.Debugger, ip2location *location.IPLocation) InfluxDBv2 {
 
 	// create new influx db client
 	client := influxdb2.NewClient(
@@ -89,7 +93,7 @@ func New(token, bucket, org, host string, ipReputationConf configurations.IpRepu
 
 		reputations: reputs,
 
-		WaitGroup: wg,
+		WaitGroup: &sync.WaitGroup{},
 	}
 
 }

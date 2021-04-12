@@ -12,6 +12,9 @@ import (
 // kind can be src or dst
 func (i *InfluxDBv2) measureSrcDstRelatedMetrics(metrics []common.Metric, kind string) {
 
+	i.WaitGroup.Add(1)
+	defer i.WaitGroup.Done()
+
 	// check for invalid host
 	if kind != "src" && kind != "dst" {
 		return

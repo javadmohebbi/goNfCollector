@@ -23,7 +23,7 @@ var BuildTime = "build date time"
 
 func main() {
 
-	runtime.GOMAXPROCS(runtime.NumCPU())
+	// runtime.GOMAXPROCS(runtime.NumCPU())
 
 	// listen address
 	addr := flag.String("address", "0.0.0.0", "Collector listen address")
@@ -36,6 +36,8 @@ func main() {
 
 	// version
 	version := flag.Bool("version", false, "Print version")
+
+	runtime.GOMAXPROCS(1)
 
 	// parse the flags
 	flag.Parse()
@@ -87,6 +89,10 @@ func main() {
 
 	// set log to file and also logfile
 	logr.SetOutput(mw)
+
+	logr.SetFormatter(&logrus.TextFormatter{
+		DisableColors: false,
+	})
 
 	// opening log file for write and append and pass it to io.multiwriter function
 	lfn := collectorConf.LogFile

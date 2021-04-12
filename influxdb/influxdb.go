@@ -75,13 +75,21 @@ func (i *InfluxDBv2) removeInvalidCharFromTags(s string) string {
 // close influx db connection
 func (i *InfluxDBv2) Close() error {
 
+	// closing ....
+	i.Debuuger.Verbose(fmt.Sprintf("Closing  %v:%v bucket:%v org:%v", i.Host, i.Port, i.Bucket, i.Org), logrus.InfoLevel)
+
+	i.Debuuger.Verbose(fmt.Sprintf("Please wait until pending writes finish on %v:%v bucket:%v org:%v", i.Host, i.Port, i.Bucket, i.Org), logrus.InfoLevel)
+
+	defer i.Debuuger.Verbose(fmt.Sprintf("%v:%v bucket:%v org:%v closed!", i.Host, i.Port, i.Bucket, i.Org), logrus.InfoLevel)
+
+	// wait until all of tasks are done
+	i.WaitGroup.Wait()
+
 	// close influxdb client
 	i.client.Close()
 
 	// close location
 	i.iplocation.Close()
-
-	i.Debuuger.Verbose(fmt.Sprintf("Closing  %v:%v bucket:%v org:%v", i.Host, i.Port, i.Bucket, i.Org), logrus.DebugLevel)
 
 	// because influx db returns nithing on close :-D
 	return nil

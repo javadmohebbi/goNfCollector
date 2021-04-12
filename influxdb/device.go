@@ -9,8 +9,20 @@ import (
 
 // write device measurement
 func (i *InfluxDBv2) measureDevice(metrics []common.Metric) {
+
+	i.WaitGroup.Add(1)
+	defer i.WaitGroup.Done()
+
 	// define new write api
 	wapi := i.client.WriteAPI(i.Org, i.Bucket)
+
+	// errorsCh := wapi.Errors()
+	// // Create go proc for reading and logging errors
+	// go func() {
+	// 	for err := range errorsCh {
+	// 		log.Printf("influxDB write error: %s\n", err.Error())
+	// 	}
+	// }()
 
 	for _, m := range metrics {
 		protoLine := fmt.Sprintf("device,ver=%v,device=%v bytes=%vu,packets=%vu %v",

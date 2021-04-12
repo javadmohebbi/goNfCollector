@@ -12,7 +12,7 @@ It can export it to many other services like InfluxDB
 
 # usage example
 ```
-NFC_DEBUG="true" NFC_LISTEN_ADDRESS="0.0.0.0" NFC_LISTEN_PORT="6859" NFC_INFLUXDB_HOST="127.0.0.1" NFC_INFLUX_PORT="8086" NFC_INFLUXDB_TOKEN="JAD5kZ0n3GAQ3jdpe17NT5_NUg73GOvdjZjhxOMiJMx1cZyvLz-4DuR7K8xyRGlPcNQXLqrUTY20lWqbRiK--w==" NFC_INFLUXDB_BUCKET="nfCollector" NFC_INFLUXDB_ORG="MJMOHEBBI" NFC_IP_REPTATION_IPSUM="/opt/nfcollector/vendors/ipsum/ipsum.txt"  NFC_IP2L_ASN="/opt/nfcollector/vendors/ip2location/db/IP2LOCATION-LITE-ASN.IPV6.CSV/IP2LOCATION-LITE-ASN.IPV6.CSV" NFC_IP2L_IP="/opt/nfcollector/vendors/ip2location/db/IP2LOCATION-LITE-DB11.IPV6.BIN/IP2LOCATION-LITE-DB11.IPV6.BIN" NFC_IP2L_PROXY="/opt/nfcollector/vendors/ip2location/db/IP2PROXY-LITE-PX10.IPV6.CSV/IP2PROXY-LITE-PX10.IPV6.CSV" NFC_IP2L_LOCAL="/opt/nfcollector/vendors/ip2location/local-db/local.csv" go run cmd/collector/main.go
+NFC_DEBUG="true" NFC_LISTEN_ADDRESS="0.0.0.0" NFC_LISTEN_PORT="6859" NFC_INFLUXDB_HOST="127.0.0.1" NFC_INFLUX_PORT="8086" NFC_INFLUXDB_TOKEN="JAD5kZ0n3GAQ3jdpe17NT5_NUg73GOvdjZjhxOMiJMx1cZyvLz-4DuR7K8xyRGlPcNQXLqrUTY20lWqbRiK--w==" NFC_INFLUXDB_BUCKET="nfCollector" NFC_INFLUXDB_ORG="MJMOHEBBI" NFC_IP_REPTATION_IPSUM="/opt/nfcollector/vendors/ipsum/ipsum.txt"  NFC_IP2L_ASN="/opt/nfcollector/vendors/ip2location/db/IP2LOCATION-LITE-ASN.IPV6.CSV/IP2LOCATION-LITE-ASN.IPV6.CSV" NFC_IP2L_IP="/opt/nfcollector/vendors/ip2location/db/IP2LOCATION-LITE-DB11.IPV6.BIN/IP2LOCATION-LITE-DB11.IPV6.BIN" NFC_IP2L_PROXY="/opt/nfcollector/vendors/ip2location/db/IP2PROXY-LITE-PX10.IPV6.CSV/IP2PROXY-LITE-PX10.IPV6.CSV" NFC_LOG_FILE="/tml/log.tmp" NFC_IP2L_LOCAL="/opt/nfcollector/vendors/ip2location/local-db/local.csv" go run cmd/collector/main.go
 ```
 
 
