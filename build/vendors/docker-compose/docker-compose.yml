@@ -45,6 +45,7 @@ services:
             - "6859:6859/udp"
 
         volumes:
+            - _PROJECT_DIR_/bin:/opt/nfcollector/bin
             - _PROJECT_DIR_/etc:/opt/nfcollector/etc
             - _PROJECT_DIR_/var:/opt/nfcollector/var
             - _PROJECT_DIR_/vendors:/opt/nfcollector/vendors
