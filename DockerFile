@@ -5,6 +5,7 @@ FROM ubuntu:focal
 
 
 ENV NFC_DEBUG="true"
+ENV NFC_CPU_NUM="1"
 ENV NFC_LISTEN_ADDRESS="0.0.0.0"
 ENV NFC_LISTEN_PORT="6859"
 ENV NFC_LOG_FILE="/opt/nfcollector/var/log/collector.log"
