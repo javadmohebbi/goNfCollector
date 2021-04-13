@@ -78,6 +78,6 @@ There are multiple ways to deploy "**netflow collector**" app & easiest ways is 
 - **Project path**: The shel script will create a directory called `oi24` (abbr. of openintelligence24.com) and a subdirectory `nfcollector` inside your HOME directory. InfluxDB database, grafana dashboards & plugins & ... are in `vendors` sub-directory.
   - To open this directory run `cd $HOME/oi24/nfcollector`
 
-- **Start & Stop Container**:
-  - **Start Container**:  `cd $HOME/oi24/nfcollector && docker-compose up -d`
-  - **Stop Container**:  `cd $HOME/oi24/nfcollector && docker-compose down`
+- **Start & Stop Containers**:
+  - **Start**:  `cd $HOME/oi24/nfcollector && docker-compose up -d`
+  - **Stop**:  `cd $HOME/oi24/nfcollector && docker-compose down`
