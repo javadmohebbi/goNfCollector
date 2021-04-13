@@ -1,19 +1,39 @@
 #!/bin/bash
 
+# This shell-script will install the latest version of
+# nfcollector to your system & has some system requirements including
+# docker, docker-compose, wget. If not satisfied, will help you install
+# them using a guide printed in the terminal
+# Check more about it's usage at: https://github.com/javadmohebbi/goNfCollector
+
+
+
+
+# change the color of echo output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 NC='\033[0m' # No Color
 
 
+# RANDOM QUERY STRING FOR PREVENTING CACHE
+RAND_STR=$(date | md5sum | cut -d" " -f1)
+
+
+## This VARIABLES are exported because of
+## nfupdater commad. This command needs some of them
+## Don't panic, this env vars are temparary & will no longer exist if
+## you re-open the Terminal
+## ;-)
+
+
 # PROJECT DIR
 export PROJECT_DIR=$HOME/oi24/nfcollector
 
-# export PROJECT_DIR=/opt/openintelligence24/nfcollector
-
-
+# USER ID
 export USER_ID=$(id -u)
 
+# Listen address
 export NFC_LISTEN_ADDRESS="0.0.0.0"
 
 # total number of used cpu
@@ -46,29 +66,25 @@ download_latest_version() {
     echo -e "${YELLOW} Downloading required files...${NC}"
 
     # download nfcollector
-    wget -O $PROJECT_DIR/bin/nfcollector https://download.openintelligence24.com/nf/bin/nfcollector
+    wget -O $PROJECT_DIR/bin/nfcollector https://download.openintelligence24.com/nf/bin/nfcollector?rnd=$RAND_STR
     chmod +x $PROJECT_DIR/bin/nfcollector
 
     # download nfupdater
-    wget -O $PROJECT_DIR/bin/nfupdater https://download.openintelligence24.com/nf/bin/nfupdater
+    wget -O $PROJECT_DIR/bin/nfupdater https://download.openintelligence24.com/nf/bin/nfupdater?rnd=$RAND_STR
     chmod +x $PROJECT_DIR/bin/nfupdater
 
     # download databases
     $PROJECT_DIR/bin/nfupdater -ipsum -ip2l -ip2l-asn -ip2l-proxy
 
     # download grafana dashboards & conf
-    wget -O /tmp/grafana.tar.gz https://download.openintelligence24.com/vendors/grafana/grafana.tar.gz && tar -vxf /tmp/grafana.tar.gz -C $GRAFANA_DIR/
+    wget -O /tmp/grafana.tar.gz https://download.openintelligence24.com/vendors/grafana/grafana.tar.gz?rnd=$RAND_STR && tar -vxf /tmp/grafana.tar.gz -C $GRAFANA_DIR/
     # chmod +r $GRAFANA_DIR/ -Rv
     echo -e "${YELLOW} Chaning permissions & owner of grafana directory. Maybe you need to enter 'sudo' password ${NC}"
     sudo chmod -Rv a+w $GRAFANA_DIR/
     sudo chown $USER:root $GRAFANA_DIR/ -Rv
 
-    wget -O ./docker-compose.yml https://download.openintelligence24.com/vendors/docker-compose/docker-compose.yml
+    wget -O ./docker-compose.yml https://download.openintelligence24.com/vendors/docker-compose/docker-compose.yml?rnd=$RAND_STR
 
-
-    # download templates
-    # wget -O $PROJECT_DIR/etc/collector.yml https://download.openintelligence24.com/nf/etc/nfcol-bash.yml
-    # wget -O $PROJECT_DIR/etc/ip2location.yml https://download.openintelligence24.com/nf/etc/nfloc-bash.yml
 
     echo -e "${GREEN}...done!${NC}"
 }
@@ -100,7 +116,7 @@ prepare_dir()
     # grafana directory
     mkdir -pv $GRAFANA_DIR
 
-    echo -e "${GRREN}...done!${NC}"
+    echo -e "${GREEN}...done!${NC}"
 }
 
 
@@ -172,7 +188,9 @@ get_influx_db_info() {
 
 
 print_info(){
-
+    echo ""
+    echo -e "${NC}= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = "
+    echo ""
     echo -e "${NC}Information you need to know:"
     echo -e "\n\t${GREEN} Project Directory: ${YELLOW}${PROJECT_DIR}"
 
@@ -192,12 +210,17 @@ print_info(){
     echo -e "\t\t${NC} address:${YELLOW}${NFC_LISTEN_ADDRESS}:${NFC_LISTEN_PORT}(udp)"
 
 
-    echo -e "- - - - - - - - - - - - - - - - "
+    echo ""
+    echo -e "${YELLOW}- - - - - - - - - - - - - - - - "
+    echo ""
     echo -e " ${YELLOW}To start containers:"
-    echo -e " ${GREEN}cd ${PROJECT_DIR} && docker-compose up -d${NC}"
+    echo -e " ${NC}\$ ${GREEN}cd ${PROJECT_DIR} && docker-compose up -d${NC}"
     echo -e " ${YELLOW}To stop containers:"
-    echo -e " ${GREEN}cd ${PROJECT_DIR} && docker-compose down${NC}"
-    echo -e "- - - - - - - - - - - - - - - - "
+    echo -e " ${NC}\$ ${GREEN}cd ${PROJECT_DIR} && docker-compose down${NC}"
+    echo ""
+    echo -e "${YELLOW}- - - - - - - - - - - - - - - - "
+    echo ""
+    echo ""
 
     echo -e "${NC}"
 }
@@ -234,6 +257,118 @@ replace_compose_template() {
 
 
 
+requirement_check() {
+
+    echo ""
+    echo -e "${YELLOW} Cheking system requirements...${NC}"
+
+    #check if  docker command is installed
+    commad_path=$(command -v docker)
+    if [ -z  "$commad_path" ] ; then
+        # OK
+        echo -e "${RED} >>> DOCKER is not installed. Please install docker and try again.${NC}"
+        echo -e "${RED} >>> Docker installation guide: https://docs.docker.com/engine/install"
+        exit 1
+    else
+        echo -e "${GREEN} Found 'docker' in '$commad_path'"
+    fi
+
+
+    #check if  docker-compose command is installed
+    commad_path=$(command -v docker-compose)
+    if [ -z  "$commad_path" ] ; then
+        # OK
+        echo -e "${RED} >>> DOCKER-COMPOSE is not installed. Please install docker-compose and try again.${NC}"
+        echo -e "${RED} >>> Docker-Compose installation guide: https://docs.docker.com/compose/install/"
+        exit 1
+    else
+        echo -e "${GREEN} Found 'docker-compose' in '$commad_path'"
+    fi
+
+
+    #check if wget command is installed
+    commad_path=$(command -v wget)
+    if [ -z  "$commad_path" ] ; then
+        # OK
+        echo -e "${RED} >>> WGET is not installed. Please install wget and try again.${NC}"
+        echo -e "${RED} >>> To install wget:"
+        echo -e "${RED} >>> \tDebian/Ubuntu/LinuxMint: ${YELLOW}sudo apt-get install wget"
+        echo -e "${RED} >>> \tRedhat/CentOS/Fedora: ${YELLOW}sudo yum install wget"
+        echo -e "${NC}"
+        exit 1
+    else
+        echo -e "${GREEN} Found 'wget' in '$commad_path'"
+    fi
+
+
+    echo -e "${YELLOW} ...requirements s atisfied!${NC}"
+    echo ""
+}
+
+
+# add cron job
+cron_jobs() {
+    echo ""
+    echo -e "${YELLOW} Create or update crontab for '${USER}' and add scheduled job...${NC}"
+
+    schedule_to=$(echo "0 7 * * * ")
+    command_to_run=$(echo "NFC_IP_REPTATION_IPSUM=$NFC_IP_REPTATION_IPSUM NFC_IP2L_ASN=$NFC_IP2L_ASN NFC_IP2L_IP=$NFC_IP2L_IP NFC_IP2L_PROXY=$NFC_IP2L_PROXY NFC_IP2L_LOCAL=$NFC_IP2L_LOCAL $PROJECT_DIR/bin/nfupdater -ipsum")
+
+    echo -e "${YELLOW} this command will be added to crontab if not available in 'crontab -l': ${NC}'nfupdater -ipsum'"
+
+    if [ 'crontab -l | grep "nfupdater"' ]; then
+        echo -e "${YELLOW} >>> Detected ${NC}'nfupdater' ${YELLOW}and no further action is required!"
+    else
+        crontab -l | echo "${schedule_to}${command_to_run}" | crontab -
+        echo -e "${YELLOW} >>> ${NC}'${schedule_to}${command_to_run}' ${YELLOW}added to crontab!"
+    fi
+
+    echo -e "${GRREN}...done!${NC}"
+
+}
+
+
+
+
+
+# print info about this shell-script
+# and let user confirm the execution
+echo ""
+echo -e "${YELLOW} This shell-script will download & install ${NC}'nfcollector' ${YELLOW}to your system."
+echo -e "${YELLOW} - Please check your server is connected to the Internet."
+echo -e "${YELLOW} - The project directory is ${NC}'${PROJECT_DIR}'"
+echo -e "${YELLOW} - These 'Docker' containers will be downloaded during installation:"
+echo -e "${YELLOW} \t- ${NC}'influxdb:2.0'"
+echo -e "${YELLOW} \t- ${NC}'grafana/grafana'"
+echo -e "${YELLOW} \t- ${NC}'javadmohebbi/gonfcollector'"
+echo -e "${YELLOW} - Also this script will download all the other required files to ${NC}${PROJECT_DIR}${YELLOW}. Including:"
+echo -e "${YELLOW} \t- ${NC}'https://download.openintelligence24.com/nf/bin/nfcollector'"
+echo -e "${YELLOW} \t- ${NC}'https://download.openintelligence24.com/nf/bin/nfupdater'"
+echo -e "${YELLOW} \t- ${NC}'https://download.openintelligence24.com/vendors/grafana/grafana.tar.gz'"
+echo -e "${YELLOW} \t- ${NC}'https://download.openintelligence24.com/vendors/docker-compose/docker-compose.yml'"
+echo -e "${YELLOW} \t- ${NC}'nfupdater -ipsum -ip2l -ip2l-asn -ip2l-proxy'${YELLOW} command will download ${NC}'ip2location lite DBs'${YELLOW} and ${NC}'ipsum IP reputation'${YELLOW} from the internet & palce them in ${NC}'${PROJECT_DIR}.'"
+echo -e "${YELLOW} - And a daily cron job will be created to download ${NC}'IPSUM' ${YELLOW}daily at ${NC}'7AM'"
+echo ""
+echo -e "${YELLOW} For more info visit: ${NC}'https://github.com/javadmohebbi/goNfCollector'"
+echo ""
+
+read -r -p "Do you want to continue? [y/N] " resp
+if [[ "$resp" =~ ^([yY][eE][sS]|[yY])$ ]]
+then
+    echo -e "${YELLOW} Start working...${NC}"
+else
+    echo -e "${YELLOW} Thank you! shell-script will be exited now${NC}"
+    exit 0
+fi
+
+
+
+
+
+# check the required packages
+requirement_check
+
+
 # preparing direcoty we need
 prepare_dir
 
@@ -247,7 +382,8 @@ get_influx_db_info
 #rename compose
 replace_compose_template
 
-
+# add cron jobs
+cron_jobs
 
 # print info
 print_info
