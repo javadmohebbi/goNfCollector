@@ -88,7 +88,7 @@ download_latest_version() {
 
     # DOWNLAOD TEMPLATES
     wget -O $PROJECT_DIR/etc/collector.yml https://download.openintelligence24.com/nf/etc/nfcol-bash.yml?rnd=$RAND_STR
-    wget -O $PROJECT_DIR/etc/location.yml https://download.openintelligence24.com/nf/etc/nfloc-bash.yml?rnd=$RAND_STR
+    wget -O $PROJECT_DIR/etc/ip2location.yml https://download.openintelligence24.com/nf/etc/nfloc-bash.yml?rnd=$RAND_STR
 
 
     echo -e "${GREEN}...done!${NC}"
@@ -293,7 +293,7 @@ replace_collector_template() {
 
 replace_location_template() {
 
-    conf=${PROJECT_DIR}/etc/location.yml
+    conf=${PROJECT_DIR}/etc/ip2location.yml
 
     echo ""
     echo -e "${YELLOW} Preparing ${conf} file...${NC}"
@@ -372,7 +372,7 @@ cron_jobs() {
 
     sh_path=$(echo "$PROJECT_DIR/bin/updateIPSum.sh")
 
-    command_to_run=$(echo "NFC_IP_REPTATION_IPSUM=$NFC_IP_REPTATION_IPSUM NFC_IP2L_ASN=$NFC_IP2L_ASN NFC_IP2L_IP=$NFC_IP2L_IP NFC_IP2L_PROXY=$NFC_IP2L_PROXY NFC_IP2L_LOCAL=$NFC_IP2L_LOCAL $PROJECT_DIR/bin/nfupdater -ipsum")
+    command_to_run=$(echo "NFC_IP_REPTATION_IPSUM=$NFC_IP_REPTATION_IPSUM NFC_IP2L_ASN=$NFC_IP2L_ASN NFC_IP2L_IP=$NFC_IP2L_IP NFC_IP2L_PROXY=$NFC_IP2L_PROXY NFC_IP2L_LOCAL=$NFC_IP2L_LOCAL $PROJECT_DIR/bin/nfupdater -ipsum -confPath ${PROJECT_DIR}/etc/")
     schedule_to=$(echo "0 7 * * * ")
 
     echo "#!/bin/bash" > $sh_path
