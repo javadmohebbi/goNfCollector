@@ -86,6 +86,11 @@ download_latest_version() {
     wget -O ./docker-compose.yml https://download.openintelligence24.com/vendors/docker-compose/docker-compose.yml?rnd=$RAND_STR
 
 
+    # DOWNLAOD TEMPLATES
+    wget -O $PROJECT_DIR/etc/collector.yml https://download.openintelligence24.com/nf/etc/nfcol-bash.yml?rnd=$RAND_STR
+    wget -O $PROJECT_DIR/etc/location.yml https://download.openintelligence24.com/nf/etc/nfloc-bash.yml?rnd=$RAND_STR
+
+
     echo -e "${GREEN}...done!${NC}"
 }
 
@@ -257,6 +262,61 @@ replace_compose_template() {
 
 
 
+replace_collector_template() {
+
+    conf=${PROJECT_DIR}/etc/collector.yml
+
+    echo ""
+    echo -e "${YELLOW} Preparing ${conf} file...${NC}"
+
+    PWD_ESCP=$(echo $INFLUX_DIR | sed 's_/_\\/_g')
+    sed -i "s/_INFLUX_DIR_/$PWD_ESCP/g"  $conf
+
+    PWD_ESCP=$(echo $GRAFANA_DIR | sed 's_/_\\/_g')
+    sed -i "s/_GRAFANA_DIR_/$PWD_ESCP/g"  $conf
+
+    PWD_ESCP=$(echo $PROJECT_DIR | sed 's_/_\\/_g')
+    sed -i "s/_PROJECT_DIR_/$PWD_ESCP/g"  $conf
+
+    sed -i "s/_NFC_CPU_NUM_/$NFC_CPU_NUM/g"  $conf
+
+    sed -i "s/_NFC_LISTEN_ADDRESS_/$NFC_LISTEN_ADDRESS/g"  $conf
+    sed -i "s/_NFC_LISTEN_PORT_/$NFC_LISTEN_PORT/g" . $conf
+    sed -i "s/_NFC_INFLUXDB_HOST_/$NFC_INFLUXDB_HOST/g"  $conf
+    sed -i "s/_NFC_INFLUXDB_PORT_/$NFC_INFLUXDB_PORT/g"  $conf
+    sed -i "s/_NFC_INFLUXDB_TOKEN_/$NFC_INFLUXDB_TOKEN/g"  $conf
+    sed -i "s/_NFC_INFLUXDB_BUCKET_/$NFC_INFLUXDB_BUCKET/g"  $conf
+    sed -i "s/_NFC_INFLUXDB_ORG_/$NFC_INFLUXDB_ORG/g" $conf
+
+    echo -e "${GRREN}...done!${NC}"
+}
+
+
+replace_location_template() {
+
+    conf=${PROJECT_DIR}/etc/location.yml
+
+    echo ""
+    echo -e "${YELLOW} Preparing ${conf} file...${NC}"
+
+    PWD_ESCP=$(echo $NFC_IP2L_ASN | sed 's_/_\\/_g')
+    sed -i "s/_NFC_IP2L_ASN_/$PWD_ESCP/g"  $conf
+
+    PWD_ESCP=$(echo $NFC_IP2L_IP | sed 's_/_\\/_g')
+    sed -i "s/_NFC_IP2L_IP_/$PWD_ESCP/g"  $conf
+
+    PWD_ESCP=$(echo $NFC_IP2L_PROXY | sed 's_/_\\/_g')
+    sed -i "s/_NFC_IP2L_PROXY_/$PWD_ESCP/g"  $conf
+
+    PWD_ESCP=$(echo $NFC_IP2L_LOCAL | sed 's_/_\\/_g')
+    sed -i "s/_NFC_IP2L_LOCAL_/$PWD_ESCP/g"  $conf
+
+
+    echo -e "${GRREN}...done!${NC}"
+}
+
+
+
 requirement_check() {
 
     echo ""
@@ -311,16 +371,23 @@ cron_jobs() {
     echo ""
     echo -e "${YELLOW} Create or update crontab for '${USER}' and add scheduled job...${NC}"
 
-    schedule_to=$(echo "0 7 * * * ")
+    sh_path=$(echo "$PROJECT_DIR/bin/updateIPSum.sh")
+
     command_to_run=$(echo "NFC_IP_REPTATION_IPSUM=$NFC_IP_REPTATION_IPSUM NFC_IP2L_ASN=$NFC_IP2L_ASN NFC_IP2L_IP=$NFC_IP2L_IP NFC_IP2L_PROXY=$NFC_IP2L_PROXY NFC_IP2L_LOCAL=$NFC_IP2L_LOCAL $PROJECT_DIR/bin/nfupdater -ipsum")
+    schedule_to=$(echo "0 7 * * * ")
+
+    echo "#!/bin/bash" > $sh_path
+    echo $command_to_run >> $sh_path
+    chmod +x -v $sh_path
+
 
     echo -e "${YELLOW} this command will be added to crontab if not available in 'crontab -l': ${NC}'nfupdater -ipsum'"
 
-    if [ 'crontab -l | grep "nfupdater"' ]; then
-        echo -e "${YELLOW} >>> Detected ${NC}'nfupdater' ${YELLOW}and no further action is required!"
+    if echo $(crontab -l) | grep -q "updateIPSum" ; then
+        echo -e "${YELLOW} >>> Detected ${NC}'updateIPSum' ${YELLOW}and no further action is required!"
     else
-        crontab -l | echo "${schedule_to}${command_to_run}" | crontab -
-        echo -e "${YELLOW} >>> ${NC}'${schedule_to}${command_to_run}' ${YELLOW}added to crontab!"
+        crontab -l | echo "${schedule_to}${sh_path}" | crontab -
+        echo -e "${YELLOW} >>> ${NC}'${schedule_to}${sh_path}' ${YELLOW}added to crontab!"
     fi
 
     echo -e "${GRREN}...done!${NC}"
@@ -379,8 +446,11 @@ download_latest_version
 get_influx_db_info
 
 
-#rename compose
+#rename compose & other templates
 replace_compose_template
+
+replace_collector_template
+replace_location_template
 
 # add cron jobs
 cron_jobs

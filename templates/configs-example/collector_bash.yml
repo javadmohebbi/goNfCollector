@@ -4,15 +4,15 @@
 debug: false
 
 # LogFile
-logFile: LOG_PATH`
+logFile: _LOG_PATH_
 
 # Listen on address & port
 listen:
   # Listen Address
-  address: NFC_LISTEN_ADDRESS
+  address: _NFC_LISTEN_ADDRESS_
 
   # Listen Port
-  port: NFC_LISTEN_PORT
+  port: _NFC_LISTEN_PORT_
 
 # Forwarder configuration
 forwarder:
@@ -32,7 +32,7 @@ forwarder:
 ipReputation:
   # IPSum DB Path
   # https://raw.githubusercontent.com/stamparm/ipsum/master/ipsum.txt
-  iPSumPath: NFC_IP_REPTATION_IPSUM
+  iPSumPath: _NFC_IP_REPTATION_IPSUM_
 
 # Exporters
 exporter:
@@ -40,16 +40,16 @@ exporter:
   # you can config as many as you want
   influxDBs:
     # influxDB host
-    - host: NFC_INFLUXDB_HOST
+    - host: _NFC_INFLUXDB_HOST_
 
       # influxDB port
-      port: NFC_INFLUXDB_PORT
+      port: _NFC_INFLUXDB_PORT_
 
       # Your API token
-      token: NFC_INFLUXDB_TOKEN
+      token: _NFC_INFLUXDB_TOKEN_
 
       # your bucket
-      bucket: NFC_INFLUXDB_BUCKET
+      bucket: _NFC_INFLUXDB_BUCKET_
 
       # your organization name (influxDB)
-      org: NFC_INFLUXDB_ORG
+      org: _NFC_INFLUXDB_ORG_
