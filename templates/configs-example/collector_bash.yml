@@ -6,6 +6,9 @@ debug: false
 # LogFile
 logFile: _LOG_PATH_
 
+# total number of cpu
+cpuNum: _NFC_CPU_NUM_
+
 # Listen on address & port
 listen:
   # Listen Address
