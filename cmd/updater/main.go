@@ -17,6 +17,9 @@ var BuildTime = "build date time"
 
 func main() {
 
+	// conf file path
+	confFilePath := flag.String("confPath", "/opt/nfcollector/etc/", "Path to conf directory. (trailing slash is needed!)")
+
 	ips := flag.Bool("ipsum", false, "Downlaod IPSum")
 
 	ipl := flag.Bool("ip2l", false, "Downlaod IP2Location")
@@ -39,17 +42,17 @@ func main() {
 
 	if *ips {
 		// download ip sum
-		downloadIPSum()
+		downloadIPSum(*confFilePath)
 	}
 
 	// download ip2location
-	downloadIP2Location(*ipl, *iplAsn, *iplProx)
+	downloadIP2Location(*ipl, *iplAsn, *iplProx, *confFilePath)
 
 }
 
-func downloadIP2Location(ipl, iplASN, iplProx bool) {
+func downloadIP2Location(ipl, iplASN, iplProx bool, path string) {
 	// download IP2location lite db
-	i2lConf := getIP2LocationCof()
+	i2lConf := getIP2LocationCof(path)
 
 	if ipl {
 		// download lite
@@ -87,9 +90,9 @@ func downloadIP2Location(ipl, iplASN, iplProx bool) {
 
 }
 
-func downloadIPSum() {
+func downloadIPSum(path string) {
 	// download IPSUM db
-	colConf := getCollectorCof()
+	colConf := getCollectorCof(path)
 	updater.DownloadDatabase(
 		filepath.Base(colConf.IPReputation.IPSumPath),    // file name
 		filepath.Dir(colConf.IPReputation.IPSumPath)+"/", // directory
@@ -99,9 +102,9 @@ func downloadIPSum() {
 	)
 }
 
-func getIP2LocationCof() *configurations.IP2Location {
+func getIP2LocationCof(path string) *configurations.IP2Location {
 	// create new instance of configurations interface
-	cfg, err := configurations.New(configurations.CONF_TYPE_IP2LOCATION)
+	cfg, err := configurations.New(configurations.CONF_TYPE_IP2LOCATION, path)
 	if err != nil {
 		log.Println("Can not create new instance of configuration due to error ", err)
 		os.Exit(configurations.ERROR_READ_CONFIG.Int())
@@ -120,9 +123,9 @@ func getIP2LocationCof() *configurations.IP2Location {
 
 }
 
-func getCollectorCof() *configurations.Collector {
+func getCollectorCof(path string) *configurations.Collector {
 	// create new instance of configurations interface
-	cfg, err := configurations.New(configurations.CONF_TYPE_COLLECTOR)
+	cfg, err := configurations.New(configurations.CONF_TYPE_COLLECTOR, path)
 	if err != nil {
 		log.Println("Can not create new instance of configuration due to error ", err)
 		os.Exit(configurations.ERROR_READ_CONFIG.Int())

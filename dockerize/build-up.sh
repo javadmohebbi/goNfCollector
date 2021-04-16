@@ -269,20 +269,19 @@ replace_collector_template() {
     echo ""
     echo -e "${YELLOW} Preparing ${conf} file...${NC}"
 
-    PWD_ESCP=$(echo $INFLUX_DIR | sed 's_/_\\/_g')
-    sed -i "s/_INFLUX_DIR_/$PWD_ESCP/g"  $conf
+    PWD_ESCP=$(echo ${PROJECT_DIR}/collector.log | sed 's_/_\\/_g')
+    sed -i "s/_LOG_PATH_/$PWD_ESCP/g"  $conf
 
-    PWD_ESCP=$(echo $GRAFANA_DIR | sed 's_/_\\/_g')
-    sed -i "s/_GRAFANA_DIR_/$PWD_ESCP/g"  $conf
-
-    PWD_ESCP=$(echo $PROJECT_DIR | sed 's_/_\\/_g')
-    sed -i "s/_PROJECT_DIR_/$PWD_ESCP/g"  $conf
 
     sed -i "s/_NFC_CPU_NUM_/$NFC_CPU_NUM/g"  $conf
 
-    sed -i "s/_NFC_LISTEN_ADDRESS_/$NFC_LISTEN_ADDRESS/g"  $conf
-    sed -i "s/_NFC_LISTEN_PORT_/$NFC_LISTEN_PORT/g" . $conf
-    sed -i "s/_NFC_INFLUXDB_HOST_/$NFC_INFLUXDB_HOST/g"  $conf
+    sed -i "s/_NFC_LISTEN_ADDRESS_/$NFC_LISTEN_ADDRESS/g" $conf
+    sed -i "s/_NFC_LISTEN_PORT_/$NFC_LISTEN_PORT/g"  $conf
+
+    PWD_ESCP=$(echo ${NFC_IP_REPTATION_IPSUM} | sed 's_/_\\/_g')
+    sed -i "s/_NFC_IP_REPTATION_IPSUM_/$PWD_ESCP/g" $conf
+
+    sed -i "s/_NFC_INFLUXDB_HOST_/$NFC_INFLUXDB_HOST/g" $conf
     sed -i "s/_NFC_INFLUXDB_PORT_/$NFC_INFLUXDB_PORT/g"  $conf
     sed -i "s/_NFC_INFLUXDB_TOKEN_/$NFC_INFLUXDB_TOKEN/g"  $conf
     sed -i "s/_NFC_INFLUXDB_BUCKET_/$NFC_INFLUXDB_BUCKET/g"  $conf

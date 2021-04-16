@@ -37,13 +37,17 @@ func (ct ConfType) String() string {
 }
 
 // create new configuration
-func New(ct ConfType) (Configuration, error) {
+func New(ct ConfType, path string) (Configuration, error) {
 
 	// define default configuration file path, name, ext
 	cf := confFile{
 		path: "/opt/nfcollector/etc/",
 		file: "collector",
 		ext:  "yml",
+	}
+
+	if path != "" {
+		cf.path = path
 	}
 
 	switch ct {
@@ -57,7 +61,7 @@ func New(ct ConfType) (Configuration, error) {
 		return Configuration(
 			&IP2Location{
 				confFile: confFile{
-					path: "/opt/nfcollector/etc/",
+					path: cf.path,
 					file: "ip2location",
 					ext:  "yml",
 				},

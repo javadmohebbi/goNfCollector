@@ -79,11 +79,11 @@ type outgoingMessage struct {
 }
 
 // create new netflow collector
-func New(h string, p int, l *logrus.Logger, c *configurations.Collector, d *debugger.Debugger) *Collector {
+func New(h string, p int, l *logrus.Logger, c *configurations.Collector, d *debugger.Debugger, path string) *Collector {
 
 	// getIP2location conf
 	// create new instance of configurations interface
-	cfg, err := configurations.New(configurations.CONF_TYPE_IP2LOCATION)
+	cfg, err := configurations.New(configurations.CONF_TYPE_IP2LOCATION, path)
 	if err != nil {
 		d.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
 			configurations.ERROR_READ_CONFIG.Int(),

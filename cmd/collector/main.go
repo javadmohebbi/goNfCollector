@@ -25,6 +25,9 @@ func main() {
 
 	// runtime.GOMAXPROCS(runtime.NumCPU())
 
+	// conf file path
+	confFilePath := flag.String("confPath", "/opt/nfcollector/etc/", "Path to conf directory. (trailing slash is needed!)")
+
 	// listen address
 	addr := flag.String("address", "0.0.0.0", "Collector listen address")
 
@@ -47,7 +50,7 @@ func main() {
 	}
 
 	// create new instance of configurations interface
-	cfg, err := configurations.New(configurations.CONF_TYPE_COLLECTOR)
+	cfg, err := configurations.New(configurations.CONF_TYPE_COLLECTOR, *confFilePath)
 	if err != nil {
 		log.Println("Can not create new instance of configuration due to error ", err)
 		os.Exit(configurations.ERROR_READ_CONFIG.Int())
@@ -133,6 +136,7 @@ func main() {
 	nfcol := collector.New(collectorConf.Listen.Address,
 		collectorConf.Listen.Port,
 		logr, collectorConf, d,
+		*confFilePath,
 	)
 
 	// serve netflow collector service
