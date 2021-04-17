@@ -15,6 +15,8 @@ GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 NC='\033[0m' # No Color
 
+COMPOSE_PROJECT_NAME="oi24"
+
 
 # RANDOM QUERY STRING FOR PREVENTING CACHE
 RAND_STR=$(date | md5sum | cut -d" " -f1)
@@ -90,6 +92,8 @@ download_latest_version() {
     wget -O $PROJECT_DIR/etc/collector.yml https://download.openintelligence24.com/nf/etc/nfcol-bash.yml?rnd=$RAND_STR
     wget -O $PROJECT_DIR/etc/ip2location.yml https://download.openintelligence24.com/nf/etc/nfloc-bash.yml?rnd=$RAND_STR
 
+
+    echo "COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}" > $PROJECT_DIR/.env
 
     echo -e "${GREEN}...done!${NC}"
 }
@@ -376,7 +380,13 @@ cron_jobs() {
     schedule_to=$(echo "0 7 * * * ")
 
     echo "#!/bin/bash" > $sh_path
+    echo "COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}"
+    echo "PROJECT_DIR=${PROJECT_DIR}" >> $sh_path
     echo $command_to_run >> $sh_path
+    echo "pushd $PROJECT_DIR" >> $sh_path
+    echo "docker-compose restart" >> $sh_path
+    echo "popd" >> $sh_path
+
     chmod +x -v $sh_path
 
 
