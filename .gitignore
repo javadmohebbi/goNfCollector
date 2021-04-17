@@ -9,3 +9,5 @@ BUILD**
 templates/configs/**
 
 _HOW**
+
+cmd/test**
