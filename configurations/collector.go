@@ -12,11 +12,12 @@ import (
 type Collector struct {
 	confFile confFile
 
-	Debug     bool      `json:"debug"`
-	CPUNum    int       `json:"cpuNum"`
-	Listen    listen    `json:"listen"`
-	Forwarder forwarder `json:"forwarder"`
-	LogFile   string    `json:"logFile"`
+	Debug      bool      `json:"debug"`
+	CPUNum     int       `json:"cpuNum"`
+	AcceptFrom string    `json:"acceptFrom"`
+	Listen     listen    `json:"listen"`
+	Forwarder  forwarder `json:"forwarder"`
+	LogFile    string    `json:"logFile"`
 
 	IPReputation IpReputation `json:"ipReputation"`
 

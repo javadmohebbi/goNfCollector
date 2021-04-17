@@ -9,6 +9,10 @@ logFile: /opt/nfcollector/var/log/collector.log
 # total number of cpu
 cpuNum: 1
 
+# comma delimited IPs
+# or any
+AcceptFrom: 192.168.1.6,127.0.0.1
+
 # Listen on address & port
 listen:
   # Listen Address
