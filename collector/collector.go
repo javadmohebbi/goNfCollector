@@ -11,11 +11,6 @@ import (
 	"syscall"
 
 	"github.com/goNfCollector/collector/nfipfix"
-	"github.com/goNfCollector/collector/nfv1"
-	"github.com/goNfCollector/collector/nfv5"
-	"github.com/goNfCollector/collector/nfv6"
-	"github.com/goNfCollector/collector/nfv7"
-	"github.com/goNfCollector/collector/nfv9"
 	"github.com/goNfCollector/common"
 	"github.com/goNfCollector/configurations"
 	"github.com/goNfCollector/debugger"
@@ -26,11 +21,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/tehmaze/netflow"
 	"github.com/tehmaze/netflow/ipfix"
-	"github.com/tehmaze/netflow/netflow1"
-	"github.com/tehmaze/netflow/netflow5"
-	"github.com/tehmaze/netflow/netflow6"
-	"github.com/tehmaze/netflow/netflow7"
-	"github.com/tehmaze/netflow/netflow9"
 	"github.com/tehmaze/netflow/session"
 )
 
@@ -360,20 +350,20 @@ func (nf *Collector) parse(m interface{}, remote net.Addr, data []byte) {
 
 	// check the netflow version
 	switch p := m.(type) {
-	case *netflow1.Packet:
-		metrics = nfv1.Prepare(remote.String(), p)
+	// case *netflow1.Packet:
+	// 	metrics = nfv1.Prepare(remote.String(), p)
 
-	case *netflow5.Packet:
-		metrics = nfv5.Prepare(remote.String(), p)
+	// case *netflow5.Packet:
+	// 	metrics = nfv5.Prepare(remote.String(), p)
 
-	case *netflow6.Packet:
-		metrics = nfv6.Prepare(remote.String(), p)
+	// case *netflow6.Packet:
+	// 	metrics = nfv6.Prepare(remote.String(), p)
 
-	case *netflow7.Packet:
-		metrics = nfv7.Prepare(remote.String(), p)
+	// case *netflow7.Packet:
+	// 	metrics = nfv7.Prepare(remote.String(), p)
 
-	case *netflow9.Packet:
-		metrics = nfv9.Prepare(remote.String(), p)
+	// case *netflow9.Packet:
+	// 	metrics = nfv9.Prepare(remote.String(), p)
 
 	case *ipfix.Message:
 		metrics = nfipfix.Prepare(remote.String(), p)

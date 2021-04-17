@@ -26,23 +26,25 @@ func Prepare(addr string, m *ipfix.Message) []common.Metric {
 
 		for _, dr := range ds.Records {
 
-			// check := make(map[string]bool)
-			// check["flowEndSysUpTime"] = false
-			// check["flowStartSysUpTime"] = false
-			// check["octetDeltaCount"] = false
-			// check["packetDeltaCount"] = false
-			// check["ingressInterface"] = false
-			// check["egressInterface"] = false
-			// check["sourceIPv4Address"] = false
-			// check["destinationIPv4Address"] = false
-			// check["protocolIdentifier"] = false
-			// check["sourceTransportPort"] = false
-			// check["destinationTransportPort"] = false
-			// check["ipNextHopIPv4Address"] = false
-			// check["destinationIPv4PrefixLength"] = false
-			// check["sourceIPv4PrefixLength"] = false
-			// check["tcpControlBits"] = false
-			// check["flowDirection"] = false
+			check := make(map[string]bool)
+
+			// not check true one for now
+			check["flowEndSysUpTime"] = true
+			check["flowStartSysUpTime"] = true
+			check["octetDeltaCount"] = true
+			check["packetDeltaCount"] = true
+			check["ingressInterface"] = true
+			check["egressInterface"] = true
+			check["ipNextHopIPv4Address"] = true
+			check["sourceIPv4Address"] = false
+			check["destinationIPv4Address"] = false
+			check["protocolIdentifier"] = false
+			check["sourceTransportPort"] = false
+			check["destinationTransportPort"] = false
+			check["destinationIPv4PrefixLength"] = true
+			check["sourceIPv4PrefixLength"] = true
+			check["tcpControlBits"] = true
+			check["flowDirection"] = false
 
 			met = common.Metric{OutBytes: "0", InBytes: "0", OutPacket: "0", InPacket: "0", Device: nfExporter}
 
@@ -57,59 +59,72 @@ func Prepare(addr string, m *ipfix.Message) []common.Metric {
 
 						// fmt.Printf("        NN %s: %v\n", f.Translated.Name, f.Translated.Value)
 
-						// check[f.Translated.Name] = true
-
 						switch strings.ToLower(f.Translated.Name) {
 						case strings.ToLower("flowEndSysUpTime"):
-
+							check[f.Translated.Name] = true
 							met.First = fmt.Sprintf("%v", f.Translated.Value)
 
 						case strings.ToLower("flowStartSysUpTime"):
+							check[f.Translated.Name] = true
 							met.Last = fmt.Sprintf("%v", f.Translated.Value)
 
 						case strings.ToLower("octetDeltaCount"):
+							check[f.Translated.Name] = true
 							met.Bytes = fmt.Sprintf("%v", f.Translated.Value)
 
 						case strings.ToLower("packetDeltaCount"):
+							check[f.Translated.Name] = true
 							met.Packets = fmt.Sprintf("%v", f.Translated.Value)
 
 						case strings.ToLower("ingressInterface"):
+							check[f.Translated.Name] = true
 							met.InEthernet = fmt.Sprintf("%v", f.Translated.Value)
 
 						case strings.ToLower("egressInterface"):
+							check[f.Translated.Name] = true
 							met.OutEthernet = fmt.Sprintf("%v", f.Translated.Value)
 
 						case strings.ToLower("sourceIPv4Address"):
+							check[f.Translated.Name] = true
 							met.SrcIP = fmt.Sprintf("%v", f.Translated.Value)
 
 						case strings.ToLower("destinationIPv4Address"):
+							check[f.Translated.Name] = true
 							met.DstIP = fmt.Sprintf("%v", f.Translated.Value)
 
 						case strings.ToLower("protocolIdentifier"):
+							check[f.Translated.Name] = true
 							met.Protocol = fmt.Sprintf("%v", f.Translated.Value)
 							met.ProtoName = common.ProtoToName(met.Protocol)
 
 						case strings.ToLower("sourceTransportPort"):
+							check[f.Translated.Name] = true
 							met.SrcPort = fmt.Sprintf("%v", f.Translated.Value)
 							met.SrcPortName = common.GetPortName(met.SrcPort, met.ProtoName)
 
 						case strings.ToLower("destinationTransportPort"):
+							check[f.Translated.Name] = true
 							met.DstPort = fmt.Sprintf("%v", f.Translated.Value)
 							met.DstPortName = common.GetPortName(met.DstPort, met.ProtoName)
 
 						case strings.ToLower("ipNextHopIPv4Address"):
+							check[f.Translated.Name] = true
 							met.NextHop = fmt.Sprintf("%v", f.Translated.Value)
 
 						case strings.ToLower("destinationIPv4PrefixLength"):
+							check[f.Translated.Name] = true
 							met.DstMask = fmt.Sprintf("%v", f.Translated.Value)
 
 						case strings.ToLower("sourceIPv4PrefixLength"):
+							check[f.Translated.Name] = true
 							met.SrcMask = fmt.Sprintf("%v", f.Translated.Value)
 
 						case strings.ToLower("tcpControlBits"):
+							check[f.Translated.Name] = true
 							met.TCPFlags = fmt.Sprintf("%v", f.Translated.Value)
 
 						case strings.ToLower("flowDirection"):
+							check[f.Translated.Name] = true
 							met.Direction = fmt.Sprintf("%v", f.Translated.Value)
 							switch met.Direction {
 							case "0":
@@ -131,7 +146,23 @@ func Prepare(addr string, m *ipfix.Message) []common.Metric {
 				}
 			}
 
-			metrics = append(metrics, met)
+			notAppend := true
+
+			for _, v := range check {
+				if !v {
+					notAppend = false
+					break
+				}
+			}
+
+			// for k, v := range check {
+			// 	fmt.Printf("\n\n=== %v= %v, ", k, v)
+			// }
+			// fmt.Println("")
+
+			if notAppend {
+				metrics = append(metrics, met)
+			}
 		}
 	}
 

@@ -97,5 +97,5 @@ func (i *InfluxDBv2) Close() error {
 
 // fix - & not availale fields in localdb
 func (i *InfluxDBv2) fixNotAvailableFileds(il *ip2location.IP2Locationrecord) {
-	ip2location.Printrecord(*il)
+	// ip2location.Printrecord(*il)
 }
