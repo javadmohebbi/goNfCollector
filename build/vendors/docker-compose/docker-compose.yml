@@ -7,6 +7,8 @@ services:
 
         image: influxdb:2.0
 
+        restart: always
+
         volumes:
             - _INFLUX_DIR_:/var/lib/influxdb2
 
@@ -25,6 +27,8 @@ services:
 
         image: grafana/grafana
 
+        restart: always
+
         volumes:
             - _GRAFANA_DIR_:/var/lib/grafana
 
@@ -38,6 +42,8 @@ services:
     nfcolector:
 
         image: javadmohebbi/gonfcollector
+
+        restart: always
 
         network_mode: host
 
