@@ -340,7 +340,7 @@ func (nf *Collector) collect(conn *net.UDPConn) {
 			}
 
 			// write debug info
-			nf.d.Verbose(fmt.Sprintf("received %d bytes from %s\n", length, remote), logrus.DebugLevel)
+			// nf.d.Verbose(fmt.Sprintf("received %d bytes from %s\n", length, remote), logrus.DebugLevel)
 
 			// parse netflow
 			nf.waitGroup.Add(1)
@@ -377,11 +377,12 @@ func (nf *Collector) parse(m interface{}, remote net.Addr, data []byte) {
 
 	case *ipfix.Message:
 		metrics = nfipfix.Prepare(remote.String(), p)
-
 	}
 
 	// export metrics if neededs
-	go nf.export(metrics)
+	if len(metrics) > 0 {
+		go nf.export(metrics)
+	}
 
 }
 

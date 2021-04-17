@@ -25,6 +25,25 @@ func Prepare(addr string, m *ipfix.Message) []common.Metric {
 		}
 
 		for _, dr := range ds.Records {
+
+			// check := make(map[string]bool)
+			// check["flowEndSysUpTime"] = false
+			// check["flowStartSysUpTime"] = false
+			// check["octetDeltaCount"] = false
+			// check["packetDeltaCount"] = false
+			// check["ingressInterface"] = false
+			// check["egressInterface"] = false
+			// check["sourceIPv4Address"] = false
+			// check["destinationIPv4Address"] = false
+			// check["protocolIdentifier"] = false
+			// check["sourceTransportPort"] = false
+			// check["destinationTransportPort"] = false
+			// check["ipNextHopIPv4Address"] = false
+			// check["destinationIPv4PrefixLength"] = false
+			// check["sourceIPv4PrefixLength"] = false
+			// check["tcpControlBits"] = false
+			// check["flowDirection"] = false
+
 			met = common.Metric{OutBytes: "0", InBytes: "0", OutPacket: "0", InPacket: "0", Device: nfExporter}
 
 			met.Time = time.Unix(int64(m.Header.ExportTime), 0)
@@ -32,11 +51,17 @@ func Prepare(addr string, m *ipfix.Message) []common.Metric {
 
 			met.FlowVersion = "IPFIX"
 			for _, f := range dr.Fields {
+
 				if f.Translated != nil {
 					if f.Translated.Name != "" {
-						//fmt.Printf("        NN %s: %v\n", f.Translated.Name, f.Translated.Value)
+
+						// fmt.Printf("        NN %s: %v\n", f.Translated.Name, f.Translated.Value)
+
+						// check[f.Translated.Name] = true
+
 						switch strings.ToLower(f.Translated.Name) {
 						case strings.ToLower("flowEndSysUpTime"):
+
 							met.First = fmt.Sprintf("%v", f.Translated.Value)
 
 						case strings.ToLower("flowStartSysUpTime"):
@@ -97,13 +122,15 @@ func Prepare(addr string, m *ipfix.Message) []common.Metric {
 						}
 					} else {
 						//fmt.Printf("        TT %d: %v\n", f.Translated.Type, f.Bytes)
-						return nil
+						// return nil
+						continue
 					}
 				} else {
 					//fmt.Printf("        RR %d: %v (raw)\n", f.Type, f.Bytes)
-					return nil
+					continue
 				}
 			}
+
 			metrics = append(metrics, met)
 		}
 	}
