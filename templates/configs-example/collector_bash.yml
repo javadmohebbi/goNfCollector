@@ -9,6 +9,10 @@ logFile: _LOG_PATH_
 # total number of cpu
 cpuNum: _NFC_CPU_NUM_
 
+# comma delimited IPs
+# or any
+acceptFrom: any
+
 # Listen on address & port
 listen:
   # Listen Address
