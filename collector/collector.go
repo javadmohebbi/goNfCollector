@@ -361,7 +361,7 @@ func (nf *Collector) parse(m interface{}, remote net.Addr, data []byte) {
 
 	mustAccept := false
 
-	if nf.c.AcceptFrom != "any" {
+	if nf.c.AcceptFrom != "any" && nf.c.AcceptFrom != "" {
 		spl := strings.Split(nf.c.AcceptFrom, ",")
 
 		for _, s := range spl {
