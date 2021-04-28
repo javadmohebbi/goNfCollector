@@ -401,6 +401,7 @@ func (nf *Collector) parse(m interface{}, remote net.Addr, data []byte) {
 
 	case *ipfix.Message:
 		metrics = nfipfix.Prepare(remote.String(), p)
+
 	}
 
 	// export metrics if neededs
