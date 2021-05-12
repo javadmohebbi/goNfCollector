@@ -75,7 +75,7 @@ There are multiple ways to deploy "**netflow collector**" app & easiest ways is 
   - Username: admin
   - Password: secret
 
-- **Project path**: The shel script will create a directory called `oi24` (abbr. of openintelligence24.com) and a subdirectory `nfcollector` inside your HOME directory. InfluxDB database, grafana dashboards & plugins & ... are in `vendors` sub-directory.
+- **Project path**: The shell script will create a directory called `oi24` (abbr. of openintelligence24.com) and a subdirectory `nfcollector` inside your HOME directory. InfluxDB database, grafana dashboards & plugins & ... are in `vendors` sub-directory.
   - To open this directory run `cd $HOME/oi24/nfcollector`
 
 - **Start & Stop Containers**:
