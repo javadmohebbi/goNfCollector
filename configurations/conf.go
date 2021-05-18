@@ -26,6 +26,8 @@ const (
 	CONF_TYPE_COLLECTOR ConfType = iota
 
 	CONF_TYPE_IP2LOCATION
+
+	CONF_TYPE_API_SERVER
 )
 
 // return filename related to requested configuration
@@ -33,6 +35,7 @@ func (ct ConfType) String() string {
 	return [...]string{
 		"collector",
 		"ip2location",
+		"apiserver",
 	}[ct]
 }
 
@@ -63,6 +66,16 @@ func New(ct ConfType, path string) (Configuration, error) {
 				confFile: confFile{
 					path: cf.path,
 					file: "ip2location",
+					ext:  "yml",
+				},
+			},
+		), nil
+	case CONF_TYPE_API_SERVER:
+		return Configuration(
+			&APIServer{
+				confFile: confFile{
+					path: cf.path,
+					file: "api_server",
 					ext:  "yml",
 				},
 			},

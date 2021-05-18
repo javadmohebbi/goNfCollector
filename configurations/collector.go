@@ -120,6 +120,14 @@ func (c *Collector) getMinialConfigsFromOSEnv() bool {
 
 }
 
+// TLS conf
+type tls struct {
+	Enable bool `json:"enabled"`
+
+	Cert string `json:"-"`
+	Key  string `json:"-"`
+}
+
 // Server listen configuration
 type listen struct {
 
