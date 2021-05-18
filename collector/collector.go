@@ -23,6 +23,7 @@ import (
 	"github.com/goNfCollector/exporters"
 	"github.com/goNfCollector/influxdb"
 	"github.com/goNfCollector/location"
+	"github.com/goNfCollector/postgres"
 	"github.com/gookit/color"
 	"github.com/sirupsen/logrus"
 	"github.com/tehmaze/netflow"
@@ -72,6 +73,8 @@ type Collector struct {
 	outgoingMessage outgoingMessage
 
 	isConClosed bool
+
+	// ztdb *zabbix.ZabbixTimeScaleDB
 }
 
 type outgoingMessage struct {
@@ -81,6 +84,10 @@ type outgoingMessage struct {
 
 // create new netflow collector
 func New(h string, p int, l *logrus.Logger, c *configurations.Collector, d *debugger.Debugger, path string) *Collector {
+
+	// test zabbix conf
+	// ztdb := zabbix.New()
+	// ztdb.Initialize()
 
 	// getIP2location conf
 	// create new instance of configurations interface
@@ -119,6 +126,8 @@ func New(h string, p int, l *logrus.Logger, c *configurations.Collector, d *debu
 		waitGroup: &sync.WaitGroup{},
 
 		iploc: i2l,
+
+		// ztdb: ztdb,
 	}
 
 	// extract valid exporters
@@ -256,7 +265,8 @@ func (nf *Collector) Serve() {
 // this method will do the collection
 func (nf *Collector) collect(conn *net.UDPConn) {
 	// close the udp connection
-	defer conn.Close()
+	// defer conn.Close()
+	// defer nf.ztdb.Close()
 
 	// set the buffer size
 	data := make([]byte, bufferSize)
@@ -434,6 +444,23 @@ func (nf *Collector) getExporters() []exporters.Exporter {
 		exps = append(exps, *influxExporter)
 	}
 
+	// Loop through Postgres Exporters
+	for _, ex := range nf.c.Exporter.Postgres {
+
+		// create new Postgres
+		ifl := postgres.New(ex.Host, ex.User, ex.Password, ex.DB, nf.c.IPReputation, ex.Port, nf.d, nf.iploc)
+
+		// create new Postgres exporter
+		influxExporter, err := exporters.New(ifl, ifl.Debuuger)
+		if err != nil {
+			// errors handled in the exporter new package
+			continue
+		}
+
+		// if no error, append it to exporters
+		exps = append(exps, *influxExporter)
+	}
+
 	return exps
 }
 
@@ -451,4 +478,7 @@ func (nf *Collector) export(metrics []common.Metric) {
 			go e.Write(metrics)
 		}
 	}
+
+	// go nf.ztdb.Store(metrics)
+
 }

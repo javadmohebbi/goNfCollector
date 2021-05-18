@@ -53,6 +53,12 @@ const (
 	// Can not Read Local CSV DB
 	ERROR_CAN_T_READ_LOCAL_DB
 
+	// Can not connect to Postgres DB
+	ERROR_CAN_T_CONNECT_TO_POSTGRES_DB
+
+	// Can not initialize postgres DB
+	ERROR_CAN_T_INIT_POSTGRES_DB
+
 	// UNKOWN ERORR
 	ERROR_UKNOWN
 )
@@ -83,6 +89,9 @@ func (e ErrorCodes) String() string {
 
 		"Can not open Local CSV DB",
 		"Can not read Local CSV DB",
+
+		"Can not connect to Postgres DB",
+		"Can not initialize postgres DB",
 
 		"Unknown error",
 	}[e]

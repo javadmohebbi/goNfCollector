@@ -53,3 +53,20 @@ exporter:
 
       # your organization name (influxDB)
       org: MJMOHEBBI
+
+  # POSTGRES DATABASE exporter
+  postgres:
+    # Postgres host
+    - host: 192.168.58.33
+
+      # Postgres port
+      port: 5432
+
+      # Postgres User
+      user: zabbix
+
+      # Postgres Pasword
+      password: zabbix
+
+      # PostgresDB
+      db: zabbix

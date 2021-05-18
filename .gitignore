@@ -13,3 +13,6 @@ _HOW**
 cmd/test**
 cmd/tsht**
 **/RELEASE**
+
+**/zabbix
+**/pgsql**

@@ -147,6 +147,25 @@ type forwarder struct {
 // will be used to export flow metrics to
 type exporter struct {
 	InfluxDBs []influxDB `json:"influxDBs"`
+	Postgres  []postgres `json:"postgres"`
+}
+
+// postgres exporter struct
+type postgres struct {
+	// postgre host
+	Host string `json:"host"`
+
+	// postgres port
+	Port int `json:"port"`
+
+	// postgres user
+	User string `json:"user"`
+
+	// postgres password
+	Password string `json:"password"`
+
+	// postgres db
+	DB string `json:"db"`
 }
 
 // influxDB exporter struct

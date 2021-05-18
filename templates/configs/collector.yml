@@ -11,7 +11,8 @@ cpuNum: 1
 
 # comma delimited IPs
 # or any
-acceptFrom: 192.168.1.6,127.0.0.1
+# acceptFrom: 192.168.16.6,127.0.0.1
+acceptFrom: 127.0.0.1
 
 # Listen on address & port
 listen:
@@ -46,9 +47,27 @@ ipReputation:
 exporter:
   # InfluxDB exporter
   # you can config as many as you want
-  influxDBs:
-    - host: 127.0.0.1
-      port: 8086
-      token: 5vqt0q0b4g_lZwNgp7-8GgPq5Nxf3YY37xbVZP_ypeK_G3dwdNlTrAkcKN_Q6QzbmG-Th96lT_65Kp0j2UD1HA==
-      bucket: nfCollector
-      org: OPENINTELLIGENCE
+#  influxDBs:
+#    - host: 127.0.0.1
+#      port: 8086
+#      token: 5vqt0q0b4g_lZwNgp7-8GgPq5Nxf3YY37xbVZP_ypeK_G3dwdNlTrAkcKN_Q6QzbmG-Th96lT_65Kp0j2UD1HA==
+#      bucket: nfCollector
+#      org: OPENINTELLIGENCE
+
+
+  # POSTGRES DATABASE exporter
+  postgres:
+    # Postgres host
+    - host: localhost
+
+      # Postgres port
+      port: 5432
+
+      # Postgres User
+      user: oi24_netflow
+
+      # Postgres Pasword
+      password: oi24_netflow
+
+      # PostgresDB
+      db: oi24_netflow_db
