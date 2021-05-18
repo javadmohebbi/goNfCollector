@@ -85,10 +85,6 @@ type outgoingMessage struct {
 // create new netflow collector
 func New(h string, p int, l *logrus.Logger, c *configurations.Collector, d *debugger.Debugger, path string) *Collector {
 
-	// test zabbix conf
-	// ztdb := zabbix.New()
-	// ztdb.Initialize()
-
 	// getIP2location conf
 	// create new instance of configurations interface
 	cfg, err := configurations.New(configurations.CONF_TYPE_IP2LOCATION, path)
