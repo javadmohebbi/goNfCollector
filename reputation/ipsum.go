@@ -58,3 +58,7 @@ func (i *IPSum) Get(ipv4 string) ReputationResponse {
 func (i *IPSum) GetType() string {
 	return "ipsum"
 }
+
+func (i *IPSum) GetKind() string {
+	return "malific:host:signature"
+}

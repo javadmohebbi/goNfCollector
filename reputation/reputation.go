@@ -27,6 +27,8 @@ type Reputation interface {
 	Get(string) ReputationResponse
 
 	GetType() string
+
+	GetKind() string
 }
 
 //  new Reputation
