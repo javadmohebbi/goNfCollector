@@ -32,7 +32,12 @@ func Prepare(addr string, p *netflow5.Packet) []common.Metric {
 		met.DstAs = fmt.Sprintf("%v", r.DstAS)
 		met.SrcMask = fmt.Sprintf("%v", r.SrcMask)
 		met.DstMask = fmt.Sprintf("%v", r.DstMask)
+
 		met.NextHop = fmt.Sprintf("%v", r.NextHop)
+
+		met.InEthernet = fmt.Sprintf("%v", r.Input)
+		met.OutEthernet = fmt.Sprintf("%v", r.Output)
+		met.ToS = fmt.Sprintf("%v", r.ToS)
 
 		met.SrcIP = fmt.Sprintf("%v", r.SrcAddr)
 		met.DstIP = fmt.Sprintf("%v", r.DstAddr)

@@ -33,7 +33,7 @@ type Metric struct {
 	DstIp2lLong         string //`header:"dLong"`
 	Protocol            string //`header:"Proto"`
 	ProtoName           string `header:"ProtoName"`
-	SrcToS              string //`header:"SrcToS"`
+	ToS                 string //`header:"ToS"`
 	SrcPort             string `header:"SrcPort"`
 	SrcPortName         string `header:"SrcPortName"`
 	DstPort             string `header:"DstPort"`

@@ -32,6 +32,10 @@ func Prepare(addr string, p *netflow1.Packet) []common.Metric {
 
 		met.NextHop = fmt.Sprintf("%v", r.NextHop)
 
+		met.InEthernet = fmt.Sprintf("%v", r.Input)
+		met.OutEthernet = fmt.Sprintf("%v", r.Output)
+		met.ToS = fmt.Sprintf("%v", r.ToS)
+
 		met.SrcIP = fmt.Sprintf("%v", r.SrcAddr)
 		met.DstIP = fmt.Sprintf("%v", r.DstAddr)
 
