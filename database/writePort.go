@@ -2,7 +2,6 @@ package database
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/goNfCollector/configurations"
 	"github.com/goNfCollector/database/model"
@@ -14,7 +13,14 @@ import (
 func (p *Postgres) writePort(PortName, protoName, portNumber string) (portID uint, err error) {
 
 	var portModel model.Port
-	p.db.Where("port_name = ?", PortName).First(&portModel)
+
+	// object exist in cache
+	if v, err := p.getCached("port_" + PortName); err == nil {
+		portModel = v.(model.Port)
+		return portModel.ID, nil
+	} else {
+		p.db.Where("port_name = ?", PortName).First(&portModel)
+	}
 
 	if portModel.ID == 0 {
 		// not found
@@ -27,11 +33,14 @@ func (p *Postgres) writePort(PortName, protoName, portNumber string) (portID uin
 		// insert to db
 		result := p.db.Create(&portModel)
 
+		// cache it
+		p.cachedIt("port_"+PortName, portModel)
+
 		// check for error
 		if result.Error != nil {
 			p.Debuuger.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
 				configurations.ERROR_CAN_T_INSERT_PORT_INFO.Int(),
-				configurations.ERROR_CAN_T_INSERT_PORT_INFO, err),
+				configurations.ERROR_CAN_T_INSERT_PORT_INFO, result.Error),
 				logrus.ErrorLevel,
 			)
 			return 0, result.Error
@@ -40,22 +49,29 @@ func (p *Postgres) writePort(PortName, protoName, portNumber string) (portID uin
 		return portModel.ID, nil
 
 	} else {
-		// found and updated_at date/time must be updated
-		result := p.db.Model(&portModel).Update("updated_at", time.Now())
-
-		// check for error
-		// since we want to update just one
-		// field in the database (updated_at)
-		// we will continue with no error
-		// but logs must be generated to the checked to
-		// the log file for future investigations
-		if result.Error != nil {
-			p.Debuuger.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
-				configurations.ERROR_CAN_T_UPDATE_PORT_INFO.Int(),
-				configurations.ERROR_CAN_T_UPDATE_PORT_INFO, err),
-				logrus.ErrorLevel,
-			)
-		}
 		return portModel.ID, nil
 	}
+	// else {
+	// 	// found and updated_at date/time must be updated
+	// 	result := p.db.Model(&portModel).Update("updated_at", time.Now())
+
+	// 	// check for error
+	// 	// since we want to update just one
+	// 	// field in the database (updated_at)
+	// 	// we will continue with no error
+	// 	// but logs must be generated to the checked to
+	// 	// the log file for future investigations
+	// 	if result.Error != nil {
+	// 		p.Debuuger.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
+	// 			configurations.ERROR_CAN_T_UPDATE_PORT_INFO.Int(),
+	// 			configurations.ERROR_CAN_T_UPDATE_PORT_INFO, result.Error),
+	// 			logrus.ErrorLevel,
+	// 		)
+	// 	}
+
+	// 	// cache it
+	// 	p.cachedIt("port_"+PortName, portModel)
+
+	// 	return portModel.ID, nil
+	// }
 }

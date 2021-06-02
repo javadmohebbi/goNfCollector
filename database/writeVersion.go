@@ -2,7 +2,6 @@ package database
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/goNfCollector/configurations"
 	"github.com/goNfCollector/database/model"
@@ -13,7 +12,14 @@ import (
 // otherwise it will update the last seen
 func (p *Postgres) writeVersion(version uint) (versionID uint, err error) {
 	var verModel model.Version
-	p.db.Where("version = ?", version).First(&verModel)
+
+	// object exist in cache
+	if v, err := p.getCached("version_" + fmt.Sprintf("%v", version)); err == nil {
+		verModel = v.(model.Version)
+		return verModel.ID, nil
+	} else {
+		p.db.Where("version = ?", version).First(&verModel)
+	}
 
 	if verModel.ID == 0 {
 		// not found
@@ -25,37 +31,45 @@ func (p *Postgres) writeVersion(version uint) (versionID uint, err error) {
 		// insert to db
 		result := p.db.Create(&verModel)
 
+		// cache it
+		p.cachedIt("version_"+fmt.Sprintf("%v", version), verModel)
+
 		// check for error
 		if result.Error != nil {
 			p.Debuuger.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
 				configurations.ERROR_CAN_T_INSERT_VERSION_INFO.Int(),
-				configurations.ERROR_CAN_T_INSERT_VERSION_INFO, err),
+				configurations.ERROR_CAN_T_INSERT_VERSION_INFO, result.Error),
 				logrus.ErrorLevel,
 			)
 			return 0, result.Error
 		}
 
+		// cache it
+		p.cachedIt("version_"+fmt.Sprintf("%v", version), verModel)
+
 		return verModel.ID, nil
-
 	} else {
-		// found and updated_at date/time must be updated
-		result := p.db.Model(&verModel).Update("updated_at", time.Now())
-
-		// check for error
-		// since we want to update just one
-		// field in the database (updated_at)
-		// we will continue with no error
-		// but logs must be generated to the checked to
-		// the log file for future investigations
-		if result.Error != nil {
-			p.Debuuger.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
-				configurations.ERROR_CAN_T_UPDATE_VERSION_INFO.Int(),
-				configurations.ERROR_CAN_T_UPDATE_VERSION_INFO, err),
-				logrus.ErrorLevel,
-			)
-		}
 		return verModel.ID, nil
 	}
+	// else {
+	// 	// found and updated_at date/time must be updated
+	// 	result := p.db.Model(&verModel).Update("updated_at", time.Now())
+
+	// 	// check for error
+	// 	// since we want to update just one
+	// 	// field in the database (updated_at)
+	// 	// we will continue with no error
+	// 	// but logs must be generated to the checked to
+	// 	// the log file for future investigations
+	// 	if result.Error != nil {
+	// 		p.Debuuger.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
+	// 			configurations.ERROR_CAN_T_UPDATE_VERSION_INFO.Int(),
+	// 			configurations.ERROR_CAN_T_UPDATE_VERSION_INFO, result.Error),
+	// 			logrus.ErrorLevel,
+	// 		)
+	// 	}
+	// 	return verModel.ID, nil
+	// }
 }
 
 // chaneg flow version to uint

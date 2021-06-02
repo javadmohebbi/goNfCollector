@@ -2,7 +2,6 @@ package database
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/goNfCollector/configurations"
 	"github.com/goNfCollector/database/model"
@@ -13,7 +12,14 @@ import (
 // otherwise it will update the last seen
 func (p *Postgres) writeProtocol(protocol, protoName string) (protocolID uint, err error) {
 	var protoModel model.Protocol
-	p.db.Where("protocol = ?", protocol).First(&protoModel)
+
+	// object exist in cache
+	if v, err := p.getCached("proto_" + protoName); err == nil {
+		protoModel = v.(model.Protocol)
+		return protoModel.ID, nil
+	} else {
+		p.db.Where("protocol = ?", protocol).First(&protoModel)
+	}
 
 	if protoModel.ID == 0 {
 		// not found
@@ -26,11 +32,14 @@ func (p *Postgres) writeProtocol(protocol, protoName string) (protocolID uint, e
 		// insert to db
 		result := p.db.Create(&protoModel)
 
+		// cache it
+		p.cachedIt("proto_"+protoName, protoModel)
+
 		// check for error
 		if result.Error != nil {
 			p.Debuuger.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
 				configurations.ERROR_CAN_T_INSERT_PROTOCOL_INFO.Int(),
-				configurations.ERROR_CAN_T_INSERT_PROTOCOL_INFO, err),
+				configurations.ERROR_CAN_T_INSERT_PROTOCOL_INFO, result.Error),
 				logrus.ErrorLevel,
 			)
 			return 0, result.Error
@@ -39,22 +48,30 @@ func (p *Postgres) writeProtocol(protocol, protoName string) (protocolID uint, e
 		return protoModel.ID, nil
 
 	} else {
-		// found and updated_at date/time must be updated
-		result := p.db.Model(&protoModel).Update("updated_at", time.Now())
-
-		// check for error
-		// since we want to update just one
-		// field in the database (updated_at)
-		// we will continue with no error
-		// but logs must be generated to the checked to
-		// the log file for future investigations
-		if result.Error != nil {
-			p.Debuuger.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
-				configurations.ERROR_CAN_T_UPDATE_PROTOCOL_INFO.Int(),
-				configurations.ERROR_CAN_T_UPDATE_PROTOCOL_INFO, err),
-				logrus.ErrorLevel,
-			)
-		}
 		return protoModel.ID, nil
 	}
+
+	// else {
+	// 	// found and updated_at date/time must be updated
+	// 	result := p.db.Model(&protoModel).Update("updated_at", time.Now())
+
+	// 	// check for error
+	// 	// since we want to update just one
+	// 	// field in the database (updated_at)
+	// 	// we will continue with no error
+	// 	// but logs must be generated to the checked to
+	// 	// the log file for future investigations
+	// 	if result.Error != nil {
+	// 		p.Debuuger.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
+	// 			configurations.ERROR_CAN_T_UPDATE_PROTOCOL_INFO.Int(),
+	// 			configurations.ERROR_CAN_T_UPDATE_PROTOCOL_INFO, result.Error),
+	// 			logrus.ErrorLevel,
+	// 		)
+	// 	}
+
+	// 	// cache it
+	// 	p.cachedIt("proto_"+protoName, protoModel)
+
+	// 	return protoModel.ID, nil
+	// }
 }

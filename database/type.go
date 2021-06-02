@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"sync"
@@ -57,6 +58,26 @@ type Postgres struct {
 
 	// check if closed
 	closed bool
+
+	// this variable used when object inserted to db
+	// in order to prevent multiple query on db
+	cachedObjects map[string]interface{}
+}
+
+// insert to local cache
+func (p *Postgres) cachedIt(key string, value interface{}) {
+	if _, ok := p.cachedObjects[key]; !ok {
+		p.cachedObjects[key] = value
+	}
+}
+
+// return object from cache
+func (p *Postgres) getCached(key string) (interface{}, error) {
+	if value, ok := p.cachedObjects[key]; !ok {
+		return nil, errors.New("Not found in the cache")
+	} else {
+		return value, nil
+	}
 }
 
 // return exporter info
@@ -70,6 +91,8 @@ func New(host, user, pass, db string, ipReputationConf configurations.IpReputati
 	ctx := context.Background()
 
 	d.Verbose(fmt.Sprintf("connecting to postgres db '%s' on %s:%v using username '%s' ", db, host, port, user), logrus.DebugLevel)
+
+	cached := make(map[string]interface{})
 
 	// connStr := fmt.Sprintf("postgres://%s:%s@%s:%d/%s",
 	// 	user, pass, host, port, db,
@@ -132,6 +155,8 @@ func New(host, user, pass, db string, ipReputationConf configurations.IpReputati
 		reputations: reputs,
 
 		WaitGroup: &sync.WaitGroup{},
+
+		cachedObjects: cached,
 	}
 
 	// initialize db

@@ -160,6 +160,17 @@ func (p *Postgres) write(metrics []common.Metric) {
 		by, _ := strconv.Atoi(m.Bytes)
 		pa, _ := strconv.Atoi(m.Packets)
 
+		// check for ip reputation
+		srcThreatID, srcIsThreat, _ := p.writeThreat(m.SrcIP, srcHostID)
+		dstThreatID, dstIsThreat, _ := p.writeThreat(m.DstIP, dstHostID)
+
+		// if next hop is valid, check that
+		var nxtHopThreatID uint
+		var nxtHopIsThreat bool
+		if m.NextHop != "0.0.0.0" {
+			nxtHopThreatID, nxtHopIsThreat, _ = p.writeThreat(m.NextHop, nextHopHostID)
+		}
+
 		flow := model.Flow{
 			DeviceID:  deviceID,
 			VersionID: verID,
@@ -176,8 +187,12 @@ func (p *Postgres) write(metrics []common.Metric) {
 			DstPortID: dstPortID,
 			DstGeoID:  dstGeoID,
 
+			DstIsThreat: dstIsThreat,
+
 			NextHopID:    nextHopHostID,
 			NextHopGeoID: nextHopGeoID,
+
+			NextHopIsThreat: nxtHopIsThreat,
 
 			FlagID: flagsID,
 
@@ -194,22 +209,28 @@ func (p *Postgres) write(metrics []common.Metric) {
 			Packet: uint(pa),
 		}
 
+		// src threats
+		if srcIsThreat && srcThreatID != 0 {
+			flow.SrcIsThreat = srcIsThreat
+			flow.SrcThreatID = &srcThreatID
+		}
+		// dst threats
+		if dstIsThreat && dstThreatID != 0 {
+			flow.DstIsThreat = dstIsThreat
+			flow.DstThreatID = &dstThreatID
+		}
+		// next hop threats
+		if nxtHopIsThreat && nxtHopThreatID != 0 {
+			flow.NextHopIsThreat = nxtHopIsThreat
+			flow.NextHopThreatID = &nxtHopThreatID
+		}
+
+		// set flow real date/time
 		flow.CreatedAt = t
 		flow.UpdatedAt = t
 
+		// append flow to arrays
 		arrFlows = append(arrFlows, flow)
-
-		// result := p.db.Create(&flow)
-
-		// if result.Error != nil {
-		// 	p.Debuuger.Verbose(fmt.Sprintf("[%d]-%s: ([FLOW] %v)",
-		// 		configurations.ERROR_CAN_T_INSERT_METRICS_TO_POSTGRES_DB.Int(),
-		// 		configurations.ERROR_CAN_T_INSERT_METRICS_TO_POSTGRES_DB, err),
-		// 		logrus.ErrorLevel,
-		// 	)
-		// 	continue
-		// }
-		// successWrites = successWrites + 1
 
 	}
 
@@ -218,7 +239,7 @@ func (p *Postgres) write(metrics []common.Metric) {
 	if result.Error != nil {
 		p.Debuuger.Verbose(fmt.Sprintf("[%d]-%s: ([FLOW] %v)",
 			configurations.ERROR_CAN_T_INSERT_METRICS_TO_POSTGRES_DB.Int(),
-			configurations.ERROR_CAN_T_INSERT_METRICS_TO_POSTGRES_DB, err),
+			configurations.ERROR_CAN_T_INSERT_METRICS_TO_POSTGRES_DB, result.Error),
 			logrus.ErrorLevel,
 		)
 		if len(metrics)-int(result.RowsAffected) > 0 {

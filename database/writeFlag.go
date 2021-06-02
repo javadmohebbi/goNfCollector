@@ -3,7 +3,6 @@ package database
 import (
 	"fmt"
 	"strconv"
-	"time"
 
 	"github.com/goNfCollector/configurations"
 	"github.com/goNfCollector/database/model"
@@ -17,7 +16,14 @@ func (p *Postgres) writeFlag(flgs string) (flagID uint, fin, syn, rst, psh, ack,
 	humanReadableFlags, fin, syn, rst, psh, ack, urg, ece, cwr := p._tcpFlags(flgs)
 
 	var flagModel model.Flag
-	p.db.Where("flags = ?", flgs).First(&flagModel)
+
+	// object exist in cache
+	if v, err := p.getCached("flag_" + flgs); err == nil {
+		flagModel = v.(model.Flag)
+		return flagModel.ID, fin, syn, rst, psh, ack, urg, ece, cwr, nil
+	} else {
+		p.db.Where("flags = ?", flgs).First(&flagModel)
+	}
 
 	if flagModel.ID == 0 {
 		// not found
@@ -30,11 +36,14 @@ func (p *Postgres) writeFlag(flgs string) (flagID uint, fin, syn, rst, psh, ack,
 		// insert to db
 		result := p.db.Create(&flagModel)
 
+		// cache it
+		p.cachedIt("flag_"+flgs, flagModel)
+
 		// check for error
 		if result.Error != nil {
 			p.Debuuger.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
 				configurations.ERROR_CAN_T_INSERT_FLAG_INFO.Int(),
-				configurations.ERROR_CAN_T_INSERT_FLAG_INFO, err),
+				configurations.ERROR_CAN_T_INSERT_FLAG_INFO, result.Error),
 				logrus.ErrorLevel,
 			)
 			return 0, fin, syn, rst, psh, ack, urg, ece, cwr, result.Error
@@ -43,24 +52,31 @@ func (p *Postgres) writeFlag(flgs string) (flagID uint, fin, syn, rst, psh, ack,
 		return flagModel.ID, fin, syn, rst, psh, ack, urg, ece, cwr, nil
 
 	} else {
-		// found and updated_at date/time must be updated
-		result := p.db.Model(&flagModel).Update("updated_at", time.Now())
-
-		// check for error
-		// since we want to update just one
-		// field in the database (updated_at)
-		// we will continue with no error
-		// but logs must be generated to the checked to
-		// the log file for future investigations
-		if result.Error != nil {
-			p.Debuuger.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
-				configurations.ERROR_CAN_T_UPDATE_FLAG_INFO.Int(),
-				configurations.ERROR_CAN_T_UPDATE_FLAG_INFO, err),
-				logrus.ErrorLevel,
-			)
-		}
 		return flagModel.ID, fin, syn, rst, psh, ack, urg, ece, cwr, nil
 	}
+	// else {
+	// 	// found and updated_at date/time must be updated
+	// 	result := p.db.Model(&flagModel).Update("updated_at", time.Now())
+
+	// 	// check for error
+	// 	// since we want to update just one
+	// 	// field in the database (updated_at)
+	// 	// we will continue with no error
+	// 	// but logs must be generated to the checked to
+	// 	// the log file for future investigations
+	// 	if result.Error != nil {
+	// 		p.Debuuger.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
+	// 			configurations.ERROR_CAN_T_UPDATE_FLAG_INFO.Int(),
+	// 			configurations.ERROR_CAN_T_UPDATE_FLAG_INFO, result.Error),
+	// 			logrus.ErrorLevel,
+	// 		)
+	// 	}
+
+	// 	// cache it
+	// 	p.cachedIt("flag_"+flgs, flagModel)
+
+	// 	return flagModel.ID, fin, syn, rst, psh, ack, urg, ece, cwr, nil
+	// }
 }
 
 // get flags and return human readable string
