@@ -25,6 +25,10 @@ type Flow struct {
 	SrcGeoID  uint
 	SrcGeo    Geo `gorm:"foreignKey:SrcGeoID"`
 
+	SrcIsThreat bool
+	SrcThreatID *uint  `gotm:"null"`
+	SrcThreat   Threat `gorm:"foreignKey:SrcThreatID"`
+
 	DstASNID  uint
 	DstASN    AutonomousSystem `gorm:"foreignKey:DstASNID"`
 	DstHostID uint
@@ -34,10 +38,18 @@ type Flow struct {
 	DstGeoID  uint
 	DstGeo    Geo `gorm:"foreignKey:DstGeoID"`
 
+	DstIsThreat bool
+	DstThreatID *uint  `gotm:"null"`
+	DstThreat   Threat `gorm:"foreignKey:DstThreatID"`
+
 	NextHopID    uint
 	NextHop      Host `gorm:"foreignKey:NextHopID"`
 	NextHopGeoID uint
 	NextHopGeo   Geo `gorm:"foreignKey:NextHopGeoID"`
+
+	NextHopIsThreat bool
+	NextHopThreatID *uint  `gotm:"null"`
+	NextHopThreat   Threat `gorm:"foreignKey:NextHopThreatID"`
 
 	FlagID uint
 	Flag   Flag `gorm:"foreignKey:FlagID"`
