@@ -41,11 +41,12 @@ func (d *Debugger) Verbose(message string, level logrus.Level, flds ...logrus.Fi
 		d.logrus.SetFormatter(&logrus.JSONFormatter{})
 	} else {
 		//LOG
-		d.logrus.SetFormatter(&logrus.TextFormatter{
-			DisableColors:          false,
+		d.logrus.Formatter = &logrus.TextFormatter{
+			// DisableColors:          false,
 			DisableLevelTruncation: true,
+			ForceColors:            true,
 			FullTimestamp:          true,
-		})
+		}
 	}
 
 	// Set fields
