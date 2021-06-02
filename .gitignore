@@ -16,3 +16,7 @@ cmd/tsht**
 
 **/zabbix
 **/pgsql**
+
+
+api/
+cmd/api/

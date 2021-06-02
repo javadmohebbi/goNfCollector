@@ -6,9 +6,9 @@ import (
 
 	"github.com/goNfCollector/common"
 	"github.com/goNfCollector/configurations"
+	"github.com/goNfCollector/database"
 	"github.com/goNfCollector/debugger"
 	"github.com/goNfCollector/influxdb"
-	"github.com/goNfCollector/postgres"
 	"github.com/sirupsen/logrus"
 )
 
@@ -41,10 +41,10 @@ func New(exporter interface{}, d *debugger.Debugger) (*Exporter, error) {
 		return &e, nil
 
 		// if postgres
-	case postgres.Postgres:
+	case database.Postgres:
 
 		// type assertion from interface to the struct
-		exp := exporter.(postgres.Postgres)
+		exp := exporter.(database.Postgres)
 
 		// create new exporter for postgres
 		e := Exporter(&exp)
