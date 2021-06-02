@@ -118,6 +118,11 @@ const (
 	// Can not update flag info
 	ERROR_CAN_T_UPDATE_FLAG_INFO
 
+	// Can not insert threat info
+	ERROR_CAN_T_INSERT_THREAT_INFO
+	// Can not update threat info
+	ERROR_CAN_T_UPDATE_THREAT_INFO
+
 	// UNKOWN ERORR
 	ERROR_UKNOWN
 )
@@ -183,6 +188,9 @@ func (e ErrorCodes) String() string {
 
 		"Can not insert flag info",
 		"Can not update flag info",
+
+		"Can not insert threat info",
+		"Can not update threat info",
 
 		"Unknown error",
 	}[e]
