@@ -13,11 +13,13 @@ type APIServer struct {
 	confFile confFile
 
 	Debug          bool   `json:"debug"`
-	LogFile        string `json:"logFile"`
+	AccessLogFile  string `json:"accessLogFile"`
+	ErrorLogFile   string `json:"errorLogFile"`
 	Listen         listen `json:"listen"`
 	JWTSecretToken string `json:"-"`
 	TLS            tls    `json:"tls"`
 	HTTP           http   `json:"http"`
+	NeedAuth       bool   `json:"needAuth"`
 }
 
 // http server extra cnfigurations
@@ -145,9 +147,10 @@ func (c *APIServer) getMinialConfigsFromOSEnv() bool {
 
 	c.JWTSecretToken = os.Getenv("NFC_API_JWT_SECRET")
 
-	c.LogFile = os.Getenv("NFC_API_LOG_FILE")
+	c.AccessLogFile = os.Getenv("NFC_API_ACCESS_LOG_FILE")
+	c.ErrorLogFile = os.Getenv("NFC_API_ERROR_LOG_FILE")
 
-	if c.Listen.Address != "" && (c.Listen.Port > 0 && c.Listen.Port <= 65535) {
+	if c.Listen.Address != "" && (c.Listen.Port > 0 && c.Listen.Port <= 65535 && c.JWTSecretToken != "") {
 		return true
 	}
 
