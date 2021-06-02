@@ -19,11 +19,11 @@ import (
 	"github.com/goNfCollector/collector/nfv9"
 	"github.com/goNfCollector/common"
 	"github.com/goNfCollector/configurations"
+	"github.com/goNfCollector/database"
 	"github.com/goNfCollector/debugger"
 	"github.com/goNfCollector/exporters"
 	"github.com/goNfCollector/influxdb"
 	"github.com/goNfCollector/location"
-	"github.com/goNfCollector/postgres"
 	"github.com/gookit/color"
 	"github.com/sirupsen/logrus"
 	"github.com/tehmaze/netflow"
@@ -122,8 +122,6 @@ func New(h string, p int, l *logrus.Logger, c *configurations.Collector, d *debu
 		waitGroup: &sync.WaitGroup{},
 
 		iploc: i2l,
-
-		// ztdb: ztdb,
 	}
 
 	// extract valid exporters
@@ -134,82 +132,6 @@ func New(h string, p int, l *logrus.Logger, c *configurations.Collector, d *debu
 
 	return nf
 }
-
-// /**
-// new approach to listen udp for handling many request
-// **/
-// func (nf *Collector) beginListen(c chan os.Signal) {
-
-// 	// Resolve Address
-// 	sAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("%v:%v", nf.host, nf.port))
-// 	if err != nil {
-// 		nf.d.Verbose(fmt.Sprintf("[%d]-%s: (%v)", configurations.ERROR_LISTEN_RESOLVE_UDP_ADDRESS.Int(), configurations.ERROR_LISTEN_RESOLVE_UDP_ADDRESS, err), logrus.ErrorLevel)
-// 		// return nil, configurations.ERROR_LISTEN_RESOLVE_UDP_ADDRESS, err
-// 		os.Exit(configurations.ERROR_LISTEN_RESOLVE_UDP_ADDRESS.Int())
-// 	}
-
-// 	config := &net.ListenConfig{Control: nf.reusePort}
-
-// 	connection, err := config.Listen(
-// 		context.Background(), "upd", sAddr.String(),
-// 	)
-
-// 	if err != nil {
-// 		nf.d.Verbose(fmt.Sprintf("[%d]-%s: (%v)", configurations.ERROR_LISTEN_ON_UDP.Int(), configurations.ERROR_LISTEN_ON_UDP, err), logrus.ErrorLevel)
-// 		// return nil, configurations.ERROR_LISTEN_RESOLVE_UDP_ADDRESS, err
-// 		os.Exit(configurations.ERROR_LISTEN_ON_UDP.Int())
-// 	}
-
-// 	outbox := make(chan outgoingMessage, maxQueueSize)
-
-// 	sendFromOutbox := func() {
-// 		n, err := 0, error(nil)
-// 		for msg := range outbox {
-
-// 			skt, _ := connection.Accept()
-
-// 			skt.
-
-// 			defer skt.Close()
-
-// 			n, err = connection.(*net.UDPConn).WriteToUDP(msg.data, msg.recipient)
-// 			if err != nil {
-// 				panic(err)
-// 			}
-// 			if n != len(msg.data) {
-// 				log.Println("Tried to send", len(msg.data), "bytes but only sent ", n)
-// 			}
-// 		}
-// 	}
-
-// 	// connection, err := reuseport.Listen("udp", sAddr.String())
-
-// 	// if err != nil {
-// 	// 	nf.d.Verbose(fmt.Sprintf("[%d]-%s: (%v)", configurations.ERROR_LISTEN_ON_UDP.Int(), configurations.ERROR_LISTEN_ON_UDP, err), logrus.ErrorLevel)
-// 	// 	// return nil, configurations.ERROR_LISTEN_RESOLVE_UDP_ADDRESS, err
-// 	// 	os.Exit(configurations.ERROR_LISTEN_ON_UDP.Int())
-// 	// }
-
-// 	// outbox := make(chan outgoingMessage, maxQueueSize)
-
-// 	// sendFromOutbox := func() {
-// 	// 	n, err := 0, error(nil)
-// 	// 	for msg := range outbox {
-// 	// 		n, err = connection.(*net.UDPConn).WriteToUDP(msg.data, msg.recipient)
-// 	// 		if err != nil {
-// 	// 			panic(err)
-// 	// 		}
-// 	// 		if n != len(msg.data) {
-// 	// 			log.Println("Tried to send", len(msg.data), "bytes but only sent ", n)
-// 	// 		}
-// 	// 	}
-// 	// }
-//buil
-// }
-
-// func (nf *Collector) socketListen() {
-// 	listen, err := net.Listen("udp4")
-// }
 
 // listen to the provided configuration
 func (nf *Collector) listen() (*net.UDPConn, configurations.ErrorCodes, error) {
@@ -319,7 +241,7 @@ func (nf *Collector) collect(conn *net.UDPConn) {
 				nf.d.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
 					configurations.ERROR_CAN_T_READ_DATA.Int(),
 					configurations.ERROR_CAN_T_READ_DATA, err),
-					logrus.DebugLevel,
+					logrus.ErrorLevel,
 				)
 
 				continue
@@ -341,7 +263,7 @@ func (nf *Collector) collect(conn *net.UDPConn) {
 				nf.d.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
 					configurations.ERROR_CAN_T_DECODE_NETFLOW_DATA.Int(),
 					configurations.ERROR_CAN_T_DECODE_NETFLOW_DATA, err),
-					logrus.DebugLevel,
+					logrus.ErrorLevel,
 				)
 				continue
 			}
@@ -412,6 +334,11 @@ func (nf *Collector) parse(m interface{}, remote net.Addr, data []byte) {
 
 	// export metrics if neededs
 	if len(metrics) > 0 {
+
+		if nf.c.Debug {
+			nf.d.Verbose(fmt.Sprintf("'%v' flows recieved from '%v'", len(metrics), remote.String()), logrus.DebugLevel)
+		}
+
 		go nf.export(metrics)
 	}
 
@@ -444,7 +371,7 @@ func (nf *Collector) getExporters() []exporters.Exporter {
 	for _, ex := range nf.c.Exporter.Postgres {
 
 		// create new Postgres
-		ifl := postgres.New(ex.Host, ex.User, ex.Password, ex.DB, nf.c.IPReputation, ex.Port, nf.d, nf.iploc)
+		ifl := database.New(ex.Host, ex.User, ex.Password, ex.DB, nf.c.IPReputation, ex.Port, nf.d, nf.iploc)
 
 		// create new Postgres exporter
 		influxExporter, err := exporters.New(ifl, ifl.Debuuger)
