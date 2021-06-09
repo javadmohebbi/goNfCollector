@@ -1,7 +1,7 @@
 # Collector Configurations
 
 # Debug mode
-debug: true
+debug: false
 
 # LogFile
 logFile: /opt/nfcollector/var/log/collector.log
