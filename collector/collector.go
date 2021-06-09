@@ -10,6 +10,7 @@ import (
 	"strings"
 	"sync"
 	"syscall"
+	"time"
 
 	"github.com/goNfCollector/collector/nfipfix"
 	"github.com/goNfCollector/collector/nfv1"
@@ -371,17 +372,17 @@ func (nf *Collector) getExporters() []exporters.Exporter {
 	for _, ex := range nf.c.Exporter.Postgres {
 
 		// create new Postgres
-		ifl := database.New(ex.Host, ex.User, ex.Password, ex.DB, nf.c.IPReputation, ex.Port, nf.d, nf.iploc)
+		ifl := database.New(ex.Host, ex.User, ex.Password, ex.DB, nf.c.IPReputation, ex.Port, nf.d, nf.iploc, 19, 99, 30*time.Second)
 
 		// create new Postgres exporter
-		influxExporter, err := exporters.New(ifl, ifl.Debuuger)
+		postgresExporter, err := exporters.New(ifl, ifl.Debuuger)
 		if err != nil {
 			// errors handled in the exporter new package
 			continue
 		}
 
 		// if no error, append it to exporters
-		exps = append(exps, *influxExporter)
+		exps = append(exps, *postgresExporter)
 	}
 
 	return exps

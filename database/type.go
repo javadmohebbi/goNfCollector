@@ -86,7 +86,7 @@ func (p Postgres) String() string {
 }
 
 // create new instance of influxDB
-func New(host, user, pass, db string, ipReputationConf configurations.IpReputation, port int, d *debugger.Debugger, ip2location *location.IPLocation) Postgres {
+func New(host, user, pass, db string, ipReputationConf configurations.IpReputation, port int, d *debugger.Debugger, ip2location *location.IPLocation, maxIdle, maxOpen int, maxLifeTime time.Duration) Postgres {
 
 	ctx := context.Background()
 
@@ -111,13 +111,13 @@ func New(host, user, pass, db string, ipReputationConf configurations.IpReputati
 	sqlDB, err := pg_db.DB()
 
 	// SetMaxIdleConns sets the maximum number of connections in the idle connection pool.
-	sqlDB.SetMaxIdleConns(20)
+	sqlDB.SetMaxIdleConns(maxIdle)
 
 	// SetMaxOpenConns sets the maximum number of open connections to the database.
-	sqlDB.SetMaxOpenConns(100)
+	sqlDB.SetMaxOpenConns(maxOpen)
 
 	// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
-	sqlDB.SetConnMaxLifetime(30 * time.Second)
+	sqlDB.SetConnMaxLifetime(maxLifeTime)
 
 	if err != nil {
 		// fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
