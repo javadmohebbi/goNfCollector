@@ -7,12 +7,12 @@ import "gorm.io/gorm"
 type Port struct {
 	gorm.Model
 
-	PortName string `gorm:"not null;unique"`
+	PortName string `gorm:"not null"`
 
 	// removed, because it was not usefull
 	// Port uint `gorm:"not null"`
 
-	PortProto string
+	PortProto string `gorm:"not null;unique"`
 
 	Info string
 }
