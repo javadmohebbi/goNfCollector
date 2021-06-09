@@ -72,16 +72,16 @@ func (d *Debugger) Verbose(message string, level logrus.Level, flds ...logrus.Fi
 		d.logrus.WithFields(fields).Warningln(message)
 		return
 	case "fatal":
-		d.logrus.WithFields(fields).Fatalln(message)
+		d.logrus.WithFields(fields).Fatalln(w, message)
 		return
 	case "error":
-		d.logrus.WithFields(fields).Errorln(message)
+		d.logrus.WithFields(fields).Errorln(w, message)
 		return
 	case "trace":
-		d.logrus.WithFields(fields).Traceln(message)
+		d.logrus.WithFields(fields).Traceln(w, message)
 		return
 	case "warn":
-		d.logrus.WithFields(fields).Warnln(message)
+		d.logrus.WithFields(fields).Warnln(w, message)
 		return
 	default:
 		return

@@ -7,7 +7,7 @@ import "gorm.io/gorm"
 type Device struct {
 	gorm.Model
 
-	Device string `gorm:"not null"`
+	Device string `gorm:"not null;unique"`
 
 	Name string
 

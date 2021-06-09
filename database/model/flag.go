@@ -7,7 +7,7 @@ import "gorm.io/gorm"
 type Flag struct {
 	gorm.Model
 
-	Flags string `gorm:"not null"`
+	Flags string `gorm:"not null;unique"`
 
 	Info string
 }

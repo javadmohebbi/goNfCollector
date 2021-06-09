@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/goNfCollector/configurations"
 	"github.com/goNfCollector/database/model"
@@ -37,6 +38,12 @@ func (p *Postgres) writeProtocol(protocol, protoName string) (protocolID uint, e
 
 		// check for error
 		if result.Error != nil {
+
+			// check if cache not prepared and not resolved
+			if strings.Contains(result.Error.Error(), "duplicate key value violates unique constraint") {
+				return p.writeProtocol(protocol, protoName)
+			}
+
 			p.Debuuger.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
 				configurations.ERROR_CAN_T_INSERT_PROTOCOL_INFO.Int(),
 				configurations.ERROR_CAN_T_INSERT_PROTOCOL_INFO, result.Error),

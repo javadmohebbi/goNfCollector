@@ -137,6 +137,18 @@ func (p *Postgres) write(metrics []common.Metric) {
 			continue
 		}
 
+		// extract in ethernet
+		inEthID, err := p.writeEthernet(m.InEthernet, m.Device, deviceID)
+		if err != nil {
+			continue
+		}
+
+		// extract out ethernet
+		outEthID, err := p.writeEthernet(m.OutEthernet, m.Device, deviceID)
+		if err != nil {
+			continue
+		}
+
 		// // log.Println(m.Device, m.FlowVersion, "===", deviceID, verID)
 		// fmt.Println()
 		// fmt.Printf("device: %v ID: %v\n   version: %v ID: %v\n   proto: %v (%v) ID: %v\n    SRC Host: %v ID: %v\n    SRC ASN: %v ID: %v\n    DST Host: %v ID: %v\n    DST ASN: %v ID: %v\n    SRC PORT: %v ID: %v\n    DST PORT: %v ID: %v\n    SRC GEO ID: %v\n    DST GEO ID: %v\n    TCP Flags: %v\n    Next Hop: %v NxtHopID: %v    GEO ID: %v",
@@ -176,6 +188,9 @@ func (p *Postgres) write(metrics []common.Metric) {
 			VersionID: verID,
 
 			ProtocolID: protoID,
+
+			InEthernetID:  inEthID,
+			OutEthernetID: outEthID,
 
 			SrcASNID:  srcAsnID,
 			SrcHostID: srcHostID,

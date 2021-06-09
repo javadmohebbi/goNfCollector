@@ -111,13 +111,13 @@ func New(host, user, pass, db string, ipReputationConf configurations.IpReputati
 	sqlDB, err := pg_db.DB()
 
 	// SetMaxIdleConns sets the maximum number of connections in the idle connection pool.
-	sqlDB.SetMaxIdleConns(200)
+	sqlDB.SetMaxIdleConns(20)
 
 	// SetMaxOpenConns sets the maximum number of open connections to the database.
-	sqlDB.SetMaxOpenConns(2000)
+	sqlDB.SetMaxOpenConns(100)
 
 	// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
-	sqlDB.SetConnMaxLifetime(2 * time.Minute)
+	sqlDB.SetConnMaxLifetime(30 * time.Second)
 
 	if err != nil {
 		// fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)

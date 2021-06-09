@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/goNfCollector/configurations"
 	"github.com/goNfCollector/database/model"
@@ -36,6 +37,12 @@ func (p *Postgres) writeHost(host string) (hostID uint, err error) {
 
 		// check for error
 		if result.Error != nil {
+
+			// check if cache not prepared and not resolved
+			if strings.Contains(result.Error.Error(), "duplicate key value violates unique constraint") {
+				return p.writeHost(host)
+			}
+
 			p.Debuuger.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
 				configurations.ERROR_CAN_T_INSERT_HOST_INFO.Int(),
 				configurations.ERROR_CAN_T_INSERT_HOST_INFO, result.Error),

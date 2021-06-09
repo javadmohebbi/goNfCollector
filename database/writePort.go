@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/goNfCollector/configurations"
 	"github.com/goNfCollector/database/model"
@@ -38,6 +39,12 @@ func (p *Postgres) writePort(PortName, protoName, portNumber string) (portID uin
 
 		// check for error
 		if result.Error != nil {
+
+			// check if cache not prepared and not resolved
+			if strings.Contains(result.Error.Error(), "duplicate key value violates unique constraint") {
+				return p.writePort(PortName, protoName, portNumber)
+			}
+
 			p.Debuuger.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
 				configurations.ERROR_CAN_T_INSERT_PORT_INFO.Int(),
 				configurations.ERROR_CAN_T_INSERT_PORT_INFO, result.Error),

@@ -9,7 +9,7 @@ type Protocol struct {
 
 	Protocol string `gorm:"not null"`
 
-	ProtocolName string `gorm:"not null"`
+	ProtocolName string `gorm:"not null;unique"`
 
 	Info string
 }

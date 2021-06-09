@@ -7,7 +7,7 @@ import "gorm.io/gorm"
 type AutonomousSystem struct {
 	gorm.Model
 
-	ASN string `gorm:"not null"`
+	ASN string `gorm:"not null;unique"`
 
 	Info string
 }

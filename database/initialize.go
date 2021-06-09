@@ -18,6 +18,8 @@ func (p *Postgres) autoMigrate() error {
 		&model.Version{},
 
 		&model.Flow{},
+
+		&model.Ethernet{},
 	)
 
 }

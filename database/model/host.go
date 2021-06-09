@@ -7,7 +7,7 @@ import "gorm.io/gorm"
 type Host struct {
 	gorm.Model
 
-	Host string `gorm:"not null"`
+	Host string `gorm:"not null;unique"`
 
 	Info string
 }

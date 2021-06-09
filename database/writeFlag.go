@@ -3,6 +3,7 @@ package database
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/goNfCollector/configurations"
 	"github.com/goNfCollector/database/model"
@@ -41,6 +42,12 @@ func (p *Postgres) writeFlag(flgs string) (flagID uint, fin, syn, rst, psh, ack,
 
 		// check for error
 		if result.Error != nil {
+
+			// check if cache not prepared and not resolved
+			if strings.Contains(result.Error.Error(), "duplicate key value violates unique constraint") {
+				return p.writeFlag(flgs)
+			}
+
 			p.Debuuger.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
 				configurations.ERROR_CAN_T_INSERT_FLAG_INFO.Int(),
 				configurations.ERROR_CAN_T_INSERT_FLAG_INFO, result.Error),

@@ -7,5 +7,5 @@ import "gorm.io/gorm"
 type Version struct {
 	gorm.Model
 
-	Version uint `gorm:"not null"`
+	Version uint `gorm:"not null;unique"`
 }

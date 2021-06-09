@@ -123,6 +123,13 @@ const (
 	// Can not update threat info
 	ERROR_CAN_T_UPDATE_THREAT_INFO
 
+	// Can not insert threat info
+	ERROR_CAN_T_INSERT_ETH_INFO
+	// Can not update threat info
+	ERROR_CAN_T_UPDATE_ETH_INFO
+	// Can not convert etherner index to uint
+	ERROR_CAN_T_CONVERT_ETH_INDEX
+
 	// UNKOWN ERORR
 	ERROR_UKNOWN
 )
@@ -191,6 +198,10 @@ func (e ErrorCodes) String() string {
 
 		"Can not insert threat info",
 		"Can not update threat info",
+
+		"Can not insert ethernet info",
+		"Can not update ethernet info",
+		"Can not convert etherner index to uint",
 
 		"Unknown error",
 	}[e]
