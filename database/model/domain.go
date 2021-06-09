@@ -7,5 +7,5 @@ import "gorm.io/gorm"
 type Domain struct {
 	gorm.Model
 
-	Domain string `gorm:"not null"`
+	Domain string `gorm:"not null;unique"`
 }
