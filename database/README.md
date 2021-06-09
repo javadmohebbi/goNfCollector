@@ -71,3 +71,10 @@ CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;
 ```
 
 
+
+
+
+# Remove/Recreate Schema
+```
+DROP SCHEMA public CASCADE;CREATE SCHEMA public;
+```
