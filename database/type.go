@@ -85,6 +85,11 @@ func (p Postgres) String() string {
 	return fmt.Sprintf("Postgress %s:%d user:%s db:%s", p.Host, p.Port, p.User, p.DB)
 }
 
+// return gorm DB
+func (p *Postgres) GetDB() *gorm.DB {
+	return p.db
+}
+
 // create new instance of influxDB
 func New(host, user, pass, db string, ipReputationConf configurations.IpReputation, port int, d *debugger.Debugger, ip2location *location.IPLocation, maxIdle, maxOpen int, maxLifeTime time.Duration) Postgres {
 
