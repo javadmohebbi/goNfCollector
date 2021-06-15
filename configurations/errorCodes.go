@@ -130,6 +130,9 @@ const (
 	// Can not convert etherner index to uint
 	ERROR_CAN_T_CONVERT_ETH_INDEX
 
+	// Can not connect to postgres DB inside API Server
+	ERROR_CAN_T_CONNECT_TO_POSTGRES_DB_INSIDE_API_SERVER
+
 	// UNKOWN ERORR
 	ERROR_UKNOWN
 )
@@ -202,6 +205,8 @@ func (e ErrorCodes) String() string {
 		"Can not insert ethernet info",
 		"Can not update ethernet info",
 		"Can not convert etherner index to uint",
+
+		"Can not connect to postgres DB inside API Server",
 
 		"Unknown error",
 	}[e]
