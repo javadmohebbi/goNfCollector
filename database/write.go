@@ -21,7 +21,9 @@ func (p *Postgres) write(metrics []common.Metric) {
 	successWrites := 0
 
 	p.WaitGroup.Add(1)
+	p.pendingWites += 1
 	defer p.WaitGroup.Done()
+	defer func() { p.pendingWites -= 1 }()
 
 	// define device ID default value
 	var deviceID uint = 0

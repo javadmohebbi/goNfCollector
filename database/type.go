@@ -62,6 +62,9 @@ type Postgres struct {
 	// this variable used when object inserted to db
 	// in order to prevent multiple query on db
 	cachedObjects map[string]interface{}
+
+	// total number of pending writes
+	pendingWites int
 }
 
 // insert to local cache

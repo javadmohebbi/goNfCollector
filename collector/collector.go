@@ -372,7 +372,7 @@ func (nf *Collector) getExporters() []exporters.Exporter {
 	for _, ex := range nf.c.Exporter.Postgres {
 
 		// create new Postgres
-		ifl := database.New(ex.Host, ex.User, ex.Password, ex.DB, nf.c.IPReputation, ex.Port, nf.d, nf.iploc, 19, 99, 30*time.Second)
+		ifl := database.New(ex.Host, ex.User, ex.Password, ex.DB, nf.c.IPReputation, ex.Port, nf.d, nf.iploc, ex.MaxIdleConnections, ex.MaxOpenConnections, 30*time.Second)
 
 		// create new Postgres exporter
 		postgresExporter, err := exporters.New(ifl, ifl.Debuuger)
@@ -391,15 +391,18 @@ func (nf *Collector) getExporters() []exporters.Exporter {
 // export if needed
 func (nf *Collector) export(metrics []common.Metric) {
 
-	// nf.waitGroup.Add(1)
-	// defer nf.waitGroup.Done()
+	nf.waitGroup.Add(1)
 
 	// check if there are valid exporters
 	if len(nf.exporters) > 0 {
 		// loop through exporters
 		for _, e := range nf.exporters {
 			// write metrics
-			go e.Write(metrics)
+			// go e.Write(metrics)
+			go func(e exporters.Exporter, metrics []common.Metric) {
+				e.Write(metrics)
+				defer nf.waitGroup.Done()
+			}(e, metrics)
 		}
 	}
 

@@ -2,7 +2,11 @@ package database
 
 import (
 	"fmt"
+	"os"
+	"os/signal"
 	"strings"
+	"syscall"
+	"time"
 
 	"github.com/goNfCollector/common"
 	"github.com/ip2location/ip2location-go"
@@ -69,10 +73,35 @@ func (p *Postgres) Close() error {
 	// dont run new queries
 	p.closed = true
 
+	ch := make(chan os.Signal, 1)
+	signal.Notify(ch,
+		// https://www.gnu.org/software/libc/manual/html_node/Termination-Signals.html
+		syscall.SIGINT, // Ctrl+C
+	)
+	go func() {
+		// check if channel signal has notified
+		<-ch
+
+		p.Debuuger.Verbose(fmt.Sprintf("CTRL + C pressed again...! App will exit now!"), logrus.InfoLevel)
+		os.Exit(0)
+
+	}()
+
 	// closing ....
 	p.Debuuger.Verbose(fmt.Sprintf("Closing  %v:%v db:%v", p.Host, p.Port, p.DB), logrus.InfoLevel)
 
-	p.Debuuger.Verbose(fmt.Sprintf("Please wait until pending writes finish on %v:%v db:%v", p.Host, p.Port, p.DB), logrus.InfoLevel)
+	p.Debuuger.Verbose(fmt.Sprintf("Please wait until pending writes finish on %v:%v db:%v or press CTRL+C again to exit the app", p.Host, p.Port, p.DB), logrus.InfoLevel)
+	p.Debuuger.Verbose(fmt.Sprintf("Total number of pending writes: %v", p.pendingWites), logrus.InfoLevel)
+
+	oldPendingWrites := p.pendingWites
+
+	for p.pendingWites != 0 {
+		if oldPendingWrites != p.pendingWites {
+			oldPendingWrites = p.pendingWites
+			p.Debuuger.Verbose(fmt.Sprintf("Total number of pending writes: %v", p.pendingWites), logrus.InfoLevel)
+		}
+		time.Sleep(1 * time.Second)
+	}
 
 	defer p.Debuuger.Verbose(fmt.Sprintf("%v:%v db:%v closed!", p.Host, p.Port, p.DB), logrus.InfoLevel)
 
