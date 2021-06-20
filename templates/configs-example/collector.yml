@@ -70,3 +70,9 @@ exporter:
 
       # PostgresDB
       db: zabbix
+
+      # db pool max open connection for collector app
+      maxOpenConnection: 450
+
+      # db pool max idle connections for collector app
+      maxIdleConnection: 40

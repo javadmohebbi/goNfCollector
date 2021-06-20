@@ -174,6 +174,12 @@ type postgres struct {
 
 	// postgres db
 	DB string `json:"db"`
+
+	// max Open connections
+	MaxOpenConnections int `json:"maxOpenConnection"`
+
+	// max Idle Connections
+	MaxIdleConnections int `json:"maxIdleConnections"`
 }
 
 // influxDB exporter struct

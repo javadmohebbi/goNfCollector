@@ -58,7 +58,7 @@ exporter:
   # POSTGRES DATABASE exporter
   postgres:
     # Postgres host
-    - host: localhost
+    - host: 127.0.0.1
 
       # Postgres port
       port: 5432
@@ -71,3 +71,9 @@ exporter:
 
       # PostgresDB
       db: oi24_netflow_db
+
+      # db pool max open connection for collector app
+      maxOpenConnection: 80
+
+      # db pool max idle connections for collector app
+      maxIdleConnection: 10
