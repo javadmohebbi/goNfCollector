@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/ammario/ipisp"
 	"github.com/goNfCollector/configurations"
 	"github.com/goNfCollector/debugger"
 	"github.com/goNfCollector/location"
@@ -63,24 +64,70 @@ type Postgres struct {
 	// in order to prevent multiple query on db
 	cachedObjects map[string]interface{}
 
+	// lock and unlock for concurrent write & read to
+	// prevent "fatal error: concurrent map read and map write"
+	// cachedObjectsMapMutex *sync.RWMutex
+
+	cachedObjectsSyncMap sync.Map
+
 	// total number of pending writes
 	pendingWites int
+
+	maxOpen int
+
+	// ASN lookup
+	IPISPClient ipisp.Client
+	IPISPErr    error
 }
 
 // insert to local cache
 func (p *Postgres) cachedIt(key string, value interface{}) {
-	if _, ok := p.cachedObjects[key]; !ok {
-		p.cachedObjects[key] = value
+
+	// lock read
+	// p.cachedObjectsMapMutex.RLock()
+
+	if _, ok := p.cachedObjectsSyncMap.Load(key); !ok {
+		p.cachedObjectsSyncMap.Store(key, value)
 	}
+
+	// if _, ok := p.cachedObjects[key]; !ok {
+
+	// 	// unlock read
+	// 	// p.cachedObjectsMapMutex.RUnlock()
+
+	// 	// lock write
+	// 	// p.cachedObjectsMapMutex.Lock()
+
+	// 	// set to cache
+	// 	p.cachedObjects[key] = value
+
+	// 	// unlock write
+	// 	// p.cachedObjectsMapMutex.Unlock()
+	// }
 }
 
 // return object from cache
 func (p *Postgres) getCached(key string) (interface{}, error) {
-	if value, ok := p.cachedObjects[key]; !ok {
+
+	if value, ok := p.cachedObjectsSyncMap.Load(key); !ok {
 		return nil, errors.New("Not found in the cache")
 	} else {
 		return value, nil
 	}
+
+	// lock read
+	// p.cachedObjectsMapMutex.RLock()
+
+	// if value, ok := p.cachedObjects[key]; !ok {
+	// 	// unlock read
+	// 	// p.cachedObjectsMapMutex.Unlock()
+	// 	return nil, errors.New("Not found in the cache")
+	// } else {
+	// 	// unlock read
+	// 	// p.cachedObjectsMapMutex.Unlock()
+	// 	return value, nil
+	// }
+
 }
 
 // return exporter info
@@ -147,6 +194,8 @@ func New(host, user, pass, db string, ipReputationConf configurations.IpReputati
 
 	d.Verbose(fmt.Sprintf("new postgres exporter %v:%v db:%v user:%v is created", host, port, db, user), logrus.DebugLevel)
 
+	ipisp_client, ipisp_err := ipisp.NewDNSClient()
+
 	// retun influxDB
 	p := Postgres{
 		Host:     host,
@@ -165,6 +214,12 @@ func New(host, user, pass, db string, ipReputationConf configurations.IpReputati
 		WaitGroup: &sync.WaitGroup{},
 
 		cachedObjects: cached,
+		// cachedObjectsMapMutex: &sync.RWMutex{},
+
+		maxOpen: maxOpen,
+
+		IPISPClient: ipisp_client,
+		IPISPErr:    ipisp_err,
 	}
 
 	// initialize db

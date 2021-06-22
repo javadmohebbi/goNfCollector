@@ -75,6 +75,12 @@ type Collector struct {
 
 	isConClosed bool
 
+	// total number of recieved flows
+	numberOfRecievedFlows uint64
+
+	// total number of flows sent for export
+	numberOfFlowsSentForExport uint64
+
 	// ztdb *zabbix.ZabbixTimeScaleDB
 }
 
@@ -340,6 +346,8 @@ func (nf *Collector) parse(m interface{}, remote net.Addr, data []byte) {
 			nf.d.Verbose(fmt.Sprintf("'%v' flows recieved from '%v'", len(metrics), remote.String()), logrus.DebugLevel)
 		}
 
+		nf.numberOfRecievedFlows += uint64(len(metrics))
+
 		go nf.export(metrics)
 	}
 
@@ -372,7 +380,7 @@ func (nf *Collector) getExporters() []exporters.Exporter {
 	for _, ex := range nf.c.Exporter.Postgres {
 
 		// create new Postgres
-		ifl := database.New(ex.Host, ex.User, ex.Password, ex.DB, nf.c.IPReputation, ex.Port, nf.d, nf.iploc, ex.MaxIdleConnections, ex.MaxOpenConnections, 30*time.Second)
+		ifl := database.New(ex.Host, ex.User, ex.Password, ex.DB, nf.c.IPReputation, ex.Port, nf.d, nf.iploc, ex.MaxIdleConnection, ex.MaxOpenConnection, 30*time.Second)
 
 		// create new Postgres exporter
 		postgresExporter, err := exporters.New(ifl, ifl.Debuuger)
@@ -400,6 +408,7 @@ func (nf *Collector) export(metrics []common.Metric) {
 			// write metrics
 			// go e.Write(metrics)
 			go func(e exporters.Exporter, metrics []common.Metric) {
+				nf.numberOfFlowsSentForExport += uint64(len(metrics))
 				e.Write(metrics)
 				defer nf.waitGroup.Done()
 			}(e, metrics)

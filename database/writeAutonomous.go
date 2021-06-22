@@ -5,7 +5,6 @@ import (
 	"net"
 	"strings"
 
-	"github.com/ammario/ipisp"
 	"github.com/goNfCollector/configurations"
 	"github.com/goNfCollector/database/model"
 	"github.com/sirupsen/logrus"
@@ -89,15 +88,13 @@ func (p *Postgres) writeAutonomous(ip string) (asn string, autonomousID uint, er
 
 // get asn lookup
 func (p *Postgres) asnLookup(ip string) string {
-	client, err := ipisp.NewDNSClient()
+
+	client, err := p.IPISPClient, p.IPISPErr
 
 	// if client has error, returns NA
 	if err != nil {
 		return "NA"
 	}
-
-	// close ipisp client
-	defer client.Close()
 
 	resp, err := client.LookupIP(net.ParseIP(ip))
 	// if no lookup, returns NA

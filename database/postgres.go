@@ -17,6 +17,7 @@ import (
 func (p *Postgres) Write(metrics []common.Metric) error {
 
 	// log.Println(" ============= WRITE CALLED ============= ")
+
 	go p.write(metrics)
 
 	return nil
@@ -115,6 +116,10 @@ func (p *Postgres) Close() error {
 
 	// close location
 	p.iplocation.Close()
+
+	// close ASN
+	// close ipisp client
+	defer p.IPISPClient.Close()
 
 	return nil
 }

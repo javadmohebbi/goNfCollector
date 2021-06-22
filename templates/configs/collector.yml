@@ -7,7 +7,7 @@ debug: false
 logFile: /opt/nfcollector/var/log/collector.log
 
 # total number of cpu
-cpuNum: 1
+cpuNum: 2
 
 # comma delimited IPs
 # or any
