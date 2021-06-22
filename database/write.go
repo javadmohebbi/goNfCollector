@@ -100,12 +100,12 @@ func (p *Postgres) write(metrics []common.Metric) {
 		}
 
 		// extract src port
-		srcPortID, err := p.writePort(m.SrcPortName, m.ProtoName, m.SrcPort)
+		srcPortID, err := p.writePort(m.SrcPortName, m.ProtoName, m.SrcPort, 0)
 		if err != nil {
 			continue
 		}
 		// extract dst port
-		dstPortID, err := p.writePort(m.DstPortName, m.ProtoName, m.DstPort)
+		dstPortID, err := p.writePort(m.DstPortName, m.ProtoName, m.DstPort, 0)
 		if err != nil {
 			continue
 		}

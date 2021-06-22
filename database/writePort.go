@@ -11,7 +11,7 @@ import (
 
 // write port into database if not exist yet
 // otherwise it will update the last seen
-func (p *Postgres) writePort(PortName, protoName, portNumber string) (portID uint, err error) {
+func (p *Postgres) writePort(PortName, protoName, portNumber string, retry int) (portID uint, err error) {
 
 	var portModel model.Port
 
@@ -40,9 +40,16 @@ func (p *Postgres) writePort(PortName, protoName, portNumber string) (portID uin
 		// check for error
 		if result.Error != nil {
 
-			// check if cache not prepared and not resolved
-			if strings.Contains(result.Error.Error(), "duplicate key value violates unique constraint") {
-				return p.writePort(PortName, protoName, portNumber)
+			if retry < 3 {
+				// check if cache not prepared and not resolved
+				if strings.Contains(result.Error.Error(), "duplicate key value violates unique constraint") {
+					return p.writePort(PortName, protoName, portNumber, retry+1)
+				}
+
+				// check if too mamy socket error
+				if strings.Contains(result.Error.Error(), "socket: too many open files") {
+					return p.writePort(PortName, protoName, portNumber, retry+1)
+				}
 			}
 
 			p.Debuuger.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
