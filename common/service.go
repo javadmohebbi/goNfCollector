@@ -69,13 +69,13 @@ func GetServices() (PortMap, error) {
 }
 
 // Return Protocol Name
-func GetPortName(port string, protocol string) string {
-	s, err := GetServices()
-	if err != nil {
+func GetPortName(port string, protocol string, portMap PortMap, portMapErr error) string {
+
+	if portMapErr != nil {
 		return fmt.Sprintf("%v/%v", port, protocol)
 	}
 	protocol = strings.ToLower(protocol)
-	for i, v := range s {
+	for i, v := range portMap {
 		if fmt.Sprintf("%v", i) == (protocol + "/" + port) {
 			return v.Name
 		}

@@ -13,7 +13,7 @@ import (
 	"fmt"
 )
 
-func Prepare(addr string, m *ipfix.Message) []common.Metric {
+func Prepare(addr string, m *ipfix.Message, portMap common.PortMap, portMapErr error) []common.Metric {
 	nfExporter, _, _ := net.SplitHostPort(addr)
 
 	var metrics []common.Metric
@@ -100,12 +100,12 @@ func Prepare(addr string, m *ipfix.Message) []common.Metric {
 						case strings.ToLower("sourceTransportPort"):
 							check[f.Translated.Name] = true
 							met.SrcPort = fmt.Sprintf("%v", f.Translated.Value)
-							met.SrcPortName = common.GetPortName(met.SrcPort, met.ProtoName)
+							met.SrcPortName = common.GetPortName(met.SrcPort, met.ProtoName, portMap, portMapErr)
 
 						case strings.ToLower("destinationTransportPort"):
 							check[f.Translated.Name] = true
 							met.DstPort = fmt.Sprintf("%v", f.Translated.Value)
-							met.DstPortName = common.GetPortName(met.DstPort, met.ProtoName)
+							met.DstPortName = common.GetPortName(met.DstPort, met.ProtoName, portMap, portMapErr)
 
 						case strings.ToLower("ipNextHopIPv4Address"):
 							check[f.Translated.Name] = true

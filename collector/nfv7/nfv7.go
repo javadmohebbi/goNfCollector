@@ -9,7 +9,7 @@ import (
 	"github.com/tehmaze/netflow/netflow7"
 )
 
-func Prepare(addr string, p *netflow7.Packet) []common.Metric {
+func Prepare(addr string, p *netflow7.Packet, portMap common.PortMap, portMapErr error) []common.Metric {
 	nfExporter, _, _ := net.SplitHostPort(addr)
 	var metrics []common.Metric
 	var met common.Metric
@@ -43,10 +43,10 @@ func Prepare(addr string, p *netflow7.Packet) []common.Metric {
 		met.DstIP = fmt.Sprintf("%v", r.DstAddr)
 
 		met.SrcPort = fmt.Sprintf("%v", r.SrcPort)
-		met.SrcPortName = common.GetPortName(met.SrcPort, met.ProtoName)
+		met.SrcPortName = common.GetPortName(met.SrcPort, met.ProtoName, portMap, portMapErr)
 
 		met.DstPort = fmt.Sprintf("%v", r.DstPort)
-		met.DstPortName = common.GetPortName(met.DstPort, met.ProtoName)
+		met.DstPortName = common.GetPortName(met.DstPort, met.ProtoName, portMap, portMapErr)
 
 		metrics = append(metrics, met)
 

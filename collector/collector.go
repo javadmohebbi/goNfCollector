@@ -82,6 +82,10 @@ type Collector struct {
 	numberOfFlowsSentForExport uint64
 
 	// ztdb *zabbix.ZabbixTimeScaleDB
+
+	// portmap for port and protocol
+	portmap    common.PortMap
+	portmapErr error
 }
 
 type outgoingMessage struct {
@@ -130,6 +134,9 @@ func New(h string, p int, l *logrus.Logger, c *configurations.Collector, d *debu
 
 		iploc: i2l,
 	}
+
+	// portMap definition
+	nf.portmap, nf.portmapErr = common.GetServices()
 
 	// extract valid exporters
 	nf.exporters = nf.getExporters()
@@ -320,22 +327,22 @@ func (nf *Collector) parse(m interface{}, remote net.Addr, data []byte) {
 	// check the netflow version
 	switch p := m.(type) {
 	case *netflow1.Packet:
-		metrics = nfv1.Prepare(remote.String(), p)
+		metrics = nfv1.Prepare(remote.String(), p, nf.portmap, nf.portmapErr)
 
 	case *netflow5.Packet:
-		metrics = nfv5.Prepare(remote.String(), p)
+		metrics = nfv5.Prepare(remote.String(), p, nf.portmap, nf.portmapErr)
 
 	case *netflow6.Packet:
-		metrics = nfv6.Prepare(remote.String(), p)
+		metrics = nfv6.Prepare(remote.String(), p, nf.portmap, nf.portmapErr)
 
 	case *netflow7.Packet:
-		metrics = nfv7.Prepare(remote.String(), p)
+		metrics = nfv7.Prepare(remote.String(), p, nf.portmap, nf.portmapErr)
 
 	case *netflow9.Packet:
-		metrics = nfv9.Prepare(remote.String(), p)
+		metrics = nfv9.Prepare(remote.String(), p, nf.portmap, nf.portmapErr)
 
 	case *ipfix.Message:
-		metrics = nfipfix.Prepare(remote.String(), p)
+		metrics = nfipfix.Prepare(remote.String(), p, nf.portmap, nf.portmapErr)
 
 	}
 

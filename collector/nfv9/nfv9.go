@@ -11,7 +11,7 @@ import (
 	"github.com/tehmaze/netflow/netflow9"
 )
 
-func Prepare(addr string, p *netflow9.Packet) []common.Metric {
+func Prepare(addr string, p *netflow9.Packet, portMap common.PortMap, portMapErr error) []common.Metric {
 	nfExporter, _, _ := net.SplitHostPort(addr)
 
 	var metrics []common.Metric
@@ -63,11 +63,11 @@ func Prepare(addr string, p *netflow9.Packet) []common.Metric {
 
 						case strings.ToLower("sourceTransportPort"):
 							met.SrcPort = fmt.Sprintf("%v", f.Translated.Value)
-							met.SrcPortName = common.GetPortName(met.SrcPort, met.ProtoName)
+							met.SrcPortName = common.GetPortName(met.SrcPort, met.ProtoName, portMap, portMapErr)
 
 						case strings.ToLower("destinationTransportPort"):
 							met.DstPort = fmt.Sprintf("%v", f.Translated.Value)
-							met.DstPortName = common.GetPortName(met.DstPort, met.ProtoName)
+							met.DstPortName = common.GetPortName(met.DstPort, met.ProtoName, portMap, portMapErr)
 
 						case strings.ToLower("ipNextHopIPv4Address"):
 							met.NextHop = fmt.Sprintf("%v", f.Translated.Value)
