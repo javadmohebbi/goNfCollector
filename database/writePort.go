@@ -40,16 +40,21 @@ func (p *Postgres) writePort(PortName, protoName, portNumber string, retry int) 
 		// check for error
 		if result.Error != nil {
 
+			// color.Yellow.Printf("======= Retries: %v\n", retry)
+
 			if retry < 3 {
 				// check if cache not prepared and not resolved
 				if strings.Contains(result.Error.Error(), "duplicate key value violates unique constraint") {
+					// color.Green.Printf("======= Retries (Duplicate key Error): %v\n", retry)
 					return p.writePort(PortName, protoName, portNumber, retry+1)
 				}
 
 				// check if too mamy socket error
 				if strings.Contains(result.Error.Error(), "socket: too many open files") {
+					// color.Blue.Printf("======= Retries (Socket Error): %v\n", retry)
 					return p.writePort(PortName, protoName, portNumber, retry+1)
 				}
+
 			}
 
 			p.Debuuger.Verbose(fmt.Sprintf("[%d]-%s: (%v)",

@@ -163,6 +163,14 @@ func New(host, user, pass, db string, ipReputationConf configurations.IpReputati
 		CreateBatchSize: 1000,
 	})
 
+	if err != nil {
+		// fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		// os.Exit(1)
+		d.Verbose(fmt.Sprintf("can not connect to postgres db '%s' on %s:%v using username '%s' due to error: %s", db, host, port, user, err.Error()), logrus.ErrorLevel)
+		os.Exit(configurations.ERROR_CAN_T_CONNECT_TO_POSTGRES_DB.Int())
+	}
+
+	// get sql Generic Interface
 	sqlDB, err := pg_db.DB()
 
 	// SetMaxIdleConns sets the maximum number of connections in the idle connection pool.
@@ -172,14 +180,7 @@ func New(host, user, pass, db string, ipReputationConf configurations.IpReputati
 	sqlDB.SetMaxOpenConns(maxOpen)
 
 	// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
-	sqlDB.SetConnMaxLifetime(maxLifeTime)
-
-	if err != nil {
-		// fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
-		// os.Exit(1)
-		d.Verbose(fmt.Sprintf("can not connect to postgres db '%s' on %s:%v using username '%s' due to error: %s", db, host, port, user, err.Error()), logrus.ErrorLevel)
-		os.Exit(configurations.ERROR_CAN_T_CONNECT_TO_POSTGRES_DB.Int())
-	}
+	sqlDB.SetConnMaxLifetime(4 * time.Hour)
 
 	// add reputation kind to reputation array
 	var reputs []reputation.Reputation
