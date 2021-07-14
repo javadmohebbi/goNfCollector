@@ -355,7 +355,7 @@ func (nf *Collector) parse(m interface{}, remote net.Addr, data []byte) {
 
 		nf.numberOfRecievedFlows += uint64(len(metrics))
 
-		go nf.export(metrics)
+		nf.export(metrics)
 	}
 
 }
@@ -387,7 +387,7 @@ func (nf *Collector) getExporters() []exporters.Exporter {
 	for _, ex := range nf.c.Exporter.Postgres {
 
 		// create new Postgres
-		ifl := database.New(ex.Host, ex.User, ex.Password, ex.DB, nf.c.IPReputation, ex.Port, nf.d, nf.iploc, ex.MaxIdleConnection, ex.MaxOpenConnection, 30*time.Second)
+		ifl := database.New(ex.Host, ex.User, ex.Password, ex.DB, nf.c.IPReputation, ex.Port, nf.d, nf.iploc, ex.MaxIdleConnection, ex.MaxOpenConnection, 1*time.Hour)
 
 		// create new Postgres exporter
 		postgresExporter, err := exporters.New(ifl, ifl.Debuuger)

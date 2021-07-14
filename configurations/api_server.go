@@ -20,6 +20,8 @@ type APIServer struct {
 	TLS            tls    `json:"tls"`
 	HTTP           http   `json:"http"`
 	NeedAuth       bool   `json:"needAuth"`
+
+	Postgres []api_postgres_db `json:"postgres"`
 }
 
 // http server extra cnfigurations
@@ -80,6 +82,24 @@ type httpCors struct {
 	// Only one wildcard can be used per origin.
 	// Default value is ["*"]
 	AllowedOrigins []string `json:"allowedOrigins"`
+}
+
+// postgres exporter struct
+type api_postgres_db struct {
+	// postgre host
+	Host string `json:"host"`
+
+	// postgres port
+	Port int `json:"port"`
+
+	// postgres user
+	User string `json:"user"`
+
+	// postgres password
+	Password string `json:"password"`
+
+	// postgres db
+	DB string `json:"db"`
 }
 
 // Read configs

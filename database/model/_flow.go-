@@ -20,56 +20,102 @@ type Flow struct {
 	UpdatedAt time.Time
 	// DeletedAt gorm.DeletedAt `gorm:"index"`
 
-	DeviceID uint
+	Device string
+	// DeviceID uint
 	// Device   Device
 
-	VersionID uint
+	Versio string
+	// VersionID uint
 	// Version   Version
 
-	ProtocolID uint
+	Protocol     string
+	ProtocolName string
+	// ProtocolID uint
 	// Protocol   Protocol
 
+	InEthernetIndex string
 	// -1 for undefined
-	InEthernetID int
+	// InEthernetID int
 	// InEthernet   Ethernet `gorm:"foreignKey:InEthernetID"`
 
+	OutEthernetIndex string
 	// -1 for undefined
-	OutEthernetID int
+	// OutEthernetID int
 	// OutEthernet   Ethernet `gorm:"foreignKey:OutEthernetID"`
 
+	SrcASN string
 	// SrcASNID uint
 	// SrcASN    AutonomousSystem `gorm:"foreignKey:SrcASNID"`
-	SrcHostID uint
+
+	SrcMac string
+
+	SrcHost string
+	// SrcHostID uint
 	// SrcHost   Host `gorm:"foreignKey:SrcHostID"`
-	SrcPortID uint
+
+	SrcPortName  string
+	SrcPortProto string
+	// SrcPortID uint
 	// SrcPort   Port `gorm:"foreignKey:SrcPortID"`
-	SrcGeoID uint
+
+	SrcCountryShort string
+	SrcCountryLong  string
+	SrcRegion       string
+	SrcCity         string
+	SrcLatitude     string
+	SrcLongitude    string
+	// SrcGeoID uint
 	// SrcGeo    Geo `gorm:"foreignKey:SrcGeoID"`
 
-	SrcIsThreat bool
-	SrcThreatID *uint `gotm:"null"`
+	SrcIsThreat     bool
+	SrcThreatSource string
+	// SrcThreatID *uint `gotm:"null"`
 	// SrcThreat   Threat `gorm:"foreignKey:SrcThreatID"`
 
+	DstASN string
 	// DstASNID uint
 	// DstASN    AutonomousSystem `gorm:"foreignKey:DstASNID"`
-	DstHostID uint
+
+	DstMac string
+
+	DstHost string
+	// DstHostID uint
 	// DstHost   Host `gorm:"foreignKey:DstHostID"`
-	DstPortID uint
+
+	DstPortName  string
+	DstPortProto string
+	// DstPortID uint
 	// DstPort   Port `gorm:"foreignKey:DstPortID"`
-	DstGeoID uint
+
+	DstCountryShort string
+	DstCountryLong  string
+	DstRegion       string
+	DstCity         string
+	DstLatitude     string
+	DstLongitude    string
+	// DstGeoID uint
 	// DstGeo    Geo `gorm:"foreignKey:DstGeoID"`
 
-	DstIsThreat bool
-	DstThreatID *uint `gotm:"null"`
+	DstIsThreat     bool
+	DstThreatSource string
+	// DstThreatID *uint `gotm:"null"`
 	// DstThreat   Threat `gorm:"foreignKey:DstThreatID"`
 
-	NextHopID uint
+	NextHop string
+	// NextHopID uint
 	// NextHop      Host `gorm:"foreignKey:NextHopID"`
-	NextHopGeoID uint
+	NextHopCountryShort string
+	NextHopCountryLong  string
+	NextHopRegion       string
+	NextHopCity         string
+	NextHopLatitude     string
+	NextHopLongitude    string
+	// NextHopGeoID uint
 	// NextHopGeo   Geo `gorm:"foreignKey:NextHopGeoID"`
 
-	NextHopIsThreat bool
-	NextHopThreatID *uint `gotm:"null"`
+	NextHopIsThreat     bool
+	NextHopThreatSource string
+	// NextHopThreatID *uint `gotm:"null"`
 	// NextHopThreat   Threat `gorm:"foreignKey:NextHopThreatID"`
 
 	FlagID uint

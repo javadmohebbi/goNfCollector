@@ -7,7 +7,7 @@ debug: false
 logFile: /opt/nfcollector/var/log/collector.log
 
 # total number of cpu
-cpuNum: 1
+cpuNum: 0
 
 # comma delimited IPs
 # or any
@@ -61,7 +61,7 @@ exporter:
     - host: 127.0.0.1
 
       # Postgres port
-      port: 5432
+      port: 6432
 
       # Postgres User
       user: oi24_netflow
@@ -70,10 +70,10 @@ exporter:
       password: oi24_netflow
 
       # PostgresDB
-      db: oi24_netflow_db
+      db: oi24_netflow_db-bouncer
 
       # db pool max open connection for collector app
-      maxOpenConnection: 80
+      maxOpenConnection: 100
 
       # db pool max idle connections for collector app
-      maxIdleConnection: 10
+      maxIdleConnection: 20

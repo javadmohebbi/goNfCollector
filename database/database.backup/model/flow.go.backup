@@ -37,7 +37,7 @@ type Flow struct {
 	OutEthernetID int
 	// OutEthernet   Ethernet `gorm:"foreignKey:OutEthernetID"`
 
-	// SrcASNID uint
+	SrcASNID uint
 	// SrcASN    AutonomousSystem `gorm:"foreignKey:SrcASNID"`
 	SrcHostID uint
 	// SrcHost   Host `gorm:"foreignKey:SrcHostID"`
@@ -50,7 +50,7 @@ type Flow struct {
 	SrcThreatID *uint `gotm:"null"`
 	// SrcThreat   Threat `gorm:"foreignKey:SrcThreatID"`
 
-	// DstASNID uint
+	DstASNID uint
 	// DstASN    AutonomousSystem `gorm:"foreignKey:DstASNID"`
 	DstHostID uint
 	// DstHost   Host `gorm:"foreignKey:DstHostID"`

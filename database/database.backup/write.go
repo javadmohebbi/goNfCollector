@@ -8,6 +8,7 @@ import (
 	"github.com/goNfCollector/common"
 	"github.com/goNfCollector/configurations"
 	"github.com/goNfCollector/database/model"
+	"github.com/gookit/color"
 	"github.com/sirupsen/logrus"
 )
 
@@ -30,23 +31,7 @@ func (p *Postgres) write(metrics []common.Metric) {
 	var err error
 
 	// check if metrics length > 0
-	if len(metrics) > 0 {
-		// get first array device
-		// because all of them are the same in the
-		// further loop
-		deviceID, err = p.writeDevice(metrics[0].Device)
-
-		// if err not null
-		// return with log
-		if err != nil {
-			p.Debuuger.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
-				configurations.ERROR_CAN_T_INSERT_METRICS_TO_POSTGRES_DB.Int(),
-				configurations.ERROR_CAN_T_INSERT_METRICS_TO_POSTGRES_DB, err),
-				logrus.ErrorLevel,
-			)
-			return
-		}
-	} else {
+	if len(metrics) == 0 {
 		// no metrics
 		p.Debuuger.Verbose(fmt.Sprintf("[%d]-%s: (metrics length: %v)",
 			configurations.ERROR_NO_METRICS_IN_THE_ARRAY.Int(),
@@ -76,17 +61,17 @@ func (p *Postgres) write(metrics []common.Metric) {
 			continue
 		}
 
-		// // extract Source ASN
-		// _, srcAsnID, err := p.writeAutonomous(m.SrcIP)
-		// if err != nil {
-		// 	continue
-		// }
+		// extract Source ASN
+		_, srcAsnID, err := p.writeAutonomous(m.SrcIP)
+		if err != nil {
+			continue
+		}
 
-		// // extract Destination ASN
-		// _, dstAsnID, err := p.writeAutonomous(m.DstIP)
-		// if err != nil {
-		// 	continue
-		// }
+		// extract Destination ASN
+		_, dstAsnID, err := p.writeAutonomous(m.DstIP)
+		if err != nil {
+			continue
+		}
 
 		// extract src host
 		srcHostID, err := p.writeHost(m.SrcIP)
@@ -151,6 +136,24 @@ func (p *Postgres) write(metrics []common.Metric) {
 			continue
 		}
 
+		// // log.Println(m.Device, m.FlowVersion, "===", deviceID, verID)
+		// fmt.Println()
+		// fmt.Printf("device: %v ID: %v\n   version: %v ID: %v\n   proto: %v (%v) ID: %v\n    SRC Host: %v ID: %v\n    SRC ASN: %v ID: %v\n    DST Host: %v ID: %v\n    DST ASN: %v ID: %v\n    SRC PORT: %v ID: %v\n    DST PORT: %v ID: %v\n    SRC GEO ID: %v\n    DST GEO ID: %v\n    TCP Flags: %v\n    Next Hop: %v NxtHopID: %v    GEO ID: %v",
+		// 	m.Device, deviceID,
+		// 	m.FlowVersion, verID,
+		// 	m.Protocol, m.ProtoName, protoID,
+		// 	m.SrcIP, srcHostID,
+		// 	srcASN, srcAsnID,
+		// 	m.DstIP, dstHostID,
+		// 	dstASN, dstAsnID,
+		// 	m.SrcPortName, srcPortID,
+		// 	m.DstPortName, dstPortID,
+		// 	srcGeoID, dstGeoID,
+		// 	flagsID,
+		// 	m.NextHop, nextHopHostID, nextHopGeoID,
+		// )
+		// fmt.Println()
+
 		t := time.Now().Add(-time.Duration(m.Time.Second()))
 
 		by, _ := strconv.Atoi(m.Bytes)
@@ -176,12 +179,12 @@ func (p *Postgres) write(metrics []common.Metric) {
 			InEthernetID:  inEthID,
 			OutEthernetID: outEthID,
 
-			// SrcASNID:  srcAsnID,
+			SrcASNID:  srcAsnID,
 			SrcHostID: srcHostID,
 			SrcPortID: srcPortID,
 			SrcGeoID:  srcGeoID,
 
-			// DstASNID:  dstAsnID,
+			DstASNID:  dstAsnID,
 			DstHostID: dstHostID,
 			DstPortID: dstPortID,
 			DstGeoID:  dstGeoID,
@@ -235,7 +238,7 @@ func (p *Postgres) write(metrics []common.Metric) {
 
 	result := p.db.CreateInBatches(arrFlows, len(arrFlows))
 
-	// color.Green.Printf("Wrote: %v -> %v", result.RowsAffected, len(metrics))
+	color.Green.Printf("Wrote: %v -> %v", result.RowsAffected, len(metrics))
 
 	if result.Error != nil {
 		p.Debuuger.Verbose(fmt.Sprintf("[%d]-%s: ([FLOW] %v)",
