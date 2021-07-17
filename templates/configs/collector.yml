@@ -1,7 +1,7 @@
 # Collector Configurations
 
 # Debug mode
-debug: false
+debug: true
 
 # LogFile
 logFile: /opt/nfcollector/var/log/collector.log
@@ -12,7 +12,7 @@ cpuNum: 0
 # comma delimited IPs
 # or any
 # acceptFrom: 192.168.16.6,127.0.0.1
-acceptFrom: 127.0.0.1
+acceptFrom: 127.0.0.1,192.168.1.102
 
 # Listen on address & port
 listen:

@@ -30,7 +30,7 @@ func (p *Postgres) writeEthernet(eth string, device string, deviceID uint) (ethe
 		ethModel = v.(model.Ethernet)
 		return int(ethModel.ID), nil
 	} else {
-		p.db.Where("ethernet = ?", uint(et)).First(&ethModel)
+		p.db.Where("uniq_key = ?", fmt.Sprintf("%v:%v", device, uint(et))).First(&ethModel)
 	}
 
 	if ethModel.ID == 0 {
