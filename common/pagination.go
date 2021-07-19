@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/url"
 	"strconv"
+	"strings"
 )
 
 // ExtractPaginationQueryString - Extract pagination from get request querystring
@@ -70,6 +71,13 @@ func PaginationStrWhereBuilder(filter string, fields []string) (strWhere string)
 		for k, v := range fields {
 			// likeFlt := "%" + strings.ReplaceAll(r.Pagination.Filter, " ", "%") + "%"
 			likeFlt := filter
+
+			// since PROTOCOL stores as CAPITAL letter
+			// it must be Capitalized in WHERE statement
+			if v == "protocols.protocol_name" || v == "ports.port_proto" {
+				likeFlt = strings.ToUpper(likeFlt)
+			}
+
 			if k == len(fields)-1 {
 				strWhere += fmt.Sprintf("%s LIKE '%%%v%%'", v, likeFlt)
 			} else {
