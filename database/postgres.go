@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/goNfCollector/common"
-	"github.com/gookit/color"
 	"github.com/ip2location/ip2location-go"
 	"github.com/sirupsen/logrus"
 )
@@ -19,11 +18,11 @@ func (p *Postgres) Write(metrics []common.Metric) error {
 
 	// log.Println(" ============= WRITE CALLED ============= ")
 
-	sqlDB, err := p.db.DB()
-	if err == nil {
-		st := sqlDB.Stats()
-		color.Yellow.Printf("max:%v idle:%v openConn:%v waitCount:%v inUse:%v pending: %v \n", st.MaxOpenConnections, st.Idle, st.OpenConnections, st.WaitCount, st.InUse, p.pendingWites)
-	}
+	// sqlDB, err := p.db.DB()
+	// if err == nil {
+	// 	st := sqlDB.Stats()
+	// 	color.Yellow.Printf("max:%v idle:%v openConn:%v waitCount:%v inUse:%v pending: %v \n", st.MaxOpenConnections, st.Idle, st.OpenConnections, st.WaitCount, st.InUse, p.pendingWites)
+	// }
 
 	go p.write(metrics)
 
