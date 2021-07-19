@@ -70,18 +70,20 @@ func PaginationStrWhereBuilder(filter string, fields []string) (strWhere string)
 	if filter != "" {
 		for k, v := range fields {
 			// likeFlt := "%" + strings.ReplaceAll(r.Pagination.Filter, " ", "%") + "%"
-			likeFlt := filter
+
+			// to lower to make a better filter
+			likeFlt := strings.ToLower(filter)
 
 			// since PROTOCOL stores as CAPITAL letter
 			// it must be Capitalized in WHERE statement
-			if v == "protocols.protocol_name" || v == "ports.port_proto" {
-				likeFlt = strings.ToUpper(likeFlt)
-			}
+			// if v == "protocols.protocol_name" || v == "ports.port_proto" {
+			// 	likeFlt = strings.ToUpper(likeFlt)
+			// }
 
 			if k == len(fields)-1 {
-				strWhere += fmt.Sprintf("%s LIKE '%%%v%%'", v, likeFlt)
+				strWhere += fmt.Sprintf("LOWER(%s) LIKE '%%%v%%'", v, likeFlt)
 			} else {
-				strWhere += fmt.Sprintf("%s LIKE '%%%v%%' OR ", v, likeFlt)
+				strWhere += fmt.Sprintf("LOWER(%s) LIKE '%%%v%%' OR ", v, likeFlt)
 			}
 		}
 	} else {
