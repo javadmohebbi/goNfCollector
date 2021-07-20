@@ -11,6 +11,8 @@ type Threat struct {
 
 	Kind string
 
+	Reputation uint
+
 	Acked         bool
 	Closed        bool
 	FalsePositive bool

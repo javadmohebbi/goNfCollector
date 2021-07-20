@@ -24,8 +24,11 @@ func (p *Postgres) writeThreat(ip string, hostID uint) (threatID uint, hasThreat
 
 				// need to be inserted to db
 				threatModel := model.Threat{
-					Source:        rpu.GetType(),
-					Kind:          rpu.GetKind(),
+					Source: rpu.GetType(),
+					Kind:   rpu.GetKind(),
+
+					Reputation: resp.Current,
+
 					Acked:         false,
 					Closed:        false,
 					FalsePositive: false,
