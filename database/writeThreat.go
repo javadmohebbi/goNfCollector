@@ -17,7 +17,11 @@ func (p *Postgres) writeThreat(ip string, hostID uint) (threatID uint, hasThreat
 		if resp := rpu.Get(ip); resp.Current > 0 {
 
 			var threatModel model.Threat
-			p.db.Where("source = ? AND kind = ? AND host_id = ?", rpu.GetType(), rpu.GetKind(), hostID).First(&threatModel)
+
+			// comment this line to insert
+			// even repeated threats in the database
+
+			// p.db.Where("source = ? AND kind = ? AND host_id = ?", rpu.GetType(), rpu.GetKind(), hostID).First(&threatModel)
 
 			if threatModel.ID == 0 {
 				// not found
