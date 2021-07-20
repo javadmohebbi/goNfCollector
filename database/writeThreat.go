@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/goNfCollector/configurations"
 	"github.com/goNfCollector/database/model"
@@ -21,7 +22,7 @@ func (p *Postgres) writeThreat(ip string, hostID uint) (threatID uint, hasThreat
 			// comment this line to insert
 			// even repeated threats in the database
 
-			// p.db.Where("source = ? AND kind = ? AND host_id = ?", rpu.GetType(), rpu.GetKind(), hostID).First(&threatModel)
+			p.db.Where("source = ? AND kind = ? AND host_id = ?", rpu.GetType(), rpu.GetKind(), hostID).First(&threatModel)
 
 			if threatModel.ID == 0 {
 				// not found
@@ -32,6 +33,7 @@ func (p *Postgres) writeThreat(ip string, hostID uint) (threatID uint, hasThreat
 					Kind:   rpu.GetKind(),
 
 					Reputation: resp.Current,
+					Counter:    1,
 
 					Acked:         false,
 					Closed:        false,
@@ -52,30 +54,34 @@ func (p *Postgres) writeThreat(ip string, hostID uint) (threatID uint, hasThreat
 					)
 					return 0, true, result.Error
 				}
-
 				return threatModel.ID, true, nil
+				// }
+				// else {
+				// 	return threatModel.ID, true, nil
+				// }
 			} else {
+				// found and updated_at date/time must be updated
+				// result := p.db.Model(&threatModel).Update("updated_at", time.Now())
+				result := p.db.Model(&threatModel).Updates(map[string]interface{}{
+					"updated_at": time.Now(),
+					"counter":    threatModel.Counter + 1,
+				})
+
+				// check for error
+				// since we want to update just one
+				// field in the database (updated_at)
+				// we will continue with no error
+				// but logs must be generated to the checked to
+				// the log file for future investigations
+				if result.Error != nil {
+					p.Debuuger.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
+						configurations.ERROR_CAN_T_UPDATE_THREAT_INFO.Int(),
+						configurations.ERROR_CAN_T_UPDATE_THREAT_INFO, result.Error),
+						logrus.ErrorLevel,
+					)
+				}
 				return threatModel.ID, true, nil
 			}
-			// else {
-			// 	// found and updated_at date/time must be updated
-			// 	result := p.db.Model(&threatModel).Update("updated_at", time.Now())
-
-			// 	// check for error
-			// 	// since we want to update just one
-			// 	// field in the database (updated_at)
-			// 	// we will continue with no error
-			// 	// but logs must be generated to the checked to
-			// 	// the log file for future investigations
-			// 	if result.Error != nil {
-			// 		p.Debuuger.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
-			// 			configurations.ERROR_CAN_T_UPDATE_THREAT_INFO.Int(),
-			// 			configurations.ERROR_CAN_T_UPDATE_THREAT_INFO, result.Error),
-			// 			logrus.ErrorLevel,
-			// 		)
-			// 	}
-			// 	return threatModel.ID, true, nil
-			// }
 
 		}
 	}

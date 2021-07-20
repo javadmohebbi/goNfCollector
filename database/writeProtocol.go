@@ -3,6 +3,7 @@ package database
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/goNfCollector/configurations"
 	"github.com/goNfCollector/database/model"
@@ -54,31 +55,31 @@ func (p *Postgres) writeProtocol(protocol, protoName string) (protocolID uint, e
 
 		return protoModel.ID, nil
 
+		// } else {
+		// 	return protoModel.ID, nil
+		// }
+
 	} else {
+		// found and updated_at date/time must be updated
+		result := p.db.Model(&protoModel).Update("updated_at", time.Now())
+
+		// check for error
+		// since we want to update just one
+		// field in the database (updated_at)
+		// we will continue with no error
+		// but logs must be generated to the checked to
+		// the log file for future investigations
+		if result.Error != nil {
+			p.Debuuger.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
+				configurations.ERROR_CAN_T_UPDATE_PROTOCOL_INFO.Int(),
+				configurations.ERROR_CAN_T_UPDATE_PROTOCOL_INFO, result.Error),
+				logrus.ErrorLevel,
+			)
+		}
+
+		// cache it
+		p.cachedIt("proto_"+protoName, protoModel)
+
 		return protoModel.ID, nil
 	}
-
-	// else {
-	// 	// found and updated_at date/time must be updated
-	// 	result := p.db.Model(&protoModel).Update("updated_at", time.Now())
-
-	// 	// check for error
-	// 	// since we want to update just one
-	// 	// field in the database (updated_at)
-	// 	// we will continue with no error
-	// 	// but logs must be generated to the checked to
-	// 	// the log file for future investigations
-	// 	if result.Error != nil {
-	// 		p.Debuuger.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
-	// 			configurations.ERROR_CAN_T_UPDATE_PROTOCOL_INFO.Int(),
-	// 			configurations.ERROR_CAN_T_UPDATE_PROTOCOL_INFO, result.Error),
-	// 			logrus.ErrorLevel,
-	// 		)
-	// 	}
-
-	// 	// cache it
-	// 	p.cachedIt("proto_"+protoName, protoModel)
-
-	// 	return protoModel.ID, nil
-	// }
 }
