@@ -19,7 +19,7 @@ func (p *Postgres) writePort(PortName, protoName, portNumber string, retry int) 
 	// object exist in cache
 	if v, err := p.getCached("port_" + PortName); err == nil {
 		portModel = v.(model.Port)
-		return portModel.ID, nil
+		// return portModel.ID, nil
 	} else {
 		p.db.Where("port_name = ?", PortName).First(&portModel)
 	}

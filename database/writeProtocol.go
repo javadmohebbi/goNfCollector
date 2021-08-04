@@ -18,7 +18,7 @@ func (p *Postgres) writeProtocol(protocol, protoName string) (protocolID uint, e
 	// object exist in cache
 	if v, err := p.getCached("proto_" + protoName); err == nil {
 		protoModel = v.(model.Protocol)
-		return protoModel.ID, nil
+		// return protoModel.ID, nil
 	} else {
 		p.db.Where("protocol = ?", protocol).First(&protoModel)
 	}

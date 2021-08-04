@@ -22,7 +22,7 @@ func (p *Postgres) writeGeo(ip string) (geoID uint, err error) {
 	// object exist in cache
 	if v, err := p.getCached("geo_" + ip); err == nil {
 		geoModel = v.(model.Geo)
-		return geoModel.ID, nil
+		// return geoModel.ID, nil
 	} else {
 		p.db.Where("country_short = ? AND country_long = ? AND region = ? AND city = ? AND latitude = ? AND longitude = ?",
 			loc.Country_short, loc.Country_long, loc.Region, loc.City,

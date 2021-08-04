@@ -18,7 +18,7 @@ func (p *Postgres) writeHost(host string) (hostID uint, err error) {
 	// object exist in cache
 	if v, err := p.getCached("host_" + host); err == nil {
 		hostModel = v.(model.Host)
-		return hostModel.ID, nil
+		// return hostModel.ID, nil
 	} else {
 		p.db.Where("host = ?", host).First(&hostModel)
 	}

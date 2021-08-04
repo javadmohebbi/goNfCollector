@@ -28,7 +28,7 @@ func (p *Postgres) writeEthernet(eth string, device string, deviceID uint) (ethe
 	// object exist in cache
 	if v, err := p.getCached("ethernet_" + device + "_" + eth); err == nil {
 		ethModel = v.(model.Ethernet)
-		return int(ethModel.ID), nil
+		// return int(ethModel.ID), nil
 	} else {
 		p.db.Where("uniq_key = ?", fmt.Sprintf("%v:%v", device, uint(et))).First(&ethModel)
 	}
