@@ -47,10 +47,22 @@ func (i *InfluxDBv2) measureSrcDstRelatedMetrics(metrics []common.Metric, kind s
 		// get location information for host
 		i2l = i.getLocation(host)
 
-		protoLine := fmt.Sprintf("%vHost,device=%v,ASN=%v,host=%v,countryLong=%v,countryShort=%v,region=%v,city=%v bytes=%vu,packets=%vu %v",
+		// protoLine := fmt.Sprintf("%vHost,device=%v,ASN=%v,host=%v,countryLong=%v,countryShort=%v,region=%v,city=%v bytes=%vu,packets=%vu %v",
+		// 	kind,
+		// 	m.Device,
+		// 	i.asnLookup(host),
+		// 	host,
+		// 	i2l.Country_long,
+		// 	i2l.Country_short,
+		// 	i2l.Region,
+		// 	i2l.City,
+		// 	m.Bytes, m.Packets,
+		// 	t,
+		// )
+
+		protoLine := fmt.Sprintf("%vHost,device=%v,host=%v,countryLong=%v,countryShort=%v,region=%v,city=%v bytes=%vu,packets=%vu %v",
 			kind,
 			m.Device,
-			i.asnLookup(host),
 			host,
 			i2l.Country_long,
 			i2l.Country_short,
@@ -102,17 +114,17 @@ func (i *InfluxDBv2) measureSrcDstRelatedMetrics(metrics []common.Metric, kind s
 		)
 
 		// ASN Name
-		protoLineASN := fmt.Sprintf("%vAS,device=%v,as=%v,countryLong=%v,countryShort=%v,region=%v,city=%v bytes=%vu,packets=%vu %v",
-			kind,
-			m.Device,
-			i.asnLookup(host),
-			i2l.Country_long,
-			i2l.Country_short,
-			i2l.Region,
-			i2l.City,
-			m.Bytes, m.Packets,
-			t,
-		)
+		// protoLineASN := fmt.Sprintf("%vAS,device=%v,as=%v,countryLong=%v,countryShort=%v,region=%v,city=%v bytes=%vu,packets=%vu %v",
+		// 	kind,
+		// 	m.Device,
+		// 	i.asnLookup(host),
+		// 	i2l.Country_long,
+		// 	i2l.Country_short,
+		// 	i2l.Region,
+		// 	i2l.City,
+		// 	m.Bytes, m.Packets,
+		// 	t,
+		// )
 
 		// write proto line records
 		wapi.WriteRecord(protoLine)
@@ -127,7 +139,7 @@ func (i *InfluxDBv2) measureSrcDstRelatedMetrics(metrics []common.Metric, kind s
 		wapi.WriteRecord(protoLineReverseLookup)
 
 		// asn
-		wapi.WriteRecord(protoLineASN)
+		// wapi.WriteRecord(protoLineASN)
 
 		// host reputation
 		for _, rpu := range i.reputations {

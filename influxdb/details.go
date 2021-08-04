@@ -39,13 +39,39 @@ func (i *InfluxDBv2) measureDetailsRelatedMetrics(metrics []common.Metric) {
 		dstI2l = i.getLocation(dstHost)
 
 		// all in and out
-		protoLineHostDetail := fmt.Sprintf("detail,device=%v,proto=%v,sASN=%v,shost=%v,sport=%v,scountryLong=%v,scountryShort=%v,sregion=%v,scity=%v,"+
-			"dASN=%v,dhost=%v,dport=%v,dcountryLong=%v,dcountryShort=%v,dregion=%v,dcity=%v "+
+		// protoLineHostDetail := fmt.Sprintf("detail,device=%v,proto=%v,sASN=%v,shost=%v,sport=%v,scountryLong=%v,scountryShort=%v,sregion=%v,scity=%v,"+
+		// 	"dASN=%v,dhost=%v,dport=%v,dcountryLong=%v,dcountryShort=%v,dregion=%v,dcity=%v "+
+		// 	"bytes=%vu,packets=%vu %v",
+		// 	m.Device,
+		// 	m.ProtoName,
+
+		// 	i.asnLookup(m.SrcIP),
+		// 	srcHost,
+		// 	srcPort,
+		// 	srcI2l.Country_long,
+		// 	srcI2l.Country_short,
+		// 	srcI2l.Region,
+		// 	srcI2l.City,
+
+		// 	i.asnLookup(m.DstIP),
+		// 	dstHost,
+		// 	dstPort,
+		// 	dstI2l.Country_long,
+		// 	dstI2l.Country_short,
+		// 	dstI2l.Region,
+		// 	dstI2l.City,
+
+		// 	m.Bytes, m.Packets,
+
+		// 	t,
+		// )
+
+		protoLineHostDetail := fmt.Sprintf("detail,device=%v,proto=%v,shost=%v,sport=%v,scountryLong=%v,scountryShort=%v,sregion=%v,scity=%v,"+
+			"dhost=%v,dport=%v,dcountryLong=%v,dcountryShort=%v,dregion=%v,dcity=%v "+
 			"bytes=%vu,packets=%vu %v",
 			m.Device,
 			m.ProtoName,
 
-			i.asnLookup(m.SrcIP),
 			srcHost,
 			srcPort,
 			srcI2l.Country_long,
@@ -53,7 +79,6 @@ func (i *InfluxDBv2) measureDetailsRelatedMetrics(metrics []common.Metric) {
 			srcI2l.Region,
 			srcI2l.City,
 
-			i.asnLookup(m.DstIP),
 			dstHost,
 			dstPort,
 			dstI2l.Country_long,
