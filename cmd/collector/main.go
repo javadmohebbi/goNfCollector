@@ -66,6 +66,24 @@ func main() {
 	// cast cfg to Collector configuration
 	collectorConf := conf.(*configurations.Collector)
 
+	// Reading Trans.yml configuration
+	// create new instance of configurations interface
+	cfgTranslation, err := configurations.New(configurations.CONF_TYPE_TRANS, *confFilePath)
+	if err != nil {
+		log.Println("Can not create new instance of configuration due to error ", err)
+		os.Exit(configurations.ERROR_READ_CONFIG.Int())
+	}
+
+	// Read config & return the requested strucut type
+	confTranslation, err := cfgTranslation.Read()
+	if err != nil {
+		log.Println("Can not read config file due to error ", err)
+		os.Exit(configurations.ERROR_READ_CONFIG.Int())
+	}
+
+	// cast cfg to Translation configuration
+	transConf := confTranslation.(*configurations.Translations)
+
 	// check fo debug in command line argument
 	if *debug {
 		collectorConf.Debug = *debug
@@ -137,6 +155,7 @@ func main() {
 		collectorConf.Listen.Port,
 		logr, collectorConf, d,
 		*confFilePath,
+		transConf,
 	)
 
 	// serve netflow collector service

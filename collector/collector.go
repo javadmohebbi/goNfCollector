@@ -56,6 +56,9 @@ type Collector struct {
 	// configuration for collector
 	c *configurations.Collector
 
+	// translation configuration
+	cfTrans *configurations.Translations
+
 	// configuration for ip2location
 	iploc *location.IPLocation
 
@@ -94,7 +97,7 @@ type outgoingMessage struct {
 }
 
 // create new netflow collector
-func New(h string, p int, l *logrus.Logger, c *configurations.Collector, d *debugger.Debugger, path string) *Collector {
+func New(h string, p int, l *logrus.Logger, c *configurations.Collector, d *debugger.Debugger, path string, cfTrans *configurations.Translations) *Collector {
 
 	// getIP2location conf
 	// create new instance of configurations interface
@@ -133,6 +136,8 @@ func New(h string, p int, l *logrus.Logger, c *configurations.Collector, d *debu
 		waitGroup: &sync.WaitGroup{},
 
 		iploc: i2l,
+
+		cfTrans: cfTrans,
 	}
 
 	// portMap definition
@@ -339,10 +344,10 @@ func (nf *Collector) parse(m interface{}, remote net.Addr, data []byte) {
 		metrics = nfv7.Prepare(remote.String(), p, nf.portmap, nf.portmapErr)
 
 	case *netflow9.Packet:
-		metrics = nfv9.Prepare(remote.String(), p, nf.portmap, nf.portmapErr)
+		metrics = nfv9.Prepare(remote.String(), p, nf.portmap, nf.portmapErr, nf.cfTrans)
 
 	case *ipfix.Message:
-		metrics = nfipfix.Prepare(remote.String(), p, nf.portmap, nf.portmapErr)
+		metrics = nfipfix.Prepare(remote.String(), p, nf.portmap, nf.portmapErr, nf.cfTrans)
 
 	}
 

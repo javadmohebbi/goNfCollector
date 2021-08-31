@@ -45,7 +45,7 @@ services:
 
         restart: always
 
-        network_mode: host
+        # network_mode: host
 
         ports:
             - "6859:6859/udp"

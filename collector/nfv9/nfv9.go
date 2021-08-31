@@ -5,13 +5,12 @@ import (
 	"net"
 	"time"
 
-	"strings"
-
 	"github.com/goNfCollector/common"
+	"github.com/goNfCollector/configurations"
 	"github.com/tehmaze/netflow/netflow9"
 )
 
-func Prepare(addr string, p *netflow9.Packet, portMap common.PortMap, portMapErr error) []common.Metric {
+func Prepare(addr string, p *netflow9.Packet, portMap common.PortMap, portMapErr error, cfTrans *configurations.Translations) []common.Metric {
 	nfExporter, _, _ := net.SplitHostPort(addr)
 
 	var metrics []common.Metric
@@ -32,56 +31,56 @@ func Prepare(addr string, p *netflow9.Packet, portMap common.PortMap, portMapErr
 				if f.Translated != nil {
 					if f.Translated.Name != "" {
 						//fmt.Printf("        NN %s: %v\n", f.Translated.Name, f.Translated.Value)
-						switch strings.ToLower(f.Translated.Name) {
-						case strings.ToLower("flowEndSysUpTime"):
+						switch f.Translated.Name {
+						case common.CheckTranslationField("flowEndSysUpTime", cfTrans.FlowEndSysUpTime):
 							met.First = fmt.Sprintf("%v", f.Translated.Value)
 
-						case strings.ToLower("flowStartSysUpTime"):
+						case common.CheckTranslationField("flowStartSysUpTime", cfTrans.FlowStartSysUpTime):
 							met.Last = fmt.Sprintf("%v", f.Translated.Value)
 
-						case strings.ToLower("octetDeltaCount"):
+						case common.CheckTranslationField("octetDeltaCount", cfTrans.OctetDeltaCount):
 							met.Bytes = fmt.Sprintf("%v", f.Translated.Value)
 
-						case strings.ToLower("packetDeltaCount"):
+						case common.CheckTranslationField("packetDeltaCount", cfTrans.PacketDeltaCount):
 							met.Packets = fmt.Sprintf("%v", f.Translated.Value)
 
-						case strings.ToLower("ingressInterface"):
+						case common.CheckTranslationField("ingressInterface", cfTrans.IngressInterface):
 							met.InEthernet = fmt.Sprintf("%v", f.Translated.Value)
 
-						case strings.ToLower("egressInterface"):
+						case common.CheckTranslationField("egressInterface", cfTrans.EgressInterface):
 							met.OutEthernet = fmt.Sprintf("%v", f.Translated.Value)
 
-						case strings.ToLower("sourceIPv4Address"):
+						case common.CheckTranslationField("sourceIPv4Address", cfTrans.SourceIPv4Address):
 							met.SrcIP = fmt.Sprintf("%v", f.Translated.Value)
 
-						case strings.ToLower("destinationIPv4Address"):
+						case common.CheckTranslationField("destinationIPv4Address", cfTrans.DestinationIPv4Address):
 							met.DstIP = fmt.Sprintf("%v", f.Translated.Value)
 
-						case strings.ToLower("protocolIdentifier"):
+						case common.CheckTranslationField("protocolIdentifier", cfTrans.ProtocolIdentifier):
 							met.Protocol = fmt.Sprintf("%v", f.Translated.Value)
 							met.ProtoName = common.ProtoToName(met.Protocol)
 
-						case strings.ToLower("sourceTransportPort"):
+						case common.CheckTranslationField("sourceTransportPort", cfTrans.SourceTransportPort):
 							met.SrcPort = fmt.Sprintf("%v", f.Translated.Value)
 							met.SrcPortName = common.GetPortName(met.SrcPort, met.ProtoName, portMap, portMapErr)
 
-						case strings.ToLower("destinationTransportPort"):
+						case common.CheckTranslationField("destinationTransportPort", cfTrans.DestinationTransportPort):
 							met.DstPort = fmt.Sprintf("%v", f.Translated.Value)
 							met.DstPortName = common.GetPortName(met.DstPort, met.ProtoName, portMap, portMapErr)
 
-						case strings.ToLower("ipNextHopIPv4Address"):
+						case common.CheckTranslationField("ipNextHopIPv4Address", cfTrans.IpNextHopIPv4Address):
 							met.NextHop = fmt.Sprintf("%v", f.Translated.Value)
 
-						case strings.ToLower("destinationIPv4PrefixLength"):
+						case common.CheckTranslationField("destinationIPv4PrefixLength", cfTrans.DestinationIPv4PrefixLength):
 							met.DstMask = fmt.Sprintf("%v", f.Translated.Value)
 
-						case strings.ToLower("sourceIPv4PrefixLength"):
+						case common.CheckTranslationField("sourceIPv4PrefixLength", cfTrans.SourceIPv4PrefixLength):
 							met.SrcMask = fmt.Sprintf("%v", f.Translated.Value)
 
-						case strings.ToLower("tcpControlBits"):
+						case common.CheckTranslationField("tcpControlBits", cfTrans.TcpControlBits):
 							met.TCPFlags = fmt.Sprintf("%v", f.Translated.Value)
 
-						case strings.ToLower("flowDirection"):
+						case common.CheckTranslationField("flowDirection", cfTrans.FlowDirection):
 							met.Direction = fmt.Sprintf("%v", f.Translated.Value)
 							switch met.Direction {
 							case "0":

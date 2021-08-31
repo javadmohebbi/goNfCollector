@@ -28,6 +28,8 @@ const (
 	CONF_TYPE_IP2LOCATION
 
 	CONF_TYPE_API_SERVER
+
+	CONF_TYPE_TRANS
 )
 
 // return filename related to requested configuration
@@ -76,6 +78,16 @@ func New(ct ConfType, path string) (Configuration, error) {
 				confFile: confFile{
 					path: cf.path,
 					file: "api_server",
+					ext:  "yml",
+				},
+			},
+		), nil
+	case CONF_TYPE_TRANS:
+		return Configuration(
+			&Translations{
+				confFile: confFile{
+					path: cf.path,
+					file: "trans",
 					ext:  "yml",
 				},
 			},
