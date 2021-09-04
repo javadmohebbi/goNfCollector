@@ -7,12 +7,12 @@ debug: true
 logFile: /opt/nfcollector/var/log/collector.log
 
 # total number of cpu
-cpuNum: 0
+cpuNum: 1
 
 # comma delimited IPs
 # or any
 # acceptFrom: 192.168.16.6,127.0.0.1
-acceptFrom: 127.0.0.1,192.168.1.102
+acceptFrom: 127.0.0.1,192.168.1.102,192.168.226.100
 
 # Listen on address & port
 listen:
@@ -47,12 +47,12 @@ ipReputation:
 exporter:
   # InfluxDB exporter
   # you can config as many as you want
-#  influxDBs:
-#    - host: 127.0.0.1
-#      port: 8086
-#      token: 5vqt0q0b4g_lZwNgp7-8GgPq5Nxf3YY37xbVZP_ypeK_G3dwdNlTrAkcKN_Q6QzbmG-Th96lT_65Kp0j2UD1HA==
-#      bucket: nfCollector
-#      org: OPENINTELLIGENCE
+  #influxDBs:
+  #  - host: 127.0.0.1
+  #    port: 8086
+  #    token: Fj7y5U2b1Sr5a2Om0yas_1Wki8MFTWf7AigdXW_grJ_7ln722jUBLhIreH6VdpzCP0ZKGiKxDhb9VT7pNoJ88A==
+  #    bucket: nfCollector
+  #    org: OPENINTELLIGENCE
 
 
   # POSTGRES DATABASE exporter

@@ -9,6 +9,8 @@ type Device struct {
 
 	Device string `gorm:"not null;unique"`
 
+	VersionID uint
+
 	Name string
 
 	Info string
