@@ -43,7 +43,7 @@ export NFC_CPU_NUM="0"
 
 
 export NFC_LISTEN_PORT="6859"
-export NFC_INFLUXDB_HOST="127.0.0.1"
+export NFC_INFLUXDB_HOST="influxdb"
 export NFC_INFLUXDB_PORT="8086"
 export NFC_INFLUXDB_TOKEN="5vqt0q0b4g_lZwNgp7-8GgPq5Nxf3YY37xbVZP_ypeK_G3dwdNlTrAkcKN_Q6QzbmG-Th96lT_65Kp0j2UD1HA=="
 export NFC_INFLUXDB_BUCKET="nfCollector"
