@@ -154,11 +154,11 @@ get_influx_db_info() {
 
     echo ""
     echo -e "${YELLOW} Renaming old configuraions...${NC}"
+
     unixnan=$(date +%s)
     mv $INFLUX_DIR/engine $INFLUX_DIR/engine.old.$unixnan -f > /dev/null 2>&1
-    check_errors
     mv $INFLUX_DIR/influxd.bolt $INFLUX_DIR/influxd.bolt.old.$unixnan > /dev/null 2>&1
-    check_errors
+
     echo -e "${GREEN}...done!${NC}"
 
     CONTAINERID=influxdb_tmp
@@ -175,10 +175,7 @@ get_influx_db_info() {
     echo ""
     echo -e "${YELLOW} Staring temporary InfluxDB container ($CONTAINERID)...${NC}"
     # create influxdb tmp image
-    docker run -d \
-    -v $INFLUX_DIR:/var/lib/influxdb2 \
-    --name $CONTAINERID \
-    influxdb:2
+    docker run -d -v $INFLUX_DIR:/var/lib/influxdb2 --name $CONTAINERID influxdb:2
     check_errors
     echo -e "${GREEN}...done!${NC}"
 
@@ -471,7 +468,7 @@ cron_jobs() {
 # error check and stop on error
 check_errors() {
     e=$?
-    if [ "${e}" -ne "0"]; then
+    if [ "${e}" -ne "0" ]; then
         echo -e "${RED} [ERROR] Could not continue due to error. Check the above information to solve the issue".
         exit 1
     fi
