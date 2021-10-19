@@ -175,7 +175,9 @@ get_influx_db_info() {
     echo ""
     echo -e "${YELLOW} Staring temporary InfluxDB container ($CONTAINERID)...${NC}"
     # create influxdb tmp image
-    docker run -d -v $INFLUX_DIR:/var/lib/influxdb2 --name $CONTAINERID influxdb:2
+    CMD_TO_RUN_INF_DB_TMP="docker run -d -v $INFLUX_DIR:/var/lib/influxdb2 --name $CONTAINERID influxdb:2.0.7"
+    echo -e "${YELLOW} ${CMD_TO_RUN_INF_DB_TMP}"
+    docker run -d -v $INFLUX_DIR:/var/lib/influxdb2 --name $CONTAINERID influxdb:2.0.7
     check_errors
     echo -e "${GREEN}...done!${NC}"
 
@@ -482,7 +484,7 @@ echo -e "${YELLOW} This shell-script will download & install ${NC}'nfcollector' 
 echo -e "${YELLOW} - Please check your server is connected to the Internet."
 echo -e "${YELLOW} - The project directory is ${NC}'${PROJECT_DIR}'"
 echo -e "${YELLOW} - These 'Docker' containers will be downloaded during installation:"
-echo -e "${YELLOW} \t- ${NC}'influxdb:2.0'"
+echo -e "${YELLOW} \t- ${NC}'influxdb:2.0.7.0'"
 echo -e "${YELLOW} \t- ${NC}'grafana/grafana'"
 echo -e "${YELLOW} \t- ${NC}'javadmohebbi/gonfcollector'"
 echo -e "${YELLOW} - Also this script will download all the other required files to ${NC}${PROJECT_DIR}${YELLOW}. Including:"
