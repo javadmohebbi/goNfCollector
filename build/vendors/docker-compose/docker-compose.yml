@@ -5,7 +5,7 @@ services:
     # Influx DB
     influxdb:
 
-        image: influxdb:2.0
+        image: influxdb:2.0.7
 
         restart: always
 
