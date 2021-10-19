@@ -69,28 +69,38 @@ download_latest_version() {
 
     # download nfcollector
     wget -O $PROJECT_DIR/bin/nfcollector https://download.openintelligence24.com/nf/bin/nfcollector?rnd=$RAND_STR
+    check_errors
     chmod +x $PROJECT_DIR/bin/nfcollector
+    check_errors
 
     # download nfupdater
     wget -O $PROJECT_DIR/bin/nfupdater https://download.openintelligence24.com/nf/bin/nfupdater?rnd=$RAND_STR
+    check_errors
     chmod +x $PROJECT_DIR/bin/nfupdater
+    check_errors
 
     # download databases
     $PROJECT_DIR/bin/nfupdater -ipsum -ip2l -ip2l-asn -ip2l-proxy
 
     # download grafana dashboards & conf
     wget -O /tmp/grafana.tar.gz https://download.openintelligence24.com/vendors/grafana/grafana.tar.gz?rnd=$RAND_STR && tar -vxf /tmp/grafana.tar.gz -C $GRAFANA_DIR/
+    check_errors
     # chmod +r $GRAFANA_DIR/ -Rv
     echo -e "${YELLOW} Chaning permissions & owner of grafana directory. Maybe you need to enter 'sudo' password ${NC}"
     sudo chmod -Rv a+w $GRAFANA_DIR/
+    check_errors
     sudo chown $USER:root $GRAFANA_DIR/ -Rv
+    check_errors
 
     wget -O ./docker-compose.yml https://download.openintelligence24.com/vendors/docker-compose/docker-compose.yml?rnd=$RAND_STR
+    check_errors
 
 
     # DOWNLAOD TEMPLATES
     wget -O $PROJECT_DIR/etc/collector.yml https://download.openintelligence24.com/nf/etc/nfcol-bash.yml?rnd=$RAND_STR
+    check_errors
     wget -O $PROJECT_DIR/etc/ip2location.yml https://download.openintelligence24.com/nf/etc/nfloc-bash.yml?rnd=$RAND_STR
+    check_errors
 
 
     echo "COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}" > $PROJECT_DIR/.env
@@ -107,23 +117,31 @@ prepare_dir()
 
     # project directory
     mkdir -pv $PROJECT_DIR
+    check_errors
 
     # config files
     mkdir -pv $PROJECT_DIR/etc
+    check_errors
 
-    # ibn
+    # bin
     mkdir -pv $PROJECT_DIR/bin
+    check_errors
 
     # vendors dir & files
     mkdir -pv $PROJECT_DIR/vendors/ip2location
+    check_errors
     mkdir -pv $PROJECT_DIR/vendors/ip2location/local-db
+    check_errors
     mkdir -pv $PROJECT_DIR/vendors/ipsum
+    check_errors
 
     # influxDB directory
     mkdir -pv $INFLUX_DIR
+    check_errors
 
     # grafana directory
     mkdir -pv $GRAFANA_DIR
+    check_errors
 
     echo -e "${GREEN}...done!${NC}"
 }
@@ -138,7 +156,9 @@ get_influx_db_info() {
     echo -e "${YELLOW} Renaming old configuraions...${NC}"
     unixnan=$(date +%s)
     mv $INFLUX_DIR/engine $INFLUX_DIR/engine.old.$unixnan -f > /dev/null 2>&1
+    check_errors
     mv $INFLUX_DIR/influxd.bolt $INFLUX_DIR/influxd.bolt.old.$unixnan > /dev/null 2>&1
+    check_errors
     echo -e "${GREEN}...done!${NC}"
 
     CONTAINERID=influxdb_tmp
@@ -159,6 +179,7 @@ get_influx_db_info() {
     -v $INFLUX_DIR:/var/lib/influxdb2 \
     --name $CONTAINERID \
     influxdb:2
+    check_errors
     echo -e "${GREEN}...done!${NC}"
 
     # NFC_INFLUXDB_TOKEN=`echo $CONTAINERID$(date)$USER | base64 -w 0`
@@ -169,6 +190,7 @@ get_influx_db_info() {
     echo ""
     echo -e "${YELLOW} Waiting for InfluxDB (${CONTAINERID}) to be ready...!${NC}"
     docker exec -it $CONTAINERID wget http://localhost:8086 > /dev/null
+    check_errors
 
     until [ "`docker inspect -f {{.State.Running}} $CONTAINERID`"=="true" ]; do
         sleep 0.1;
@@ -189,12 +211,15 @@ get_influx_db_info() {
     echo "------------------------------------------"
     # RUN THE COMMAND
     $COMMAND_TO_RUN
+    check_errors
     echo "------------------------------------------"
 
     echo ""
     echo -e "${YELLOW} Stop & remove container $CONTAINERID ${NC}"
     docker stop $CONTAINERID > /dev/null 2>&1
+    check_errors
     docker container rm $CONTAINERID > /dev/null 2>&1
+    check_errors
     echo -e "${GREEN}...done!${NC}"
 
 }
@@ -246,25 +271,37 @@ replace_compose_template() {
 
     PWD_ESCP=$(echo $INFLUX_DIR | sed 's_/_\\/_g')
     sed -i "s/_INFLUX_DIR_/$PWD_ESCP/g" ./docker-compose.yml
+    check_errors
 
     PWD_ESCP=$(echo $GRAFANA_DIR | sed 's_/_\\/_g')
     sed -i "s/_GRAFANA_DIR_/$PWD_ESCP/g" ./docker-compose.yml
+    check_errors
 
     PWD_ESCP=$(echo $PROJECT_DIR | sed 's_/_\\/_g')
     sed -i "s/_PROJECT_DIR_/$PWD_ESCP/g" ./docker-compose.yml
+    check_errors
 
     sed -i "s/_NFC_CPU_NUM_/$NFC_CPU_NUM/g" ./docker-compose.yml
+    check_errors
 
     sed -i "s/_NFC_LISTEN_ADDRESS_/$NFC_LISTEN_ADDRESS/g" ./docker-compose.yml
+    check_errors
     sed -i "s/_NFC_LISTEN_PORT_/$NFC_LISTEN_PORT/g" ./docker-compose.yml
+    check_errors
     sed -i "s/_NFC_INFLUXDB_HOST_/$NFC_INFLUXDB_HOST/g" ./docker-compose.yml
+    check_errors
     sed -i "s/_NFC_INFLUXDB_PORT_/$NFC_INFLUXDB_PORT/g" ./docker-compose.yml
+    check_errors
     sed -i "s/_NFC_INFLUXDB_TOKEN_/$NFC_INFLUXDB_TOKEN/g" ./docker-compose.yml
+    check_errors
     sed -i "s/_NFC_INFLUXDB_BUCKET_/$NFC_INFLUXDB_BUCKET/g" ./docker-compose.yml
+    check_errors
     sed -i "s/_NFC_INFLUXDB_ORG_/$NFC_INFLUXDB_ORG/g" ./docker-compose.yml
+    check_errors
 
 
     mv ./docker-compose.yml $PROJECT_DIR/docker-compose.yml -v
+    check_errors
 
     echo -e "${GRREN}...done!${NC}"
 }
@@ -280,21 +317,31 @@ replace_collector_template() {
 
     PWD_ESCP=$(echo ${PROJECT_DIR}/collector.log | sed 's_/_\\/_g')
     sed -i "s/_LOG_PATH_/$PWD_ESCP/g"  $conf
+    check_errors
 
 
     sed -i "s/_NFC_CPU_NUM_/$NFC_CPU_NUM/g"  $conf
+    check_errors
 
     sed -i "s/_NFC_LISTEN_ADDRESS_/$NFC_LISTEN_ADDRESS/g" $conf
+    check_errors
     sed -i "s/_NFC_LISTEN_PORT_/$NFC_LISTEN_PORT/g"  $conf
+    check_errors
 
     PWD_ESCP=$(echo ${NFC_IP_REPTATION_IPSUM} | sed 's_/_\\/_g')
     sed -i "s/_NFC_IP_REPTATION_IPSUM_/$PWD_ESCP/g" $conf
+    check_errors
 
     sed -i "s/_NFC_INFLUXDB_HOST_/$NFC_INFLUXDB_HOST/g" $conf
+    check_errors
     sed -i "s/_NFC_INFLUXDB_PORT_/$NFC_INFLUXDB_PORT/g"  $conf
+    check_errors
     sed -i "s/_NFC_INFLUXDB_TOKEN_/$NFC_INFLUXDB_TOKEN/g"  $conf
+    check_errors
     sed -i "s/_NFC_INFLUXDB_BUCKET_/$NFC_INFLUXDB_BUCKET/g"  $conf
+    check_errors
     sed -i "s/_NFC_INFLUXDB_ORG_/$NFC_INFLUXDB_ORG/g" $conf
+    check_errors
 
     echo -e "${GRREN}...done!${NC}"
 }
@@ -309,15 +356,19 @@ replace_location_template() {
 
     PWD_ESCP=$(echo $NFC_IP2L_ASN | sed 's_/_\\/_g')
     sed -i "s/_NFC_IP2L_ASN_/$PWD_ESCP/g"  $conf
+    check_errors
 
     PWD_ESCP=$(echo $NFC_IP2L_IP | sed 's_/_\\/_g')
     sed -i "s/_NFC_IP2L_IP_/$PWD_ESCP/g"  $conf
+    check_errors
 
     PWD_ESCP=$(echo $NFC_IP2L_PROXY | sed 's_/_\\/_g')
     sed -i "s/_NFC_IP2L_PROXY_/$PWD_ESCP/g"  $conf
+    check_errors
 
     PWD_ESCP=$(echo $NFC_IP2L_LOCAL | sed 's_/_\\/_g')
     sed -i "s/_NFC_IP2L_LOCAL_/$PWD_ESCP/g"  $conf
+    check_errors
 
 
     echo -e "${GRREN}...done!${NC}"
@@ -385,14 +436,22 @@ cron_jobs() {
     schedule_to=$(echo "0 7 * * * ")
 
     echo "#!/bin/bash" > $sh_path
-    echo "COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}"
+    check_errors
+    echo "COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}" >> $sh_path
+    check_errors
     echo "PROJECT_DIR=${PROJECT_DIR}" >> $sh_path
+    check_errors
     echo $command_to_run >> $sh_path
+    check_errors
     echo "pushd $PROJECT_DIR" >> $sh_path
+    check_errors
     echo "docker-compose restart" >> $sh_path
+    check_errors
     echo "popd" >> $sh_path
+    check_errors
 
     chmod +x -v $sh_path
+    check_errors
 
 
     echo -e "${YELLOW} this command will be added to crontab if not available in 'crontab -l': ${NC}'nfupdater -ipsum'"
@@ -409,7 +468,14 @@ cron_jobs() {
 }
 
 
-
+# error check and stop on error
+check_errors() {
+    e=$?
+    if [ "${e}" -ne "0"]; then
+        echo -e "${RED} [ERROR] Could not continue due to error. Check the above information to solve the issue".
+        exit 1
+    fi
+}
 
 
 # print info about this shell-script
