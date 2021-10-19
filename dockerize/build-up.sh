@@ -164,10 +164,10 @@ get_influx_db_info() {
     CONTAINERID=influxdb_tmp
     echo ""
     echo "Stop & remove container $CONTAINERID, if available..."
-    docker stop $CONTAINERID > /dev/null 2>&1
-    docker container rm $CONTAINERID > /dev/null 2>&1
+    docker stop $CONTAINERID > /dev/null
+    docker container rm $CONTAINERID > /dev/null
 
-    docker network create --driver bridge tick-graf > /dev/null 2>&1
+    docker network create --driver bridge tick-graf > /dev/null
 
     echo -e "${GREEN}...done!${NC}"
 
