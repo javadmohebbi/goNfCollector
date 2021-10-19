@@ -176,7 +176,7 @@ get_influx_db_info() {
     echo -e "${YELLOW} Staring temporary InfluxDB container ($CONTAINERID)...${NC}"
     # create influxdb tmp image
     CMD_TO_RUN_INF_DB_TMP="docker run -d -v $INFLUX_DIR:/var/lib/influxdb2 --name $CONTAINERID influxdb:2.0.7"
-    echo -e "${YELLOW} ${CMD_TO_RUN_INF_DB_TMP}"
+    echo -e "${YELLOW} ${CMD_TO_RUN_INF_DB_TMP} ${NC}"
     docker run -d -v $INFLUX_DIR:/var/lib/influxdb2 --name $CONTAINERID influxdb:2.0.7
     check_errors
     echo -e "${GREEN}...done!${NC}"
