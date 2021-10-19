@@ -158,7 +158,7 @@ get_influx_db_info() {
     docker run -d \
     -v $INFLUX_DIR:/var/lib/influxdb2 \
     --name $CONTAINERID \
-    influxdb:2  > /dev/null 2>&1
+    influxdb:2
     echo -e "${GREEN}...done!${NC}"
 
     # NFC_INFLUXDB_TOKEN=`echo $CONTAINERID$(date)$USER | base64 -w 0`
