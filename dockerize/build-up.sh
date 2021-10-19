@@ -169,6 +169,11 @@ get_influx_db_info() {
     echo ""
     echo -e "${YELLOW} Waiting for InfluxDB (${CONTAINERID}) to be ready...!${NC}"
     docker exec -it $CONTAINERID wget http://localhost:8086 > /dev/null
+
+    until [ "`docker inspect -f {{.State.Running}} $CONTAINERID`"=="true" ]; do
+        sleep 0.1;
+    done;
+
     echo -e "${GREEN}...done!${NC}"
 
     echo ""
