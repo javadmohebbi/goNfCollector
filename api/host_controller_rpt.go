@@ -73,11 +73,12 @@ func (api *APIServer) _hostRptWhenSrcOrDst(host, interval, top, direction string
 		opos_dir = "dst"
 	} else {
 		opos_dir = "src"
+		direction = "dst"
 	}
 
 	strQuery := `
 		SELECT
-			` + direction + `_host_id as host_id,
+			` + opos_dir + `_host_id as host_id,
 			hosts.host as host,
 			hosts.info as host_info,
 			sum(flows.byte) as total_bytes,
@@ -87,12 +88,12 @@ func (api *APIServer) _hostRptWhenSrcOrDst(host, interval, top, direction string
 		JOIN
 			hosts
 		ON
-			hosts.id = dst_host_id
+			hosts.id = flows.` + opos_dir + `_host_id
 		WHERE
 			flows.created_at > NOW() - INTERVAL '` + interval + `'
-			AND flows.` + opos_dir + `_host_id = '` + fmt.Sprintf("%v", hostID) + `'
+			AND flows.` + direction + `_host_id = '` + fmt.Sprintf("%v", hostID) + `'
 		GROUP BY
-			` + direction + `_host_id, hosts.host, hosts.info
+			` + opos_dir + `_host_id, hosts.host, hosts.info
 		ORDER BY
 			total_bytes desc
 		LIMIT ` + top + `

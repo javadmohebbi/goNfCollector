@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { HostsGetTopByDeviceByInterval } from '../../../services/hosts';
 
 
 import Chart from "react-apexcharts";
 import { Card, CardContent, Typography } from '@material-ui/core';
 
 import humanFormat from 'human-format'
+import { HostsAsSrcOrDstReportByInterval } from '../../services/hosts';
 
 const controller = new AbortController()
 const signal = controller.signal
@@ -18,11 +18,13 @@ const TopHostWhenSrcOrDst = (
         interval = '15m',
         refresh = false,
 
-        deviceId,
+        host = 'uknown',
         direction = 'src',
         top = 15,
 
         busy = false,
+
+        widgetTitle = ''
     }
 ) => {
 
@@ -44,13 +46,14 @@ const TopHostWhenSrcOrDst = (
 
 
         controller.abort()
-        HostsGetTopByDeviceByInterval({ top, deviceId, direction, interval, signal }).then(async (json) => {
+        HostsAsSrcOrDstReportByInterval({ host, top, direction, interval, signal }).then(async (json) => {
             if (json.error) {
                 setFetchError(true)
             } else {
                 const resp = await json.response.then((result) => result);
+                console.log(resp);
                 if (resp !== null) {
-                    setResult(resp)
+                    setResult(resp.hosts.list)
                 } else {
                     setResult([])
                 }
@@ -138,7 +141,7 @@ const TopHostWhenSrcOrDst = (
 
 
                     <Typography>
-                        TOP {top} {direction === 'src' ? 'Source' : 'Destination'} Host
+                        {widgetTitle}
                     </Typography>
 
                     {

@@ -14,6 +14,7 @@ import RefreshIcon from '@material-ui/icons/Refresh'
 
 import BackButton from '../../widgets/BackButton';
 import HostReportThreatComponent from './HostReportThreat';
+import TopHostWhenSrcOrDst from './TopHostWhenSrcOrDst';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -149,6 +150,31 @@ function HostReport({ pageTitle = "Host Report", reportName = '' }) {
                             host={host}
                         />
 
+                    </Grid>
+
+                    <Grid item xs={12} md={6}>
+                        <TopHostWhenSrcOrDst
+                            widgetTitle={`Top hosts when src is: ${host} `}
+                            refresh={refresh}
+                            interval={timeRange}
+                            busy={busy}
+                            handleParentBusyState={handleBusyState}
+                            handleParentRefreshState={handleRefreshChange}
+                            host={host}
+                            direction="src"
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <TopHostWhenSrcOrDst
+                            widgetTitle={`Top host when dst is: ${host} `}
+                            refresh={refresh}
+                            interval={timeRange}
+                            busy={busy}
+                            handleParentBusyState={handleBusyState}
+                            handleParentRefreshState={handleRefreshChange}
+                            host={host}
+                            direction="dst"
+                        />
                     </Grid>
                 </Grid>
             </div>

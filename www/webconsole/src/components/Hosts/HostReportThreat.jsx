@@ -95,7 +95,7 @@ const HostReportThreatComponent = ({
                 setFetchError(true)
             } else {
                 const resp = await json.response.then((result) => result);
-                console.log(resp);
+                // console.log(resp);
                 if (resp.threats.list !== null) {
                     setHostThreats(resp.threats.list)
                 } else {
