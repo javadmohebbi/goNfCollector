@@ -1,0 +1,1 @@
+export { GetEthernetSummaryByDeviceByInterval as EthernetsGetSummaryByDeviceByInterval } from './getEthernetSummary'

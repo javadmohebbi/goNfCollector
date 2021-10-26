@@ -1,0 +1,1 @@
+export { GetTopPortByDeviceByInterval as PortsGetTopByDeviceByInterval } from './getTopPortByDevice'

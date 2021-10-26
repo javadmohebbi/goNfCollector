@@ -16,7 +16,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
 
 // postgres database struct to
@@ -159,7 +158,7 @@ func New(host, user, pass, db string, ipReputationConf configurations.IpReputati
 	)
 
 	pg_db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
-		Logger:          logger.Default.LogMode(logger.Silent),
+		// Logger:          logger.Default.LogMode(logger.Silent),
 		CreateBatchSize: 1000,
 	})
 

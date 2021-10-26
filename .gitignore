@@ -18,12 +18,12 @@ cmd/tsht**
 **/pgsql**
 
 
-api/
-cmd/api/
+#api/
+#cmd/api/
 
 
-www/**
+#www/**
 **/node_modules
-packages.json
-package-lock.json
+#packages.json
+#package-lock.json
 cmd/collector/err.log

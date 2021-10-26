@@ -1,0 +1,1 @@
+export { GetTopCountriesByDeviceByInterval as GeosGetTopByDeviceByInterval } from './getTopCountriesByDevice'
