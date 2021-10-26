@@ -22,6 +22,6 @@ func (api *APIServer) hostRoutes(r *mux.Router) {
 	r.HandleFunc("/report/{host}/top/{top}/interval/{interval}", api.getHostReport).Methods(http.MethodOptions, http.MethodGet)
 
 	// get host report only when SOURCE OR DESTINATION report based on interval
-	r.HandleFunc("/report/{host}/as/src/top/{top}/direction/{direction}/interval/{interval}", api.getHostReportWhenSrcOrDst).Methods(http.MethodOptions, http.MethodGet)
+	r.HandleFunc("/report/{host}/as/{direction}/top/{top}/interval/{interval}", api.getHostReportWhenSrcOrDst).Methods(http.MethodOptions, http.MethodGet)
 
 }
