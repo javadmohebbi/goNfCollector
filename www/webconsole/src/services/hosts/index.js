@@ -1,2 +1,3 @@
 export { GetTopHostByDeviceByInterval as HostsGetTopByDeviceByInterval } from './getTopHostByDevice'
-export { ReportHostByInterval as HostsReportByInterval } from './reportHostByInterval'
+export { ReportHostThreatByInterval as HostsThreatReportByInterval } from './reportHostThreatByInterval'
+export { ReportHostAsSrcOrDst as HostsAsSrcOrDstReportByInterval } from './reportHostAsSrcOrDst'
