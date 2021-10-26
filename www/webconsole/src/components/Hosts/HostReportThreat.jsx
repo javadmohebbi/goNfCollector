@@ -6,7 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Paper } from '@material-ui/core';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { HostsReportByInterval } from '../../services/hosts';
+import { HostsThreatReportByInterval } from '../../services/hosts';
 import Alert from '@material-ui/lab/Alert';
 import WidgetDataTableComponent from '../../widgets/DataTable';
 import { Typography } from '@material-ui/core';
@@ -90,7 +90,7 @@ const HostReportThreatComponent = ({
 
         controller.abort()
 
-        HostsReportByInterval({ interval, host, signal }).then(async (json) => {
+        HostsThreatReportByInterval({ interval, host, signal }).then(async (json) => {
             if (json.error) {
                 setFetchError(true)
             } else {

@@ -1,7 +1,7 @@
 import { UtlHttpRequest } from '../utils';
 
 
-export const ReportHostByInterval = ({
+export const ReportHostThreatByInterval = ({
     host = 'uknown',
     top = 15,
     direction = 'src',
