@@ -18,3 +18,12 @@ type HostRPTThreatsResult struct {
 	UpdatedAt           time.Time `json:"updated_at" gorm:"updated_at"`
 	CreatedAt           time.Time `json:"created_at" gorm:"created_at"`
 }
+
+// host when src
+type HostRPTWhenSrcOrDstResult struct {
+	HostID       uint   `json:"host_id" gorm:"host_id"`
+	Host         string `json:"host" gorm:"host"`
+	HostInfo     string `json:"host_info" gorm:"host_info"`
+	TotalBytes   uint   `json:"total_bytes" gorm:"total_bytes"`
+	TotalPackets uint   `json:"total_packets" gorm:"total_packets"`
+}

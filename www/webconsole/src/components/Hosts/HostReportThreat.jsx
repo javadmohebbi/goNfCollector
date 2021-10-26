@@ -18,7 +18,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import moment from "moment";
 import ThreatLevelWidget from '../../widgets/ThreatLevel';
-import ThreatUserAckWidget from '../../widgets/ThreatUserAck';
+
 
 
 const useStyles = makeStyles((theme) => ({

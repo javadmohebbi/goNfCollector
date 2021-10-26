@@ -48,3 +48,57 @@ func (api *APIServer) _hostRptThreats(host, interval string, hostID uint) []*Hos
 
 	return result
 }
+
+// get report about host when seen as SOURCE or DESTINATION
+func (api *APIServer) hostRptWhenSrcOrDst(host, interval, top, direction string, hostID uint) interface{} {
+
+	type Result struct {
+		WhenSrc []*HostRPTWhenSrcOrDstResult `json:"list"`
+	}
+	var result Result
+
+	// threats
+	result.WhenSrc = api._hostRptWhenSrcOrDst(host, interval, top, direction, hostID)
+
+	return result
+}
+
+// get report about host when seen as SOURCE or DESTINATION
+func (api *APIServer) _hostRptWhenSrcOrDst(host, interval, top, direction string, hostID uint) []*HostRPTWhenSrcOrDstResult {
+
+	var result []*HostRPTWhenSrcOrDstResult
+
+	opos_dir := "dst"
+	if direction == "src" {
+		opos_dir = "dst"
+	} else {
+		opos_dir = "src"
+	}
+
+	strQuery := `
+		SELECT
+			` + direction + `_host_id as host_id,
+			hosts.host as host,
+			hosts.info as host_info,
+			sum(flows.byte) as total_bytes,
+			sum(flows.packet) as total_packets
+		FROM
+			flows
+		JOIN
+			hosts
+		ON
+			hosts.id = dst_host_id
+		WHERE
+			flows.created_at > NOW() - INTERVAL '` + interval + `'
+			AND flows.` + opos_dir + `_host_id = '` + fmt.Sprintf("%v", hostID) + `'
+		GROUP BY
+			` + direction + `_host_id, hosts.host, hosts.info
+		ORDER BY
+			total_bytes desc
+		LIMIT ` + top + `
+	;`
+
+	api.db.Raw(strQuery).Scan(&result)
+
+	return result
+}
