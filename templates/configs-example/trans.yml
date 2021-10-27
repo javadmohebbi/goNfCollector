@@ -1,0 +1,59 @@
+# # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # #
+# # # #                                 # # # #
+# # # # !!! ONLY FOR NFv9 AND IPFIX !!! # # # #
+# # # #                                 # # # #
+# # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # #
+
+# This app tries to decode netflow packet
+# accoring to RFC5102 You might use another
+# field name in your devices # So, in this file
+# you could defined them in a comma separated
+# values and help Netflow Collector, decode
+# your flow recordset
+
+flowStartSysUpTime: flowStartSysUpTime, flowStartMilliseconds
+flowEndSysUpTime: flowEndSysUpTime, flowEndMilliseconds
+
+# Total number of bytes
+octetDeltaCount: octetDeltaCount, octetTotalCount
+
+# Total Number of packets
+packetDeltaCount: packetDeltaCount, packetTotalCount
+
+# Input interface (SNMP Index)
+ingressInterface: ingressInterface, ingressPhysicalInterface
+
+# Output interface (SNMP Index)
+egressInterface: egressInterface, egressPhysicalInterface
+
+# Next HOP IP address
+ipNextHopIPv4Address: ipNextHopIPv4Address
+
+# Source IP
+sourceIPv4Address: sourceIPv4Address
+
+# Destination IP
+destinationIPv4Address: destinationIPv4Address
+
+# Protocol ID
+protocolIdentifier: protocolIdentifier
+
+# Source Port
+sourceTransportPort: sourceTransportPort
+
+# Destination Port
+destinationTransportPort: destinationTransportPort
+
+# TCP Control bits
+tcpControlBits: tcpControlBits
+
+# Flow Direction
+flowDirection: flowDirection
+
+# Destination IPv4 Prefix Length
+destinationIPv4PrefixLength: destinationIPv4PrefixLength
+
+# Source IPv4 Prefix Length
+sourceIPv4PrefixLength: sourceIPv4PrefixLength
