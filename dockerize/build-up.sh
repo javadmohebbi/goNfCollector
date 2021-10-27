@@ -102,6 +102,9 @@ download_latest_version() {
     wget -O $PROJECT_DIR/etc/ip2location.yml https://download.openintelligence24.com/nf/etc/nfloc-bash.yml?rnd=$RAND_STR
     check_errors
 
+    wget -O $PROJECT_DIR/etc/trans.yml https://download.openintelligence24.com/nf/etc/trans.yml?rnd=$RAND_STR
+    check_errors
+
 
     echo "COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}" > $PROJECT_DIR/.env
 
