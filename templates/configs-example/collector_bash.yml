@@ -1,7 +1,7 @@
 # Collector Configurations
 
 # Debug mode
-debug: false
+debug: true
 
 # LogFile
 logFile: _LOG_PATH_
