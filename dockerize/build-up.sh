@@ -49,10 +49,24 @@ export NFC_INFLUXDB_TOKEN="5vqt0q0b4g_lZwNgp7-8GgPq5Nxf3YY37xbVZP_ypeK_G3dwdNlTr
 export NFC_INFLUXDB_BUCKET="nfCollector"
 export NFC_INFLUXDB_ORG="OPENINTELLIGENCE"
 export NFC_IP_REPTATION_IPSUM="$PROJECT_DIR/vendors/ipsum/ipsum.txt"
+# added in v0.0.1-30b for replacing config in dockerize deployment automaticaly
+export REPLACING_NFC_IP_REPTATION_IPSUM="/opt/nfcollector/vendors/ipsum/ipsum.txt"
+
 export NFC_IP2L_ASN="$PROJECT_DIR/vendors/ip2location/db/IP2LOCATION-LITE-ASN.IPV6.CSV/IP2LOCATION-LITE-ASN.IPV6.CSV"
+# added in v0.0.1-30b for replacing config in dockerize deployment automaticaly
+export REPLACING_NFC_IP2L_ASN="/opt/nfcollector/vendors/ip2location/db/IP2LOCATION-LITE-ASN.IPV6.CSV/IP2LOCATION-LITE-ASN.IPV6.CSV"
+
 export NFC_IP2L_IP="$PROJECT_DIR/vendors/ip2location/db/IP2LOCATION-LITE-DB11.IPV6.BIN/IP2LOCATION-LITE-DB11.IPV6.BIN"
+# added in v0.0.1-30b for replacing config in dockerize deployment automaticaly
+export REPLACING_NFC_IP2L_IP="/opt/nfcollector/vendors/ip2location/db/IP2LOCATION-LITE-DB11.IPV6.BIN/IP2LOCATION-LITE-DB11.IPV6.BIN"
+
 export NFC_IP2L_PROXY="$PROJECT_DIR/vendors/ip2location/db/IP2PROXY-LITE-PX10.IPV6.CSV/IP2PROXY-LITE-PX10.IPV6.CSV"
+# added in v0.0.1-30b for replacing config in dockerize deployment automaticaly
+export REPLACING_NFC_IP2L_PROXY="/opt/nfcollector/vendors/ip2location/db/IP2PROXY-LITE-PX10.IPV6.CSV/IP2PROXY-LITE-PX10.IPV6.CSV"
+
 export NFC_IP2L_LOCAL="$PROJECT_DIR/vendors/ip2location/local-db/local.csv"
+# added in v0.0.1-30b for replacing config in dockerize deployment automaticaly
+export REPLACING_NFC_IP2L_LOCAL="/opt/nfcollector/vendors/ip2location/local-db/local.csv"
 
 
 # InfluxDB DIR
@@ -318,7 +332,7 @@ replace_collector_template() {
     echo ""
     echo -e "${YELLOW} Preparing ${conf} file...${NC}"
 
-    PWD_ESCP=$(echo ${PROJECT_DIR}/collector.log | sed 's_/_\\/_g')
+    PWD_ESCP=$(echo "/opt/nfcollector/var/collector.log" | sed 's_/_\\/_g')
     sed -i "s/_LOG_PATH_/$PWD_ESCP/g"  $conf
     check_errors
 
@@ -331,7 +345,10 @@ replace_collector_template() {
     sed -i "s/_NFC_LISTEN_PORT_/$NFC_LISTEN_PORT/g"  $conf
     check_errors
 
-    PWD_ESCP=$(echo ${NFC_IP_REPTATION_IPSUM} | sed 's_/_\\/_g')
+
+    # changed in v0.0.1-b30
+    #PWD_ESCP=$(echo ${NFC_IP_REPTATION_IPSUM} | sed 's_/_\\/_g')
+    PWD_ESCP=$(echo ${REPLACING_NFC_IP_REPTATION_IPSUM} | sed 's_/_\\/_g')
     sed -i "s/_NFC_IP_REPTATION_IPSUM_/$PWD_ESCP/g" $conf
     check_errors
 
@@ -357,19 +374,27 @@ replace_location_template() {
     echo ""
     echo -e "${YELLOW} Preparing ${conf} file...${NC}"
 
-    PWD_ESCP=$(echo $NFC_IP2L_ASN | sed 's_/_\\/_g')
+    # changed in v0.0.1-b30
+    #PWD_ESCP=$(echo $NFC_IP2L_ASN | sed 's_/_\\/_g')
+    PWD_ESCP=$(echo $REPLACING_NFC_IP2L_ASN | sed 's_/_\\/_g')
     sed -i "s/_NFC_IP2L_ASN_/$PWD_ESCP/g"  $conf
     check_errors
 
-    PWD_ESCP=$(echo $NFC_IP2L_IP | sed 's_/_\\/_g')
+    # changed in v0.0.1-b30
+    # PWD_ESCP=$(echo $NFC_IP2L_IP | sed 's_/_\\/_g')
+    PWD_ESCP=$(echo $REPLACING_NFC_IP2L_IP | sed 's_/_\\/_g')
     sed -i "s/_NFC_IP2L_IP_/$PWD_ESCP/g"  $conf
     check_errors
 
-    PWD_ESCP=$(echo $NFC_IP2L_PROXY | sed 's_/_\\/_g')
+    # changed in v0.0.1-b30
+    # PWD_ESCP=$(echo $NFC_IP2L_PROXY | sed 's_/_\\/_g')
+    PWD_ESCP=$(echo $REPLACING_NFC_IP2L_PROXY | sed 's_/_\\/_g')
     sed -i "s/_NFC_IP2L_PROXY_/$PWD_ESCP/g"  $conf
     check_errors
 
-    PWD_ESCP=$(echo $NFC_IP2L_LOCAL | sed 's_/_\\/_g')
+    # changed in v0.0.1-b30
+    # PWD_ESCP=$(echo $NFC_IP2L_LOCAL | sed 's_/_\\/_g')
+    PWD_ESCP=$(echo $REPLACING_NFC_IP2L_LOCAL | sed 's_/_\\/_g')
     sed -i "s/_NFC_IP2L_LOCAL_/$PWD_ESCP/g"  $conf
     check_errors
 
