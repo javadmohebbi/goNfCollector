@@ -26,7 +26,7 @@ func main() {
 	// runtime.GOMAXPROCS(runtime.NumCPU())
 
 	// conf file path
-	confFilePath := flag.String("confPath", "/opt/oi24/netflow-collector/etc/", "Path to conf directory. (trailing slash is needed!)")
+	confFilePath := flag.String("confPath", "/opt/nfcollector/etc/", "Path to conf directory. (trailing slash is needed!)")
 
 	// listen address
 	addr := flag.String("address", "0.0.0.0", "Collector listen address")
