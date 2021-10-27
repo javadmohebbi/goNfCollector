@@ -7,6 +7,13 @@
 # Check more about it's usage at: https://github.com/javadmohebbi/goNfCollector
 
 
+# The version: v0.0.1-30b
+# BETA VERSION
+# Author: M. Javad Mohebi
+# Github: https://github.com/javadmohebbi
+# Dockerhub: https://hub.docker.com/u/javadmohebbi
+# Website: https://openintelligence24.com
+
 
 
 # change the color of echo output
