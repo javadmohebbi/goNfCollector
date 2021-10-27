@@ -53,7 +53,11 @@ const TopHostWhenSrcOrDst = (
                 const resp = await json.response.then((result) => result);
                 console.log(resp);
                 if (resp !== null) {
-                    setResult(resp.hosts.list)
+                    if (resp.hosts.list === null) {
+                        setResult([])
+                    } else {
+                        setResult(resp.hosts.list)
+                    }
                 } else {
                     setResult([])
                 }
