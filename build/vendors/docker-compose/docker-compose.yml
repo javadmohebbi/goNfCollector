@@ -25,7 +25,7 @@ services:
     # Grafna
     grafana:
 
-        image: grafana/grafana
+        image: grafana/grafana:7.5.0-ubuntu
 
         restart: always
 
