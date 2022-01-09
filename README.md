@@ -31,7 +31,7 @@ docker build --pull --rm -f "DockerFile" -t gonfcollector:beta "."
 
 
 # Go Netflow Collector (goNfCollector)
-This repo will help you collect **Netflow** (version 1,5,6,7,9 and IPFIX) from network devices. It stores all the required information needed for further analysis in **InfluxDB** and visualize them using **Grafna**.
+This repo will help you collect **Netflow** (version 1,5,6,7,9 and IPFIX) from network devices. It stores all the required information needed for further analysis in **InfluxDB** and visualize them using **Grafana**.
 
 Currently we are using InfluxDB v2+ for stroring data. If You need older version, you can see [this repository](https://github.com/javadmohebbi/nfCollector).
 
