@@ -18,4 +18,6 @@ func (api *APIServer) portRoutes(r *mux.Router) {
 	// top ports base on an intervals like 1m, 2h ...
 	r.HandleFunc("/get/top/{top}/device/{deviceID}/direction/{direction}/interval/{interval}", api.getTopPortsByDeviceByInterval).Methods(http.MethodOptions, http.MethodGet)
 
+	// get port report only when SOURCE OF DESTINATION report based on interval
+	r.HandleFunc("/report/{host}/as/{direction}/top/{top}/interval/{interval}", api.getPortReportWhenHostSrcOrDst).Methods(http.MethodOptions, http.MethodGet)
 }
