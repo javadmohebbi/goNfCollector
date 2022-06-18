@@ -1,13 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
-
-
-
 import Chart from "react-apexcharts";
 import { Card, CardContent, Typography } from '@material-ui/core';
 
 import humanFormat from 'human-format'
-import { PortsGetTopByHost } from '../../services/ports';
-
+import { ProtocolGetTopByHost } from '../../services/protocols';
 
 
 
@@ -15,12 +11,13 @@ const controller = new AbortController()
 const signal = controller.signal
 
 
-const TopSrcOrDstPortsByHost = (
+const TopSrcDstProtoByHost = (
     {
         handleParentBusyState = () => { return },
         handleParentRefreshState = () => { return },
         interval = '15m',
         refresh = false,
+
 
         host = 'uknown',
         direction = 'src',
@@ -41,7 +38,7 @@ const TopSrcOrDstPortsByHost = (
     // eslint-disable-next-line
     const [fetchError, setFetchError] = useState(false)
 
-    const getTopPortsCallback = useCallback(() => {
+    const getTopProtocolsCallback = useCallback(() => {
 
         handleParentBusyState(true)
         handleParentRefreshState(false)
@@ -50,16 +47,17 @@ const TopSrcOrDstPortsByHost = (
 
 
         controller.abort()
-        PortsGetTopByHost({ host, top, direction, interval, signal }).then(async (json) => {
+        ProtocolGetTopByHost({ host, top, direction, interval, signal }).then(async (json) => {
             if (json.error) {
                 setFetchError(true)
             } else {
                 const resp = await json.response.then((result) => result);
+                console.log(resp);
                 if (resp !== null) {
-                    if (resp.ports.list === null) {
+                    if (resp.protocols.list === null) {
                         setResult([])
                     } else {
-                        setResult(resp.ports.list)
+                        setResult(resp.protocols.list)
                     }
                 } else {
                     setResult([])
@@ -77,13 +75,13 @@ const TopSrcOrDstPortsByHost = (
 
     useEffect(() => {
         if (refresh) {
-            getTopPortsCallback()
+            getTopProtocolsCallback()
         }
-    }, [refresh, getTopPortsCallback])
+    }, [refresh, getTopProtocolsCallback])
 
     useEffect(() => {
-        getTopPortsCallback()
-    }, [interval, getTopPortsCallback])
+        getTopProtocolsCallback()
+    }, [interval, getTopProtocolsCallback])
 
 
 
@@ -94,7 +92,7 @@ const TopSrcOrDstPortsByHost = (
                 mode: 'dark',
             },
             chartOptions: {
-                labels: result.map((r) => r.port_name)
+                labels: result.map((r) => r.protocol_name)
             },
             legend: {
                 position: 'bottom',
@@ -128,11 +126,11 @@ const TopSrcOrDstPortsByHost = (
                     // result.forEach((r) => sum += r.total_bytes)
                     // console.log(val, sum);
                     const v = result[seriesIndex].total_bytes
-                    const l = result[seriesIndex].port_name
+                    const l = result[seriesIndex].protocol_name
                     return l + '(' + humanFormat(v, { unit: 'B' }) + ')'
                 }
             },
-            labels: result.map((r) => r.port_name.toLowerCase() !== r.port_proto.toLowerCase() ? `${r.port_name} (${r.port_proto})` : r.port_name),
+            labels: result.map((r) => r.protocol_name),
             series: result.map((r) => r.total_bytes),
         }
         setChartData(newChartData)
@@ -144,6 +142,7 @@ const TopSrcOrDstPortsByHost = (
         <div>
             <Card variant="outlined">
                 <CardContent>
+
                     <Typography>
                         {widgetTitle}
                     </Typography>
@@ -155,6 +154,7 @@ const TopSrcOrDstPortsByHost = (
                                 options={chartData}
                                 series={chartData.series || []}
                                 type="donut"
+
                                 height="500"
                             />
                             :
@@ -167,4 +167,4 @@ const TopSrcOrDstPortsByHost = (
     );
 }
 
-export default TopSrcOrDstPortsByHost;
+export default TopSrcDstProtoByHost;

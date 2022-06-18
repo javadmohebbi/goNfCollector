@@ -16,6 +16,7 @@ import BackButton from '../../widgets/BackButton';
 import HostReportThreatComponent from './HostReportThreat';
 import TopHostWhenSrcOrDst from './TopHostWhenSrcOrDst';
 import TopSrcOrDstPortsByHost from './SrcDstPortsByHost';
+import TopSrcDstProtoByHost from './TopSrcDstProtocolByHost';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -181,7 +182,7 @@ function HostReport({ pageTitle = "Host Report", reportName = '' }) {
 
                     <Grid item xs={12} md={6}>
                         <TopSrcOrDstPortsByHost
-                            widgetTitle={`Top hosts when src is: ${host} `}
+                            widgetTitle={`Top src ports when host is: ${host} `}
                             refresh={refresh}
                             interval={timeRange}
                             busy={busy}
@@ -193,7 +194,32 @@ function HostReport({ pageTitle = "Host Report", reportName = '' }) {
                     </Grid>
                     <Grid item xs={12} md={6}>
                         <TopSrcOrDstPortsByHost
-                            widgetTitle={`Top host when dst is: ${host} `}
+                            widgetTitle={`Top dst ports when host is: ${host} `}
+                            refresh={refresh}
+                            interval={timeRange}
+                            busy={busy}
+                            handleParentBusyState={handleBusyState}
+                            handleParentRefreshState={handleRefreshChange}
+                            host={host}
+                            direction="dst"
+                        />
+                    </Grid>
+
+                    <Grid item xs={12} md={6}>
+                        <TopSrcDstProtoByHost
+                            widgetTitle={`Top src protocols when host is: ${host} `}
+                            refresh={refresh}
+                            interval={timeRange}
+                            busy={busy}
+                            handleParentBusyState={handleBusyState}
+                            handleParentRefreshState={handleRefreshChange}
+                            host={host}
+                            direction="src"
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <TopSrcDstProtoByHost
+                            widgetTitle={`Top dst protocols when host is: ${host} `}
                             refresh={refresh}
                             interval={timeRange}
                             busy={busy}
