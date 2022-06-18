@@ -11,6 +11,7 @@ import { useLocation } from 'react-router-dom'
 
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import RouterIcon from '@material-ui/icons/Router';
+// eslint-disable-next-line
 import ViewListIcon from '@material-ui/icons/ViewList';
 import ComputerIcon from '@material-ui/icons/Computer';
 import WebIcon from '@material-ui/icons/Web';
@@ -55,7 +56,7 @@ const DrawerLayout = (props) => {
                         {[
                             { name: 'Dashboard', Icon: () => (<DashboardIcon />), to: '/dashboard' },
                             { name: 'Managed Devices', Icon: () => (<RouterIcon />), to: '/devices' },
-                            { name: 'Raw Filter', Icon: () => (<ViewListIcon />), to: '/raw/filter' },
+                            // { name: 'Raw Filter', Icon: () => (<ViewListIcon />), to: '/raw/filter' },
                         ].map((item, index) => (
                             <ListItem selected={location.pathname === item.to} component={Link} to={item.to} button key={item.name}>
                                 <ListItemIcon>{<item.Icon />}</ListItemIcon>
