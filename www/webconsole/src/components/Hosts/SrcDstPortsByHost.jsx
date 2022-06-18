@@ -130,7 +130,7 @@ const TopSrcOrDstPortsByHost = (
                     return l + '(' + humanFormat(v, { unit: 'B' }) + ')'
                 }
             },
-            labels: result.map((r) => r.port_name),
+            labels: result.map((r) => r.port_name.toLowerCase() !== r.port_proto.toLowerCase() ? `${r.port_name} (${r.port_proto})` : r.port_name),
             series: result.map((r) => r.total_bytes),
         }
         setChartData(newChartData)
