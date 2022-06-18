@@ -36,6 +36,7 @@ func (api *APIServer) getAllHosts(w http.ResponseWriter, r *http.Request) {
 
 	if strWhere != "" {
 		strQuery += ` WHERE ` + strWhere + `
+		 AND host != '0.0.0.0'
 		`
 	}
 
