@@ -1,7 +1,7 @@
 import { UtlHttpRequest } from '../utils';
 
 
-export const ReportPortWheneHostSrcOrDst = ({
+export const GetTopPortByHost = ({
     host = 'uknown',
     top = 15,
     direction = 'src',
