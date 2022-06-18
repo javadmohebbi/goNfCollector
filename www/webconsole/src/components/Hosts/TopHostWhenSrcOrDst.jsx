@@ -51,7 +51,7 @@ const TopHostWhenSrcOrDst = (
                 setFetchError(true)
             } else {
                 const resp = await json.response.then((result) => result);
-                console.log(resp);
+                // console.log(resp);
                 if (resp !== null) {
                     if (resp.hosts.list === null) {
                         setResult([])
