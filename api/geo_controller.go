@@ -175,3 +175,45 @@ func (api *APIServer) getTopGeoCountryByDeviceByInterval(w http.ResponseWriter, 
 	return
 
 }
+
+// get geo report only when SOURCE OF DESTINATION report based on interval
+func (api *APIServer) getGeoReportWhenHostSrcOrDst(w http.ResponseWriter, r *http.Request) {
+	// add this line for debugging time
+	api.d.Verbose(fmt.Sprintf("URI %v called!", r.URL.RequestURI()), logrus.DebugLevel)
+
+	type Result struct {
+		Geo interface{} `json:"geo"`
+	}
+	var result Result
+
+	// Set header content type to application/json
+	w.Header().Set("Content-Type", "application/json")
+
+	// extract interval
+	interval := common.GetPGInterval(mux.Vars(r)["interval"])
+
+	// extract top
+	top := mux.Vars(r)["top"]
+	if _, err := strconv.Atoi(top); err != nil {
+		top = "10"
+	}
+
+	// extract host
+	host := mux.Vars(r)["host"]
+
+	dir := mux.Vars(r)["direction"]
+	if dir != "src" && dir != "dst" {
+		dir = "dst"
+	}
+
+	// fetch host from db
+	var h model.Host
+	api.db.Model(&model.Host{}).Where("host = ?", host).First(&h)
+
+	// get the report
+	result.Geo = api.geoRptWhenHostSrcOrDst(host, interval, top, dir, h.ID)
+
+	_ = json.NewEncoder(w).Encode(&result)
+	return
+
+}

@@ -17,6 +17,7 @@ import HostReportThreatComponent from './HostReportThreat';
 import TopHostWhenSrcOrDst from './TopHostWhenSrcOrDst';
 import TopSrcOrDstPortsByHost from './SrcDstPortsByHost';
 import TopSrcDstProtoByHost from './TopSrcDstProtocolByHost';
+import TopSrcDstCountryByHost from './TopSrcDstCountryByHost';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -220,6 +221,31 @@ function HostReport({ pageTitle = "Host Report", reportName = '' }) {
                     <Grid item xs={12} md={6}>
                         <TopSrcDstProtoByHost
                             widgetTitle={`Top dst protocols when host is: ${host} `}
+                            refresh={refresh}
+                            interval={timeRange}
+                            busy={busy}
+                            handleParentBusyState={handleBusyState}
+                            handleParentRefreshState={handleRefreshChange}
+                            host={host}
+                            direction="dst"
+                        />
+                    </Grid>
+
+                    <Grid item xs={12} md={6}>
+                        <TopSrcDstCountryByHost
+                            widgetTitle={`Top src Country when host is: ${host} `}
+                            refresh={refresh}
+                            interval={timeRange}
+                            busy={busy}
+                            handleParentBusyState={handleBusyState}
+                            handleParentRefreshState={handleRefreshChange}
+                            host={host}
+                            direction="src"
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <TopSrcDstCountryByHost
+                            widgetTitle={`Top dst Country when host is: ${host} `}
                             refresh={refresh}
                             interval={timeRange}
                             busy={busy}
