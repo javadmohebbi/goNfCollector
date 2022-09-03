@@ -13,6 +13,7 @@ import ThreatsComponent from './components/Threats/Threats'
 
 import MainAdminLayout from './layout/MainAdmin'
 import HostReport from './components/Hosts/HostReport'
+import HostEditComponent from './components/Hosts/HostEdit'
 
 const MainRouter = () => {
     return (
@@ -24,10 +25,11 @@ const MainRouter = () => {
 
                     <Route exact path="/devices" component={ManagedDeviceComponent} name="devices" />
                     <Route exact path="/devices/:device/report" component={MDReport} name="devices_report" />
-                    <Route exact path="/devices/:device/edit" component={MDEditComponent} name="devices_report" />
+                    <Route exact path="/devices/:device/edit" component={MDEditComponent} name="devices_edit" />
 
                     <Route exact path="/hosts" component={HostsComponent} name="hosts" />
                     <Route exact path="/hosts/:host/report" component={HostReport} name="host_report" />
+                    <Route exact path="/hosts/:hostId/:host/edit" component={HostEditComponent} name="host_edit" />
 
                     <Route exact path="/ports" component={PortsComponent} name="ports" />
                     <Route exact path="/protocols" component={ProtocolsComponent} name="protocols" />

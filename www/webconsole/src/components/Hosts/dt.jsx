@@ -54,7 +54,7 @@ const HostsDataTableComponent = ({
                                     component: (btn, row) => (<ReportButton btn={btn} forObj={row.host} />),
                                 },
                                 {
-                                    url: row => `/hosts/${row.host}/edit`,
+                                    url: row => `/hosts/${row.host_id}/${row.host}/edit`,
                                     component: (btn, row) => (<EditButton btn={btn} forObj={row.host} />),
                                 },
                             ]
