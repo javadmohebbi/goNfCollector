@@ -57,7 +57,10 @@ const PortsDataTableComponent = ({
                                 //     component: (btn, row) => (<ReportButton btn={btn} forObj={row.port} />),
                                 // },
                                 {
-                                    url: row => `/ports/${row.port}/edit`,
+                                    url: row => () => {
+                                        const prt = row.port.replace("/", " ");
+                                        return `/ports/${row.port_id}/${prt}/edit`
+                                    },
                                     component: (btn, row) => (<EditButton btn={btn} forObj={row.port} />),
                                 },
                             ]
