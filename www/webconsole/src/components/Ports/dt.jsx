@@ -5,7 +5,9 @@ import WidgetDataTableComponent from '../../widgets/DataTable';
 
 import moment from "moment";
 
+// eslint-disable-next-line
 import ReportButton from '../../widgets/ReportButton';
+
 import EditButton from '../../widgets/EditButton';
 
 
@@ -50,10 +52,10 @@ const PortsDataTableComponent = ({
                         dataType: "actionButton",
                         buttons: {
                             list: [
-                                {
-                                    url: row => `/ports/${row.port}/report`,
-                                    component: (btn, row) => (<ReportButton btn={btn} forObj={row.port} />),
-                                },
+                                // {
+                                //     url: row => `/ports/${row.port}/report`,
+                                //     component: (btn, row) => (<ReportButton btn={btn} forObj={row.port} />),
+                                // },
                                 {
                                     url: row => `/ports/${row.port}/edit`,
                                     component: (btn, row) => (<EditButton btn={btn} forObj={row.port} />),
