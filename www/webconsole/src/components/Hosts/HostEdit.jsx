@@ -175,7 +175,7 @@ const HostEditComponent = (props) => {
                                 id="host"
                                 fullWidth
                                 disabled
-                                label="Device"
+                                label="Host"
                                 variant="filled"
                                 defaultValue={host}
                             />
