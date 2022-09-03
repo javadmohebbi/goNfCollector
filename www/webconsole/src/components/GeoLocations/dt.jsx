@@ -103,19 +103,19 @@ const GeoLocationsDataTableComponent = ({
                     },
                     { key: "updated_at", label: "LastActivity", dataType: 'dateTime', reFormat: (val, row) => moment(val).fromNow() },
 
-                    {
-                        key: "action_button",
-                        label: "Operation",
-                        dataType: "actionButton",
-                        buttons: {
-                            list: [
-                                {
-                                    url: row => `/geos/${row.protocol}/report`,
-                                    component: (btn, row) => (<ReportButton btn={btn} forObj={row.country_long + ' > ' + row.city} />),
-                                },
-                            ]
-                        }
-                    }
+                    // {
+                    //     key: "action_button",
+                    //     label: "Operation",
+                    //     dataType: "actionButton",
+                    //     buttons: {
+                    //         list: [
+                    //             {
+                    //                 url: row => `/geos/${row.geo_id}/report`,
+                    //                 component: (btn, row) => (<ReportButton btn={btn} forObj={row.country_long + ' > ' + row.city} />),
+                    //             },
+                    //         ]
+                    //     }
+                    // }
                 ]}
 
                 handleParentBusyState={handleParentBusyState}
