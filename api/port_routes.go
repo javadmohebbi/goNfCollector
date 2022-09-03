@@ -24,6 +24,6 @@ func (api *APIServer) portRoutes(r *mux.Router) {
 	// get a port by id to update Info in UI
 	r.HandleFunc("/get/by/id/{id}", api.getPortByID).Methods(http.MethodOptions, http.MethodGet)
 
-	// get a port by id to update Info in UI
+	// set a port by id to update Info in UI
 	r.HandleFunc("/set/by/id/{id}", api.setPortByID).Methods(http.MethodOptions, http.MethodPost)
 }
