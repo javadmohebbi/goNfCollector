@@ -56,7 +56,7 @@ const ProtocolsDataTableComponent = ({
                                 //     component: (btn, row) => (<ReportButton btn={btn} forObj={row.protocol} />),
                                 // },
                                 {
-                                    url: row => `/protocols/${row.protocol}/edit`,
+                                    url: row => `/protocols/${row.protocol_id}/${row.protocol}/edit`,
                                     component: (btn, row) => (<EditButton btn={btn} forObj={row.protocol} />),
                                 },
                             ]

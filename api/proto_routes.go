@@ -21,4 +21,9 @@ func (api *APIServer) protoRoutes(r *mux.Router) {
 	// get proto report only when SOURCE OF DESTINATION report based on interval
 	r.HandleFunc("/report/{host}/as/{direction}/top/{top}/interval/{interval}", api.getProtocolReportWhenHostSrcOrDst).Methods(http.MethodOptions, http.MethodGet)
 
+	// get a protocol by id to update Info in UI
+	r.HandleFunc("/get/by/id/{id}", api.getProtocolByID).Methods(http.MethodOptions, http.MethodGet)
+
+	// set a protocol by id to update Info in UI
+	r.HandleFunc("/set/by/id/{id}", api.setProtocolByID).Methods(http.MethodOptions, http.MethodPost)
 }

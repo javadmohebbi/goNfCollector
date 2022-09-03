@@ -205,3 +205,95 @@ func (api *APIServer) getProtocolReportWhenHostSrcOrDst(w http.ResponseWriter, r
 	return
 
 }
+
+// get a proto by id to update Info in UI
+func (api *APIServer) getProtocolByID(w http.ResponseWriter, r *http.Request) {
+	// add this line for debugging time
+	api.d.Verbose(fmt.Sprintf("URI %v called!", r.URL.RequestURI()), logrus.DebugLevel)
+
+	// Set header content type to application/json
+	w.Header().Set("Content-Type", "application/json")
+
+	var obj model.Protocol
+
+	api.db.Model(&model.Protocol{}).
+		Where("id = ?", mux.Vars(r)["id"]).First(&obj)
+
+	if obj.ID == 0 {
+		// not found
+		w.WriteHeader(http.StatusNotFound)
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{
+			"error":   true,
+			"message": "There are no records in the database regarding your request",
+		})
+		return
+	}
+
+	_ = json.NewEncoder(w).Encode(&obj)
+	return
+
+}
+
+// save a proto new values to db
+// by it's Id to update Info in UI side
+func (api *APIServer) setProtocolByID(w http.ResponseWriter, r *http.Request) {
+	// add this line for debugging time
+	api.d.Verbose(fmt.Sprintf("URI %v called!", r.URL.RequestURI()), logrus.DebugLevel)
+
+	// Set header content type to application/json
+	w.Header().Set("Content-Type", "application/json")
+
+	//extract info from json body
+	type JSONBodyReq struct {
+		ID   uint   `json:"id"`
+		Info string `json:"Info"`
+	}
+
+	var jbr JSONBodyReq
+	err := json.NewDecoder(r.Body).Decode(&jbr)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{
+			"result":  true,
+			"message": err,
+		})
+		return
+	}
+
+	var obj model.Protocol
+
+	api.db.Model(&model.Protocol{}).
+		Where("id = ?", mux.Vars(r)["id"]).First(&obj)
+
+	if obj.ID == 0 {
+		// not found
+		w.WriteHeader(http.StatusNotFound)
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{
+			"error":   true,
+			"message": "There are no records in the database regarding your request",
+		})
+		return
+	}
+
+	obj.ID = jbr.ID
+	obj.Info = jbr.Info
+
+	if dbc := api.db.Save(&obj); dbc.Error == nil {
+		// created
+		api.d.Verbose(fmt.Sprint("object updated ", mux.Vars(r)["id"]), logrus.InfoLevel)
+
+	} else {
+		// not created
+		api.d.Verbose(fmt.Sprint("can not update object due to error", dbc.Error), logrus.ErrorLevel)
+		w.WriteHeader(http.StatusInternalServerError)
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{
+			"error":   true,
+			"message": fmt.Sprint("can not update object due to error", dbc.Error),
+		})
+		return
+	}
+
+	_ = json.NewEncoder(w).Encode(&obj)
+	return
+
+}

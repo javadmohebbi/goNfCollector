@@ -15,6 +15,7 @@ import MainAdminLayout from './layout/MainAdmin'
 import HostReport from './components/Hosts/HostReport'
 import HostEditComponent from './components/Hosts/HostEdit'
 import PortEditComponent from './components/Ports/PortEdit'
+import ProtocolEditComponent from './components/Protocols/ProtocolEdit'
 
 const MainRouter = () => {
     return (
@@ -36,6 +37,8 @@ const MainRouter = () => {
                     <Route exact path="/ports/:portId/:port/edit" component={PortEditComponent} name="port_edit" />
 
                     <Route exact path="/protocols" component={ProtocolsComponent} name="protocols" />
+                    <Route exact path="/protocols/:protoId/:protocol/edit" component={ProtocolEditComponent} name="proto_edit" />
+
                     <Route exact path="/geos" component={GeoLocationsComponent} name="geos" />
 
                     <Route exact path="/threats" component={ThreatsComponent} name="threats" />
