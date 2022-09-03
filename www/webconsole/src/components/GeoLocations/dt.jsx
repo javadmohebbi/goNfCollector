@@ -5,7 +5,10 @@ import WidgetDataTableComponent from '../../widgets/DataTable';
 
 import moment from "moment";
 import ReactCountryFlag from "react-country-flag"
+
+// eslint-disable-next-line
 import ReportButton from '../../widgets/ReportButton';
+
 import { Grid } from '@material-ui/core';
 import MapButton from '../../widgets/MapButton';
 import Modal from 'react-modal';
