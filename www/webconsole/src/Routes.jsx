@@ -16,6 +16,7 @@ import HostReport from './components/Hosts/HostReport'
 import HostEditComponent from './components/Hosts/HostEdit'
 import PortEditComponent from './components/Ports/PortEdit'
 import ProtocolEditComponent from './components/Protocols/ProtocolEdit'
+import SettingsComponent from './components/Setting/Settings'
 
 const MainRouter = () => {
     return (
@@ -43,6 +44,9 @@ const MainRouter = () => {
 
                     <Route exact path="/threats" component={ThreatsComponent} name="threats" />
                     <Route exact path="/threats/:host/report" component={HostReport} name="threat_host_report" />
+
+                    {/* Settings */}
+                    <Route exact path="/settings" component={SettingsComponent} name="settings" />
                 </Switch>
             </MainAdminLayout>
         </Router>

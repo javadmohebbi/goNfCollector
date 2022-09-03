@@ -9,6 +9,7 @@ import Button from '@material-ui/core/Button';
 
 
 import DrawerLayout from './Drawer'
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -45,7 +46,7 @@ const AppBarLayout = () => {
                     <Typography variant="h6" className={classes.title}>
                         Netflow Analyzer
                     </Typography>
-                    <Button color="inherit">Settings</Button>
+                    <Button color="inherit" component={Link} to="/settings">Settings</Button>
                 </Toolbar>
 
                 <DrawerLayout drawerOpen={isDrawerOpen} onCloseDrawer={handleDrawerOpenToggle} />
