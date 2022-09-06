@@ -9,6 +9,8 @@ import (
 	"syscall"
 	"time"
 
+	socketio "github.com/googollee/go-socket.io"
+
 	"github.com/goNfCollector/configurations"
 	"github.com/goNfCollector/database"
 	"github.com/goNfCollector/debugger"
@@ -65,6 +67,8 @@ type APIServer struct {
 
 	// httpServer
 	httpSrv *http.Server
+
+	apiSocketServer *socketio.Server
 }
 
 // Create new HTTP server
@@ -239,6 +243,8 @@ func (api *APIServer) Serve() {
 		rw.Write([]byte("This is Netflow Collector API. For more information visit: https://openintelligence24.com"))
 		return
 	})
+
+	// SOCKET_IO
 
 	// routes for devices
 	dr := apiRoutes.PathPrefix("/device").Subrouter()

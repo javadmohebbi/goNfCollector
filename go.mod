@@ -6,6 +6,7 @@ require (
 	github.com/ammario/ipisp v1.0.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dustin/go-humanize v1.0.0
+	github.com/googollee/go-socket.io v1.6.2
 	github.com/gookit/color v1.3.8
 	github.com/gorilla/context v1.1.1
 	github.com/gorilla/mux v1.7.3

@@ -25,6 +25,7 @@
     "react-leaflet": "^3.1.0",
     "react-modal": "^3.14.3",
     "react-scripts": "4.0.3",
+    "use-socket.io-client": "^1.1.0",
     "web-vitals": "^1.1.2"
   },
   "scripts": {
