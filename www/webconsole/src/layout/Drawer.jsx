@@ -78,7 +78,7 @@ const DrawerLayout = (props) => {
                             { name: 'Hosts', Icon: () => (<ComputerIcon />), to: '/hosts' },
                             { name: 'Ports', Icon: () => (<WebIcon />), to: '/ports' },
                             { name: 'Protocols', Icon: () => (<WebIcon />), to: '/protocols' },
-                            { name: 'Geo Locations', Icon: () => (<MapIcon />), to: '/geos' },
+                            // { name: 'Geo Locations', Icon: () => (<MapIcon />), to: '/geos' },
                             { name: 'Threats', Icon: () => (<WarningIcon />), to: '/threats' },
                         ].map((item, index) => (
                             <ListItem selected={location.pathname === item.to} component={Link} to={item.to} button key={item.name}>
