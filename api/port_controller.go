@@ -119,6 +119,7 @@ func (api *APIServer) getTopPortsByDeviceByInterval(w http.ResponseWriter, r *ht
 	type Result struct {
 		PortID   uint   `json:"port_id"`
 		PortName string `json:"port_name"`
+		Info     string `json:"info"`
 
 		PortProto string `json:"port_proto"`
 
@@ -153,6 +154,7 @@ func (api *APIServer) getTopPortsByDeviceByInterval(w http.ResponseWriter, r *ht
 			` + dir + `_port_id as port_id,
 			ports.port_name,
 			ports.port_proto,
+			ports.info,
 			sum(flows.byte) as total_bytes,
 			sum(flows.packet) as total_packets
 		FROM
@@ -165,7 +167,7 @@ func (api *APIServer) getTopPortsByDeviceByInterval(w http.ResponseWriter, r *ht
 			flows.created_at > NOW() - INTERVAL '` + interval + `'
 			AND flows.device_id = ` + deviceID + `
 		GROUP BY
-			` + dir + `_port_id, ports.port_name, ports.port_proto
+			` + dir + `_port_id, ports.port_name, ports.port_proto, ports.info
 		ORDER BY
 			total_bytes desc
 		LIMIT ` + top + `

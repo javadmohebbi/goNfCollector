@@ -124,7 +124,10 @@ const TopPortWidget = (
                     return l + '(' + humanFormat(v, { unit: 'B' }) + ')'
                 }
             },
-            labels: result.map((r) => r.port_name),
+            labels: result.map((r) => {
+                // console.log(r);
+                return r.info !== "" ? r.info : r.port_name
+            }),
             series: result.map((r) => r.total_bytes),
         }
         setChartData(newChartData)
