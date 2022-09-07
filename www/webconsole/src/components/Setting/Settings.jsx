@@ -75,11 +75,14 @@ const SettingsComponent = () => {
 
     const [value, setValue] = React.useState(0);
 
+
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
 
+    // eslint-disable-next-line
     const [busy, setBusy] = React.useState(false);
+    // eslint-disable-next-line
     const [refresh, setRefresh] = React.useState(false)
 
     return (

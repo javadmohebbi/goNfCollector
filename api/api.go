@@ -245,6 +245,8 @@ func (api *APIServer) Serve() {
 	})
 
 	// SOCKET_IO
+	api.IP2LocationUpdate(r)
+	defer api.apiSocketServer.Close() //close socket
 
 	// routes for devices
 	dr := apiRoutes.PathPrefix("/device").Subrouter()

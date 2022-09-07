@@ -15,6 +15,7 @@ import RouterIcon from '@material-ui/icons/Router';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import ComputerIcon from '@material-ui/icons/Computer';
 import WebIcon from '@material-ui/icons/Web';
+// eslint-disable-next-line
 import MapIcon from '@material-ui/icons/Map';
 import WarningIcon from '@material-ui/icons/Warning';
 

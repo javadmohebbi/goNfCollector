@@ -20,6 +20,9 @@ func (p *Postgres) autoMigrate() error {
 		&model.Flow{},
 
 		&model.Ethernet{},
+
+		// ip2l settings
+		&model.Settings{},
 	)
 
 }
