@@ -104,7 +104,7 @@ func (ncl *netSockClient) HandleSockConnection(scl *socketClientList) {
 
 			clientRequest = strings.TrimSpace(clientRequest)
 
-			log.Println("Req: ", clientRequest)
+			// log.Println("Req: ", clientRequest)
 
 			var req ClientServerReqResp
 			err = json.Unmarshal([]byte(clientRequest), &req)
@@ -238,7 +238,8 @@ func (ncl *netSockClient) ForwardToAPIServers(
 
 	switch rr.Command {
 	case CMD_EXPORTED:
-		log.Println("exported")
+		// log.Println("exported")
+		shouldEcho = true
 
 	// case goremoteinstall.CMD_BOOTSTRAP_STARTED:
 	// 	log.Println("started")

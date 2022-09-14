@@ -14,7 +14,7 @@ func (fws *FwSockClient) SetChann(ch chan os.Signal) {
 }
 
 func (fws *FwSockClient) Reader(r io.Reader) {
-	buf := make([]byte, 1024)
+	buf := make([]byte, 100*1024)
 	for {
 		n, err := r.Read(buf[:])
 		if err != nil {

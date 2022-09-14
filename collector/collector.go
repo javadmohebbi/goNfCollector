@@ -411,6 +411,7 @@ func (nf *Collector) parse(m interface{}, remote net.Addr, data []byte) {
 		nf.numberOfRecievedFlows += uint64(len(metrics))
 
 		nf.export(metrics)
+
 	}
 
 }
