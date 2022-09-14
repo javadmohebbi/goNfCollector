@@ -142,6 +142,9 @@ const (
 	// can not dial linux socket address
 	ERROR_CAN_T_DIAL_LINUX_SOCKET_ADDRESS
 
+	// can not initialize collector server on linux socket
+	ERROR_CAN_T_INIT_COL_SERVER_LINUX_SOCKET
+
 	// UNKOWN ERORR
 	ERROR_UKNOWN
 )
@@ -220,6 +223,7 @@ func (e ErrorCodes) String() string {
 		"Can not remove socket address",
 		"can not listen on linux socket address",
 		"can not dial linux socket address",
+		"can not initialize collector server on linux socket",
 
 		"Unknown error",
 	}[e]

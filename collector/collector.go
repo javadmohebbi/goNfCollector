@@ -91,8 +91,11 @@ type Collector struct {
 	portmap    common.PortMap
 	portmapErr error
 
-	// FwConfig for forwarding sockets to unix socket file
+	// FwSock Server for forwarding sockets to unix socket file
 	fwSock *fwsock.FwSock
+
+	// FwSocketClient
+	FwSockClient *fwsock.FwSockClient
 }
 
 type outgoingMessage struct {
@@ -146,6 +149,23 @@ func New(h string, p int, l *logrus.Logger, c *configurations.Collector, d *debu
 	// accept new socket clients
 	go fws.Accept()
 
+	// prepare socket client
+	fwsClient := fwsock.NewClient(d, l, path)
+	initReq := fwsock.ClientServerReqResp{
+		Collector: true,
+		Command:   fwsock.CMD_INIT,
+	}
+	bts, _ := initReq.JSONToStringClientServerReqResp()
+	_, err = fwsClient.Conn.Write([]byte(fmt.Sprintf("%s\n", bts)))
+	if err != nil {
+		d.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
+			configurations.ERROR_CAN_T_INIT_COL_SERVER_LINUX_SOCKET.Int(),
+			configurations.ERROR_CAN_T_INIT_COL_SERVER_LINUX_SOCKET, err),
+			logrus.ErrorLevel,
+		)
+		os.Exit(configurations.ERROR_CAN_T_INIT_COL_SERVER_LINUX_SOCKET.Int())
+	}
+
 	nf := &Collector{
 		host: h,
 		port: p,
@@ -160,7 +180,8 @@ func New(h string, p int, l *logrus.Logger, c *configurations.Collector, d *debu
 
 		cfTrans: cfTrans,
 
-		fwSock: fws,
+		fwSock:       fws,
+		FwSockClient: fwsClient,
 	}
 
 	// portMap definition
@@ -171,6 +192,9 @@ func New(h string, p int, l *logrus.Logger, c *configurations.Collector, d *debu
 
 	// grab the signals
 	signal.Notify(nf.ch, syscall.SIGINT, syscall.SIGTERM)
+
+	fws.SetChann(nf.ch)
+	fwsClient.SetChann(nf.ch)
 
 	return nf
 }
