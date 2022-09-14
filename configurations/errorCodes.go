@@ -133,6 +133,15 @@ const (
 	// Can not connect to postgres DB inside API Server
 	ERROR_CAN_T_CONNECT_TO_POSTGRES_DB_INSIDE_API_SERVER
 
+	// can not remove socket address
+	ERROR_CAN_T_REMOVE_SOCKET_ADDRESS
+
+	// can not listen on linux socket address
+	ERROR_CAN_T_LISTEN_ON_LINUX_SOCKET_ADDRESS
+
+	// can not dial linux socket address
+	ERROR_CAN_T_DIAL_LINUX_SOCKET_ADDRESS
+
 	// UNKOWN ERORR
 	ERROR_UKNOWN
 )
@@ -207,6 +216,10 @@ func (e ErrorCodes) String() string {
 		"Can not convert etherner index to uint",
 
 		"Can not connect to postgres DB inside API Server",
+
+		"Can not remove socket address",
+		"can not listen on linux socket address",
+		"can not dial linux socket address",
 
 		"Unknown error",
 	}[e]

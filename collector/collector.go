@@ -23,6 +23,7 @@ import (
 	"github.com/goNfCollector/database"
 	"github.com/goNfCollector/debugger"
 	"github.com/goNfCollector/exporters"
+	"github.com/goNfCollector/fwsock"
 	"github.com/goNfCollector/influxdb"
 	"github.com/goNfCollector/location"
 	"github.com/gookit/color"
@@ -89,6 +90,9 @@ type Collector struct {
 	// portmap for port and protocol
 	portmap    common.PortMap
 	portmapErr error
+
+	// FwConfig for forwarding sockets to unix socket file
+	fwSock *fwsock.FwSock
 }
 
 type outgoingMessage struct {
@@ -125,6 +129,23 @@ func New(h string, p int, l *logrus.Logger, c *configurations.Collector, d *debu
 	// make new instance of ip2location
 	i2l := location.New(cf.(*configurations.IP2Location), d)
 
+	// create new instance of fwSocket
+	fws := fwsock.New(d, l, path)
+
+	// make socket listener
+	if erc, err := fws.MakeSocketListener(); err != nil {
+		d.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
+			erc.Int(),
+			erc, err),
+			logrus.ErrorLevel,
+		)
+		os.Exit(erc.Int())
+		return nil
+	}
+
+	// accept new socket clients
+	go fws.Accept()
+
 	nf := &Collector{
 		host: h,
 		port: p,
@@ -138,6 +159,8 @@ func New(h string, p int, l *logrus.Logger, c *configurations.Collector, d *debu
 		iploc: i2l,
 
 		cfTrans: cfTrans,
+
+		fwSock: fws,
 	}
 
 	// portMap definition
@@ -240,6 +263,9 @@ func (nf *Collector) collect(conn *net.UDPConn) {
 			// close exporter clients if needed
 			e.Close()
 		}
+
+		// close socket listener
+		nf.fwSock.Close()
 
 		defer nf.d.Verbose(fmt.Sprintf("Please wait until netflow collector finishes pending %v jobs", runtime.NumGoroutine()), logrus.InfoLevel)
 		nf.waitGroup.Wait()

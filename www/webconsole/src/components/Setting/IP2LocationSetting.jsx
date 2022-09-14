@@ -17,14 +17,18 @@ const IP2LocationSettings = () => {
 
     const [data, setData] = useState("NODATA")
 
-    socket.connect()
+
 
     useEffect(() => {
+
+        socket.connect()
+
         return () => {
             console.log("disconnected!");
             socket.disconnect()
             socket.close()
         }
+        // eslint-disable-next-line
     }, [])
 
 

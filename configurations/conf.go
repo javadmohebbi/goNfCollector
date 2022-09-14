@@ -30,6 +30,8 @@ const (
 	CONF_TYPE_API_SERVER
 
 	CONF_TYPE_TRANS
+
+	CONF_TYPE_SOCKET
 )
 
 // return filename related to requested configuration
@@ -38,6 +40,7 @@ func (ct ConfType) String() string {
 		"collector",
 		"ip2location",
 		"apiserver",
+		"socket",
 	}[ct]
 }
 
@@ -88,6 +91,16 @@ func New(ct ConfType, path string) (Configuration, error) {
 				confFile: confFile{
 					path: cf.path,
 					file: "trans",
+					ext:  "yml",
+				},
+			},
+		), nil
+	case CONF_TYPE_SOCKET:
+		return Configuration(
+			&Socket{
+				confFile: confFile{
+					path: cf.path,
+					file: "socket",
 					ext:  "yml",
 				},
 			},
