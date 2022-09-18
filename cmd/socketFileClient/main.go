@@ -13,6 +13,8 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// {"cmd":4096, "api":true}
+
 func main() {
 
 	// conf file path
