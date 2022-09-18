@@ -9,6 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Link } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
 
+import PlaylistPlayIcon from '@material-ui/icons/PlaylistPlay';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import RouterIcon from '@material-ui/icons/Router';
 // eslint-disable-next-line
@@ -76,6 +77,7 @@ const DrawerLayout = (props) => {
                     {/* HOSTS */}
                     <List>
                         {[
+                            { name: 'Live', Icon: () => (<PlaylistPlayIcon />), to: '/live' },
                             { name: 'Hosts', Icon: () => (<ComputerIcon />), to: '/hosts' },
                             { name: 'Ports', Icon: () => (<WebIcon />), to: '/ports' },
                             { name: 'Protocols', Icon: () => (<WebIcon />), to: '/protocols' },
