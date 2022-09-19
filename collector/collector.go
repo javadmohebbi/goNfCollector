@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"runtime"
+	"strconv"
 	"strings"
 	"sync"
 	"syscall"
@@ -494,7 +495,7 @@ func (nf *Collector) exportFSClient(metrics []common.Metric) {
 		metr := _metric
 
 		ilSrc := nf.getLocation(metr.SrcIP)
-		metr.SrcIp2lCountryShort = ilSrc.Country_long
+		metr.SrcIp2lCountryLong = ilSrc.Country_long
 		metr.SrcIp2lCountryShort = ilSrc.Country_short
 		metr.SrcIp2lState = ilSrc.Region
 		metr.SrcIp2lCity = ilSrc.City
@@ -502,12 +503,22 @@ func (nf *Collector) exportFSClient(metrics []common.Metric) {
 		metr.SrcIp2lLong = fmt.Sprintf("%f", ilSrc.Longitude)
 
 		ilDst := nf.getLocation(metr.DstIP)
-		metr.DstIp2lCountryShort = ilDst.Country_long
+		metr.DstIp2lCountryLong = ilDst.Country_long
 		metr.DstIp2lCountryShort = ilDst.Country_short
 		metr.DstIp2lState = ilDst.Region
 		metr.DstIp2lCity = ilDst.City
 		metr.DstIp2lLat = fmt.Sprintf("%f", ilDst.Latitude)
 		metr.DstIp2lLong = fmt.Sprintf("%f", ilDst.Longitude)
+
+		_, fin, syn, rst, psh, ack, urg, ece, cwr := nf._tcpFlags(metr.TCPFlags)
+		metr.FlagFin = fin
+		metr.FlagSyn = syn
+		metr.FlagRst = rst
+		metr.FlagPsh = psh
+		metr.FlagAck = ack
+		metr.FlagUrg = urg
+		metr.FlagEce = ece
+		metr.FlagCwr = cwr
 
 		_metrics = append(_metrics, metr)
 	}
@@ -583,4 +594,56 @@ func (nf *Collector) removeInvalidCharFromTags(s string) string {
 	// rs = strings.Replace(rs, " ", "_", -1)
 
 	return s
+}
+
+func (nf *Collector) _tcpFlags(f string) (str string, fin, syn, rst, psh, ack, urg, ece, cwr bool) {
+
+	FIN := 0x01
+	SYN := 0x02
+	RST := 0x04
+	PSH := 0x08
+	ACK := 0x10
+	URG := 0x20
+	ECE := 0x40
+	CWR := 0x80
+
+	i, _ := strconv.Atoi(f)
+
+	// hx := fmt.Sprintf("%x", i)
+
+	if FIN&i == 0x01 {
+		str += " FIN "
+		fin = true
+	}
+	if SYN&i == 0x02 {
+		str += " SYN "
+		syn = true
+	}
+	if RST&i == 0x04 {
+		str += " RST "
+		rst = true
+	}
+	if PSH&i == 0x08 {
+		str += " PSH "
+		psh = true
+	}
+	if ACK&i == 0x10 {
+		str += " ACK "
+		ack = true
+	}
+	if URG&i == 0x20 {
+		str += " URG "
+		urg = true
+	}
+	if ECE&i == 0x40 {
+		str += " ECE "
+		ece = true
+	}
+	if CWR&i == 0x80 {
+		str += " CWR "
+		cwr = true
+	}
+
+	return str, fin, syn, rst, psh, ack, urg, ece, cwr
+
 }

@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -10,10 +11,16 @@ import (
 	"time"
 
 	socketio "github.com/googollee/go-socket.io"
+	"github.com/googollee/go-socket.io/engineio"
+	"github.com/googollee/go-socket.io/engineio/transport"
+	"github.com/googollee/go-socket.io/engineio/transport/polling"
+	"github.com/googollee/go-socket.io/engineio/transport/websocket"
 
+	"github.com/goNfCollector/common"
 	"github.com/goNfCollector/configurations"
 	"github.com/goNfCollector/database"
 	"github.com/goNfCollector/debugger"
+	"github.com/goNfCollector/fwsock"
 	"github.com/goNfCollector/location"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
@@ -68,7 +75,41 @@ type APIServer struct {
 	// httpServer
 	httpSrv *http.Server
 
+	// socket io server
 	apiSocketServer *socketio.Server
+
+	// Unix Socket Client
+	fwsClient *fwsock.FwSockClient
+
+	// Unix Socket Channel Struct for metrics
+	metricChann chan []common.Metric
+
+	// list of websocket clients
+	WebSocketClients *WebSocketIDs
+}
+
+type WSClients struct {
+	Kind string // liveflow, ip2location,
+	Conn socketio.Conn
+}
+
+type WebSocketIDs struct {
+	mu       sync.Mutex
+	WSClient map[string]WSClients
+}
+
+func (wsi *WebSocketIDs) Add(id, kind string, c socketio.Conn) {
+	wsi.mu.Lock()
+	defer wsi.mu.Unlock()
+	wsi.WSClient[id] = WSClients{
+		Kind: kind,
+		Conn: c,
+	}
+}
+func (wsi *WebSocketIDs) Remove(id string) {
+	wsi.mu.Lock()
+	defer wsi.mu.Unlock()
+	delete(wsi.WSClient, id)
 }
 
 // Create new HTTP server
@@ -171,6 +212,52 @@ func New(l *logrus.Logger, c *configurations.Collector, d *debugger.Debugger, pa
 		break
 	}
 
+	// create new unix socket file client
+	fwsc := fwsock.NewClient(d, l, path)
+
+	/**
+		BEGIN SOCKET IO INITIALIZATION
+	**/
+	allowOriginFunc := func(r *http.Request) bool {
+		return true
+	}
+	sockSrv := socketio.NewServer(&engineio.Options{
+		Transports: []transport.Transport{
+			&polling.Transport{
+				CheckOrigin: allowOriginFunc,
+			},
+			&websocket.Transport{
+				CheckOrigin: allowOriginFunc,
+			},
+		},
+	})
+	sockSrv.OnConnect("/", func(s socketio.Conn) error {
+		s.SetContext("")
+		log.Println("connected:", s.ID(), s.RemoteAddr().String())
+		return nil
+	})
+	sockSrv.OnError("/", func(s socketio.Conn, e error) {
+		log.Println("meet error:", s.ID(), s.RemoteAddr().String())
+	})
+	sockSrv.OnDisconnect("/", func(s socketio.Conn, reason string) {
+		log.Println("closed:", s.ID(), s.RemoteAddr().String(), "reason: ", reason)
+	})
+	sockSrv.OnEvent("/", "join", func(s socketio.Conn, room string) string {
+		s.Join(room)
+		log.Println("join:", s.ID(), s.RemoteAddr().String(), "room: ", room)
+		return room
+	})
+	sockSrv.OnEvent("/", "bye", func(s socketio.Conn) string {
+		last := s.Context().(string)
+		log.Println("bye:", s.ID(), s.RemoteAddr().String(), "last: ", last)
+		s.Emit("bye", last)
+		s.Close()
+		return last
+	})
+	/**
+		E N D SOCKET IO INITIALIZATION
+	**/
+
 	api := &APIServer{
 		host:    configs.Listen.Address,
 		port:    configs.Listen.Port,
@@ -191,6 +278,13 @@ func New(l *logrus.Logger, c *configurations.Collector, d *debugger.Debugger, pa
 
 		ch:        make(chan os.Signal, 1),
 		waitGroup: &sync.WaitGroup{},
+
+		// unix socket client
+		fwsClient: fwsc,
+
+		WebSocketClients: &WebSocketIDs{},
+
+		apiSocketServer: sockSrv,
 	}
 
 	api.ch = make(chan os.Signal, 1)
@@ -203,9 +297,45 @@ func New(l *logrus.Logger, c *configurations.Collector, d *debugger.Debugger, pa
 		syscall.SIGHUP,  // "terminal is disconnected"
 	)
 
+	// set channel on unix socket client
+	api.fwsClient.SetChann(api.ch)
+
+	// read and forward if needed
+	go api._readAndForward(api.fwsClient.Conn)
+
+	// initialize unix socket client as API server
+	req := fwsock.ClientServerReqResp{
+		API:     true,
+		Command: fwsock.CMD_INIT,
+	}
+	bts, err := req.JSONToStringClientServerReqResp()
+	if err != nil {
+		d.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
+			configurations.ERROR_CAN_T_INIT_API_SERVER_LINUX_SOCKET.Int(),
+			configurations.ERROR_CAN_T_INIT_API_SERVER_LINUX_SOCKET, err),
+			logrus.ErrorLevel,
+		)
+		os.Exit(configurations.ERROR_CAN_T_INIT_API_SERVER_LINUX_SOCKET.Int())
+	}
+	_, err = api.fwsClient.Conn.Write([]byte(fmt.Sprintf("%s\n", bts)))
+	if err != nil {
+		d.Verbose(fmt.Sprintf("[%d]-%s: (%v)",
+			configurations.ERROR_CAN_T_INIT_API_SERVER_LINUX_SOCKET.Int(),
+			configurations.ERROR_CAN_T_INIT_API_SERVER_LINUX_SOCKET, err),
+			logrus.ErrorLevel,
+		)
+		os.Exit(configurations.ERROR_CAN_T_INIT_API_SERVER_LINUX_SOCKET.Int())
+	}
+
 	// catch signals
 	go func() {
 		<-api.ch
+
+		api.d.Verbose("Closing Unix Socket File Client", logrus.InfoLevel)
+		api.fwsClient.Close()
+
+		api.d.Verbose("Stopping Socket IO Server", logrus.InfoLevel)
+		api.apiSocketServer.Close()
 
 		api.d.Verbose("Stopping API HTTP server...!", logrus.InfoLevel)
 
@@ -244,9 +374,15 @@ func (api *APIServer) Serve() {
 		return
 	})
 
-	// SOCKET_IO
-	api.IP2LocationUpdate(r)
-	defer api.apiSocketServer.Close() //close socket
+	// // ip2location socketio
+	go api._ip2loc()
+
+	// ip2location socketio
+	// api.LiveFlow(r)
+	// defer api.apiSocketServer.Close() //close socket
+
+	go api.apiSocketServer.Serve()
+	r.Handle("/socket.io/", socketioMiddleware(api.apiSocketServer))
 
 	// routes for devices
 	dr := apiRoutes.PathPrefix("/device").Subrouter()

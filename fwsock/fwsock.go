@@ -55,7 +55,8 @@ func (fws *FwSock) Accept() {
 				fws.lstn.Close()
 				return
 			default:
-				log.Println("err in connection: ", fws.lstn.Addr().String())
+				log.Println(">>>>> err in connection: ", fws.lstn.Addr().String())
+				fws.socketClientList.RemoveSockClient(conn.LocalAddr().String())
 				continue
 			}
 		} else {
@@ -63,6 +64,7 @@ func (fws *FwSock) Accept() {
 			go func() {
 				_c := &netSockClient{
 					Conn: conn,
+					addr: conn.RemoteAddr().String(),
 				}
 				// _c.IdentifySockClient()
 				fws.socketClientList.AddSockClient(_c)

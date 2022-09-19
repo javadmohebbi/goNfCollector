@@ -31,6 +31,8 @@ type netSockClient struct {
 	IsIdentified bool
 	IsCollector  bool
 	IsAPI        bool
+
+	addr string
 }
 
 // identify client
@@ -80,6 +82,18 @@ func (cList *socketClientList) AddSockClient(cl *netSockClient) {
 	cList.sockClients = append(cList.sockClients, cl)
 }
 
+func (cList *socketClientList) RemoveSockClient(addr string) {
+	cList.mu.Lock()
+	defer cList.mu.Unlock()
+
+	for _, scl := range cList.sockClients {
+		if scl.addr == addr {
+			scl.IsIdentified = false
+		}
+	}
+
+}
+
 // network socket handle connections
 func (ncl *netSockClient) HandleSockConnection(scl *socketClientList) {
 	defer ncl.Conn.Close()
@@ -120,27 +134,6 @@ func (ncl *netSockClient) HandleSockConnection(scl *socketClientList) {
 			}
 
 			if !ncl.Disconnected {
-				// if req.Command == goremoteinstall.CMD_INIT {
-				// 	resp = req
-				// 	resp.Ack = true
-				// 	resp.HostID = fmt.Sprintf("host_%v", time.Now().Unix())
-
-				// 	b, err := json.Marshal(&resp)
-				// 	_, err = ncl.Conn.Write([]byte(b))
-				// 	if err != nil {
-
-				// 		if io.EOF == err {
-				// 			ncl.Disconnected = true
-				// 		}
-
-				// 		notify <- err
-				// 		return
-				// 	}
-				// } else {
-				// 	ncl.ForwardToAPIServers(
-				// 		req, scl,
-				// 	)
-				// }
 				if req.Command != CMD_INIT {
 					// if ncl.IsCollector {
 					// if client is an agent, request will be sent to
@@ -266,6 +259,7 @@ func (ncl *netSockClient) ForwardToAPIServers(
 					_, err := c.Conn.Write([]byte(fw))
 					if err != nil {
 						log.Println("echo error", err)
+						c.Disconnected = true
 					}
 				}
 			}

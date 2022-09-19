@@ -17,6 +17,7 @@ import HostEditComponent from './components/Hosts/HostEdit'
 import PortEditComponent from './components/Ports/PortEdit'
 import ProtocolEditComponent from './components/Protocols/ProtocolEdit'
 import SettingsComponent from './components/Setting/Settings'
+import LiveFlowComponent from './components/Live/LiveFlow'
 
 const MainRouter = () => {
     return (
@@ -44,6 +45,10 @@ const MainRouter = () => {
 
                     <Route exact path="/threats" component={ThreatsComponent} name="threats" />
                     <Route exact path="/threats/:host/report" component={HostReport} name="threat_host_report" />
+
+
+                    {/* Live Flow */}
+                    <Route exact path="/live" component={LiveFlowComponent} name="liveflow" />
 
                     {/* Settings */}
                     <Route exact path="/settings" component={SettingsComponent} name="settings" />

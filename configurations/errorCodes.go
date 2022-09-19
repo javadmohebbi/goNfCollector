@@ -148,6 +148,12 @@ const (
 	// can not export collector server on linux socket
 	ERROR_CAN_T_EXPORT_COL_SERVER_LINUX_SOCKET
 
+	// can not initialize api server on linux socket
+	ERROR_CAN_T_INIT_API_SERVER_LINUX_SOCKET
+
+	// can not read exporetd flows on api server on linux socket
+	ERROR_CAN_T_READ_EXPORTED_FLOWS_ON_API_SERVER_LINUX_SOCKET
+
 	// UNKOWN ERORR
 	ERROR_UKNOWN
 )
@@ -228,6 +234,8 @@ func (e ErrorCodes) String() string {
 		"can not dial linux socket address",
 		"can not initialize collector server on linux socket",
 		"can not export collector server on linux socket",
+		"can not initialize api server on linux socket",
+		"can not read exporetd flows on api server on linux socket",
 
 		"Unknown error",
 	}[e]
