@@ -370,7 +370,7 @@ function LiveFlowComponent(props) {
                             onRowsPerPageChange={handleChangeRowsPerPage}
                             rowsPerPageOptions={[5, 10, 25, 50, 100, 150, 200, 400]}
                         />
-                        <p><b>{tableData.page}</b></p>
+                        {/* <p><b>{tableData.page}</b></p> */}
                     </Paper>
                 </Grid>
             </Grid>
