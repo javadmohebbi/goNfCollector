@@ -20,6 +20,7 @@ func Prepare(addr string, p *netflow5.Packet, portMap common.PortMap, portMapErr
 		met.Uptime = time.Duration(p.Header.SysUptime) * time.Nanosecond
 
 		met.FlowVersion = "Netflow-V5"
+		met.FlowVersionNumber = 5
 		met.Direction = "Unsupported"
 		met.First = fmt.Sprintf("%v", r.First)
 		met.Last = fmt.Sprintf("%v", r.Last)

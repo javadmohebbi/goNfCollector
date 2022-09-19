@@ -51,6 +51,7 @@ func Prepare(addr string, m *ipfix.Message, portMap common.PortMap, portMapErr e
 			// no up time
 
 			met.FlowVersion = "IPFIX"
+			met.FlowVersionNumber = 10
 			for _, f := range dr.Fields {
 
 				if f.Translated != nil {

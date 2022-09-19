@@ -27,6 +27,7 @@ func Prepare(addr string, p *netflow9.Packet, portMap common.PortMap, portMapErr
 			met.Uptime = time.Duration(p.Header.SysUpTime) * time.Nanosecond
 
 			met.FlowVersion = "Netflow-V9"
+			met.FlowVersionNumber = 9
 			for _, f := range dr.Fields {
 				if f.Translated != nil {
 					if f.Translated.Name != "" {
