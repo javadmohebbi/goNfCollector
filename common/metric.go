@@ -3,48 +3,59 @@ package common
 import "time"
 
 type Metric struct {
-	Time                time.Time
-	Uptime              time.Duration
-	FlowVersion         string `header:"NF Ver"`
-	Device              string `header:"Device"`
-	Last                string //`header:"Last"`
-	First               string //`header:"First"`
-	Bytes               string `header:"Bytes"`
-	Packets             string `header:"Packets"`
-	InBytes             string //`header:"Bytes In"`
-	InPacket            string //`header:"Packets In"`
-	OutBytes            string //`header:"Bytes Out"`
-	OutPacket           string //`header:"Packets Out"`
-	InEthernet          string //`header:"In Eth"`
-	OutEthernet         string //`header:"Out Eth"`
-	SrcIP               string `header:"SrcIP"`
-	SrcIp2lCountryShort string //`header:"sCountry_S"`
-	SrcIp2lCountryLong  string //`header:"sCountry_L"`
-	SrcIp2lState        string //`header:"sState"`
-	SrcIp2lCity         string //`header:"sCity"`
-	SrcIp2lLat          string //`header:"sLat"`
-	SrcIp2lLong         string //`header:"sLong"`
-	DstIP               string `header:"DstIP"`
-	DstIp2lCountryShort string //`header:"dCountry_S"`
-	DstIp2lCountryLong  string //`header:"dCountry_L"`
-	DstIp2lState        string //`header:"dState"`
-	DstIp2lCity         string //`header:"dCity"`
-	DstIp2lLat          string //`header:"dLat"`
-	DstIp2lLong         string //`header:"dLong"`
-	Protocol            string //`header:"Proto"`
-	ProtoName           string `header:"ProtoName"`
-	ToS                 string //`header:"ToS"`
-	SrcPort             string `header:"SrcPort"`
-	SrcPortName         string `header:"SrcPortName"`
-	DstPort             string `header:"DstPort"`
-	DstPortName         string `header:"DstPortName"`
-	FlowSamplerId       string //`header:"FlowSampleId"`
-	VendorPROPRIETARY   string //`header:"VendorPROPRIETARY"`
-	NextHop             string `header:"NextHop"`
-	DstMask             string //`header:"DstMask"`
-	SrcMask             string //`header:"SrcMask"`
-	TCPFlags            string `header:"TCPFlags"`
-	Direction           string //`header:"Direction"`
-	DstAs               string //`header:"DstAs"`
-	SrcAs               string //`header:"SrcAs"`
+	Time                time.Time     `json:"time"`
+	Uptime              time.Duration `json:"uptime"`
+	FlowVersion         string        `header:"NF Ver" json:"flowVersionName"`
+	FlowVersionNumber   uint          `header:"NF Ver Num" json:"flowVersion"`
+	Device              string        `header:"Device" json:"device"`
+	Last                string        `header:"Last" json:"last"`
+	First               string        `header:"First" json:"first"`
+	Bytes               string        `header:"Bytes" json:"bytes"`
+	Packets             string        `header:"Packets" json:"packets"`
+	InBytes             string        `header:"Bytes In" json:"inBytes"`
+	InPacket            string        `header:"Packets In" json:"inPackets"`
+	OutBytes            string        `header:"Bytes Out" json:"outBytes"`
+	OutPacket           string        `header:"Packets Out" json:"outPackets"`
+	InEthernet          string        `header:"In Eth" json:"inEthernet"`
+	OutEthernet         string        `header:"Out Eth" json:"outEthernet"`
+	SrcIP               string        `header:"SrcIP" json:"srcIP"`
+	SrcIp2lCountryShort string        `header:"sCountry_S" json:"sCountryShort"`
+	SrcIp2lCountryLong  string        `header:"sCountry_L" json:"sCountryLong"`
+	SrcIp2lState        string        `header:"sState" json:"sState"`
+	SrcIp2lCity         string        `header:"sCity" json:"sCity"`
+	SrcIp2lLat          string        `header:"sLat" json:"sLat"`
+	SrcIp2lLong         string        `header:"sLong" json:"sLOng"`
+	DstIP               string        `header:"DstIP" json:"dstIP"`
+	DstIp2lCountryShort string        `header:"dCountry_S" json:"dCountryShort"`
+	DstIp2lCountryLong  string        `header:"dCountry_L" json:"dCountryLong"`
+	DstIp2lState        string        `header:"dState" json:"dState"`
+	DstIp2lCity         string        `header:"dCity" json:"dCity"`
+	DstIp2lLat          string        `header:"dLat" json:"dLat"`
+	DstIp2lLong         string        `header:"dLong" json:"dLong"`
+	Protocol            string        `header:"Proto" json:"proto"`
+	ProtoName           string        `header:"ProtoName" json:"protoName"`
+	ToS                 string        `header:"ToS" json:"ToS"`
+	SrcPort             string        `header:"SrcPort" json:"srcPort"`
+	SrcPortName         string        `header:"SrcPortName" json:"srcPortName"`
+	DstPort             string        `header:"DstPort" json:"dstPort"`
+	DstPortName         string        `header:"DstPortName" json:"dstPortName"`
+	FlowSamplerId       string        `header:"FlowSampleId" json:"flowSampleId"`
+	VendorPROPRIETARY   string        `header:"VendorPROPRIETARY" json:"vendorPropretary"`
+	NextHop             string        `header:"NextHop" json:"nextHop"`
+	DstMask             string        `header:"DstMask" json:"dstMask"`
+	SrcMask             string        `header:"SrcMask" json:"srcMask"`
+	TCPFlags            string        `header:"TCPFlags" json:"tcpFlags"`
+	Direction           string        `header:"Direction" json:"direction"`
+	DstAs               string        `header:"DstAs" json:"dstAs"`
+	SrcAs               string        `header:"SrcAs" json:"srcAs"`
+
+	// this are sent to UI on web socket
+	FlagFin bool `json:"fin"`
+	FlagSyn bool `json:"syn"`
+	FlagRst bool `json:"rst"`
+	FlagPsh bool `json:"psh"`
+	FlagAck bool `json:"ack"`
+	FlagUrg bool `json:"urg"`
+	FlagEce bool `json:"ece"`
+	FlagCwr bool `json:"cwr"`
 }
