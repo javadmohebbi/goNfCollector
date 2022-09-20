@@ -3,7 +3,6 @@ import React from 'react';
 
 import {
     Box,
-    Chip,
     Collapse,
     IconButton,
     Link,
@@ -30,7 +29,7 @@ import { Link as RouterLink } from 'react-router-dom';
 
 
 const RowComponent = (props) => {
-    const { row, keyID, isCapturing } = props;
+    const { row, isCapturing } = props;
     const [open, setOpen] = React.useState(false);
 
     return (

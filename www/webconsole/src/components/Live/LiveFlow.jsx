@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import { makeStyles } from '@material-ui/core/styles';
-import { Button, CircularProgress, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@material-ui/core';
+import { Button, Chip, CircularProgress, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@material-ui/core';
 
 // import PlayCircleFilledWhiteIcon from '@material-ui/icons/PlayCircleFilledWhite';
 // import StopCircleIcon from '@material-ui/icons/StopCircle';
 
 import PlayCircleIcon from '@material-ui/icons/PlayArrow'
 import StopCircleIcon from '@material-ui/icons/Stop'
+import DownloadIcon from '@material-ui/icons/FileCopy'
 
 import _ from 'lodash'
 import RowComponent from './RowComponent';
+import humanFormat from 'human-format';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -81,11 +83,34 @@ const getPaginatedItems = (items, page, pageSize) => {
     };
 }
 
+
+const HeaderFooter = ({ recordsCount, sumBytes, sumPackets }) => {
+    return <div style={{ marginTop: '15px', marginBottom: '15px' }}>
+        <Chip style={{ fontSize: '120%', marginRight: '10px' }}
+            color="primary"
+            label={`Flow Counts: ${humanFormat(recordsCount)}`}
+        />
+        <Chip style={{ fontSize: '120%', marginRight: '10px' }}
+            color="primary"
+            label={`Total Bytes: ${humanFormat(sumBytes, { unit: 'B' })}`}
+        />
+        <Chip style={{ fontSize: '120%', marginRight: '10px' }}
+            color="primary"
+            label={`Total Packets: ${humanFormat(sumPackets)}`}
+        />
+    </div>
+}
+
+
 function LiveFlowComponent(props) {
 
     const [isConnected, setIsConnected] = useState(socket.connected);
     const [isFirstInit, setIsFirstInit] = useState(true);
     const [counter, setCounter] = useState(0);
+
+    const [sumBytes, setSumBytes] = useState(0)
+    const [sumPackets, setSumPackets] = useState(0)
+    const [recordsCount, setRecordsCount] = useState(0)
 
     // eslint-disable-next-line
     const [page, setPage] = React.useState(1);
@@ -116,8 +141,14 @@ function LiveFlowComponent(props) {
 
 
     useEffect(() => {
-        setRows([...newRows, ...rows])
-        setCounter(counter + 1)
+        setRows([...newRows, ...rows]);
+        setCounter(counter + 1);
+        const byts = _.sumBy(newRows, (r) => parseInt(r.bytes))
+        const pkts = _.sumBy(newRows, (r) => parseInt(r.packets))
+        const rcds = newRows.length
+        setSumBytes(byts + sumBytes)
+        setSumPackets(pkts + sumPackets)
+        setRecordsCount(rcds + recordsCount)
         // eslint-disable-next-line
     }, [newRows])
 
@@ -192,10 +223,70 @@ function LiveFlowComponent(props) {
             socket.disconnect()
         } else {
             socket.connect()
+            setSumBytes(0)
+            setSumPackets(0)
             setIsFirstInit(true)
             setRows([])
             setTableData(getPaginatedItems([], 0, rowsPerPage))
         }
+    }
+
+    const downloadFile = ({ data, fileName, fileType }) => {
+        // Create a blob with the data we want to download as a file
+        const blob = new Blob([data], { type: fileType })
+        // Create an anchor element and dispatch a click event on it
+        // to trigger a download
+        const a = document.createElement('a')
+        a.download = fileName
+        a.href = window.URL.createObjectURL(blob)
+        const clickEvt = new MouseEvent('click', {
+            view: window,
+            bubbles: true,
+            cancelable: true,
+        })
+        a.dispatchEvent(clickEvt)
+        a.remove()
+    }
+
+    const handleDownloadCsv = (e) => {
+        e.preventDefault()
+
+        let headers = []
+        const records = [];
+
+        for (let i = 0; i < rows.length; i++) {
+            if (i === 0) {
+                headers.push(Object.keys(rows[i]).join(','))
+            }
+            var vals = _.values(rows[i])
+            vals.forEach((element, index, array) => {
+                element = "\"" + element.toString() + "\"";
+                array[index] = element;
+                // let vv = "\"" + v[ind].toString() + "\"";
+                // vv = vv.replace(',', ' ')
+                // console.log(v[ind], vv);
+                // return vv
+            })
+            // console.log(vals);
+            records.push(vals.join(','))
+        }
+
+
+        downloadFile({
+            // data: JSON.stringify(rows),
+            data: [...headers, ...records].join('\r\n'),
+            fileName: 'liveflow-exported.csv',
+            fileType: 'text/csv',
+        })
+    }
+
+    const handleDownloadJson = (e) => {
+        e.preventDefault()
+        downloadFile({
+            data: JSON.stringify(rows),
+            fileName: 'liveflow-exported.json',
+            fileType: 'text/json',
+        })
     }
 
     return (
@@ -244,6 +335,31 @@ function LiveFlowComponent(props) {
                                     Stop
                                 </Button>
                         }
+                        {
+                            !isConnected && rows.length > 0 ?
+                                <>
+                                    <Button
+                                        style={{ marginLeft: '10px' }}
+                                        color="secondary"
+                                        variant="contained"
+                                        startIcon={<DownloadIcon />}
+                                        onClick={handleDownloadCsv}
+                                    >
+                                        Download CSV
+                                    </Button>
+                                    <Button
+                                        style={{ marginLeft: '10px' }}
+                                        color="secondary"
+                                        variant="contained"
+                                        startIcon={<DownloadIcon />}
+                                        onClick={handleDownloadJson}
+                                    >
+                                        Download JSON
+                                    </Button>
+                                </>
+
+                                : <></>
+                        }
                     </Grid>
                 </Grid>
             </Paper>
@@ -253,7 +369,20 @@ function LiveFlowComponent(props) {
                     <Paper className={classes.formPaper}>
                         <div>
                             {
-                                !isConnected ? <p>Live flow is not started. Please click on "Play" button to see live flows!</p> : ''
+                                !isConnected
+                                    ?
+                                    <p>Live flow is not running. Please click on "Play" button to see live flows!</p>
+                                    :
+                                    <></>
+                            }
+                            {
+                                rows.length > 0 ?
+                                    <HeaderFooter
+                                        recordsCount={recordsCount}
+                                        sumBytes={sumBytes}
+                                        sumPackets={sumPackets}
+                                    />
+                                    : <></>
                             }
                         </div>
 
@@ -288,7 +417,17 @@ function LiveFlowComponent(props) {
 
                         </TableContainer>
 
-                        <TablePagination
+                        {
+                            rows.length > 0 ?
+                                <HeaderFooter
+                                    recordsCount={recordsCount}
+                                    sumBytes={sumBytes}
+                                    sumPackets={sumPackets}
+                                />
+                                : <></>
+                        }
+
+                        < TablePagination
                             component="div"
                             count={rows.length}
                             page={tableData.page}
@@ -299,6 +438,8 @@ function LiveFlowComponent(props) {
                             rowsPerPageOptions={[5, 10, 25, 50, 100, 150, 200, 400]}
                         />
                         {/* <p><b>{tableData.page}</b></p> */}
+
+
                     </Paper>
                 </Grid>
             </Grid>
