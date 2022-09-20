@@ -25,16 +25,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }))
 
-
-
-
-
-
-
-
-
-
-
 const GeoLocationsDataTableComponent = ({
     busy = false,
     refresh = false,
