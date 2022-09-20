@@ -262,10 +262,6 @@ function LiveFlowComponent(props) {
             vals.forEach((element, index, array) => {
                 element = "\"" + element.toString() + "\"";
                 array[index] = element;
-                // let vv = "\"" + v[ind].toString() + "\"";
-                // vv = vv.replace(',', ' ')
-                // console.log(v[ind], vv);
-                // return vv
             })
             // console.log(vals);
             records.push(vals.join(','))
