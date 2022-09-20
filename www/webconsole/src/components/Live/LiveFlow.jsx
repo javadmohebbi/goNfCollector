@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import { makeStyles } from '@material-ui/core/styles';
-import { Box, Button, Chip, CircularProgress, Collapse, Grid, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@material-ui/core';
+import { Button, CircularProgress, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@material-ui/core';
 
 // import PlayCircleFilledWhiteIcon from '@material-ui/icons/PlayCircleFilledWhite';
 // import StopCircleIcon from '@material-ui/icons/StopCircle';
 
 import PlayCircleIcon from '@material-ui/icons/PlayArrow'
 import StopCircleIcon from '@material-ui/icons/Stop'
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp'
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown'
-import NetflowVersionWidget from '../../widgets/NetflowVersion';
+
 import _ from 'lodash'
+import RowComponent from './RowComponent';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -57,78 +56,6 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 
-function Row(props) {
-    const { row, keyID } = props;
-    const [open, setOpen] = React.useState(false);
-
-    return (
-        <React.Fragment>
-            <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-                <TableCell>
-                    <IconButton
-                        aria-label="expand row"
-                        size="small"
-                        onClick={() => setOpen(!open)}
-                    >
-                        {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                    </IconButton>
-                </TableCell>
-                <TableCell >{keyID}{row.device}</TableCell>
-                <TableCell ><NetflowVersionWidget version={row.flowVersion} /></TableCell>
-                <TableCell >{row.protoName}</TableCell>
-                <TableCell >{row.srcIP} : {row.srcPort}</TableCell>
-                <TableCell >{row.dstIP} : {row.dstPort}</TableCell>
-                <TableCell >{row.bytes} | {row.packets}</TableCell>
-                <TableCell >
-                    <Chip label="FIN" size="small" color={row.fin ? 'primary' : 'secondary'} />
-                    <Chip label="SYN" size="small" color={row.syn ? 'primary' : 'secondary'} />
-                    <Chip label="RST" size="small" color={row.rst ? 'primary' : 'secondary'} />
-                    <Chip label="PSH" size="small" color={row.psh ? 'primary' : 'secondary'} />
-                    <Chip label="ACK" size="small" color={row.ack ? 'primary' : 'secondary'} />
-                    <Chip label="URG" size="small" color={row.urg ? 'primary' : 'secondary'} />
-                    <Chip label="ECE" size="small" color={row.ece ? 'primary' : 'secondary'} />
-                    <Chip label="CWR" size="small" color={row.cwr ? 'primary' : 'secondary'} />
-                </TableCell>
-            </TableRow>
-            <TableRow>
-                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-                    <Collapse in={open} timeout="auto" unmountOnExit>
-                        <Box sx={{ margin: 1 }}>
-                            {/* <Typography variant="h6" gutterBottom component="div">
-                  History
-                </Typography> */}
-                            {/* <Table size="small" aria-label="purchases">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Date</TableCell>
-                      <TableCell>Customer</TableCell>
-                      <TableCell align="right">Amount</TableCell>
-                      <TableCell align="right">Total price ($)</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {row.history.map((historyRow) => (
-                      <TableRow key={historyRow.date}>
-                        <TableCell component="th" scope="row">
-                          {historyRow.date}
-                        </TableCell>
-                        <TableCell>{historyRow.customerId}</TableCell>
-                        <TableCell align="right">{historyRow.amount}</TableCell>
-                        <TableCell align="right">
-                          {Math.round(historyRow.amount * row.price * 100) / 100}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table> */}
-                            Details
-                        </Box>
-                    </Collapse>
-                </TableCell>
-            </TableRow>
-        </React.Fragment>
-    );
-}
 
 
 const socket = io(
@@ -347,7 +274,7 @@ function LiveFlowComponent(props) {
                                 <TableBody>
                                     {
                                         tableData.data.map((row, i) => (
-                                            <Row
+                                            <RowComponent
                                                 key={"r-" + i}
                                                 // keyID={i + counter + ' '}
                                                 keyID={' '}
