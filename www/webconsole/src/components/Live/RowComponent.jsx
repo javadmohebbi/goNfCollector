@@ -87,7 +87,17 @@ const RowComponent = (props) => {
                             </Typography>
                             : <></>
                     }
-
+                    {
+                        row.isDstThreat ?
+                            <div style={{ marginTop: '10px', marginBottom: '10px' }}>
+                                <ThreatLevelWidget
+                                    inline={true}
+                                    level={row.dstThreatReputation}
+                                    label={`(${row.dstThreatType})`}
+                                />
+                            </div>
+                            : <></>
+                    }
                 </TableCell>
                 <TableCell ><BytesWidget bytes={row.bytes} /> | <PacketsWidget packets={row.packets} /></TableCell>
                 <TableCell >
