@@ -46,7 +46,9 @@ const AppBarLayout = () => {
                     <Typography variant="h6" className={classes.title}>
                         Netflow Analyzer
                     </Typography>
-                    <Button color="inherit" component={Link} to="/settings">Settings</Button>
+
+                    {/* <Button color="inherit" component={Link} to="/settings">Settings</Button> */}
+
                 </Toolbar>
 
                 <DrawerLayout drawerOpen={isDrawerOpen} onCloseDrawer={handleDrawerOpenToggle} />
