@@ -45,7 +45,7 @@ const ThreatsDataTableComponent = ({
                     // { key: "threat_counter", label: "Count", dataType: 'string', reFormat: (val, row) => <ThreatLevelWidget level={row.threat_counter} justCounter /> },
                     { key: "threat_reputation", label: "Level", dataType: 'string', reFormat: (val, row) => <ThreatLevelWidget level={val} /> },
                     { key: "threat_host", label: "RelatedHost", dataType: 'string', reFormat: (val, row) => row.threat_host_info !== '' ? val + ' (' + row.threat_host_info + ')' : val },
-                    { key: "threat_acked", label: "Acked|Closed|False+", dataType: 'string', reFormat: (val, row) => <ThreatUserAckWidget acked={row.threat_acked} closed={row.threat_closed} falsePositive={row.threat_false_positive} /> },
+                    // { key: "threat_acked", label: "Acked|Closed|False+", dataType: 'string', reFormat: (val, row) => <ThreatUserAckWidget acked={row.threat_acked} closed={row.threat_closed} falsePositive={row.threat_false_positive} /> },
                     { key: "created_at", label: "FirstSeen", dataType: 'dateTime', reFormat: (val, row) => moment(val).fromNow() },
                     { key: "updated_at", label: "LastActivity", dataType: 'dateTime', reFormat: (val, row) => moment(val).fromNow() },
 
