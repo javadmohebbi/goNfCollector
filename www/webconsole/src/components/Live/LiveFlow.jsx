@@ -268,13 +268,14 @@ function LiveFlowComponent(props) {
                                         <TableCell>Source</TableCell>
                                         <TableCell>Destination</TableCell>
                                         <TableCell>Bytes | Packets</TableCell>
-                                        <TableCell>TCPFlags</TableCell>
+                                        <TableCell>TCP Flags</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
                                     {
                                         tableData.data.map((row, i) => (
                                             <RowComponent
+                                                isCapturing={isConnected}
                                                 key={"r-" + i}
                                                 // keyID={i + counter + ' '}
                                                 keyID={' '}

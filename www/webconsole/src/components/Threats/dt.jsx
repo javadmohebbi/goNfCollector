@@ -7,6 +7,7 @@ import moment from "moment";
 
 import ReportButton from '../../widgets/ReportButton';
 import ThreatLevelWidget from '../../widgets/ThreatLevel';
+// eslint-disable-next-line
 import ThreatUserAckWidget from '../../widgets/ThreatUserAck';
 
 

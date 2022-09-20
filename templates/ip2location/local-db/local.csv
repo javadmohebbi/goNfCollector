@@ -1,3 +1,3 @@
-IR,"Iran, Islamic Republic of",Tehran,Tehran,+03:30,35.6892,51.3890,10.0.0.1,10.255.255.254
-IR,"Iran, Islamic Republic of",Tehran,Tehran,+03:30,35.6892,51.3890,192.168.0.1,192.168.255.254
-IR,"Iran, Islamic Republic of",Tehran,Tehran,+03:30,35.6892,51.3890,172.0.0.1,172.255.255.254
+IR,"Iran, Islamic Republic of",Tehran,Tehran(HQ),+03:30,35.6892,51.3890,10.0.0.1,10.255.255.254
+IR,"Iran, Islamic Republic of",Tehran,Tehran(LocalOffice),+03:30,35.6892,51.3890,192.168.0.1,192.168.255.254
+IR,"Iran, Islamic Republic of",Tehran,Tehran(Shop),+03:30,35.6892,51.3890,172.0.0.1,172.255.255.254
