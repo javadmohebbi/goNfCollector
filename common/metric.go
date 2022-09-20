@@ -58,4 +58,17 @@ type Metric struct {
 	FlagUrg bool `json:"urg"`
 	FlagEce bool `json:"ece"`
 	FlagCwr bool `json:"cwr"`
+
+	IsSrcThreat             bool   `json:"isSrcThreat"`
+	SrcThreatType           string `json:"srcThreatType"`
+	SrcThreatKind           string `json:"srcThreatKind"`
+	SrcThreatReputation     uint   `json:"srcThreatReputation"`
+	IsDstThreat             bool   `json:"isDstThreat"`
+	DstThreatType           string `json:"dstThreatType"`
+	DstThreatKind           string `json:"dstThreatKind"`
+	DstThreatReputation     uint   `json:"dstThreatReputation"`
+	IsNextHopThreat         bool   `json:"isNextHopThreat"`
+	NextHopThreatType       string `json:"nextHopThreatType"`
+	NextHopThreatKind       string `json:"nextHopThreatKind"`
+	NextHopThreatReputation uint   `json:"nextHopThreatReputation"`
 }
