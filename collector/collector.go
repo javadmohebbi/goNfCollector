@@ -27,6 +27,7 @@ import (
 	"github.com/goNfCollector/fwsock"
 	"github.com/goNfCollector/influxdb"
 	"github.com/goNfCollector/location"
+	"github.com/goNfCollector/reputation"
 	"github.com/gookit/color"
 	"github.com/ip2location/ip2location-go"
 	"github.com/sirupsen/logrus"
@@ -98,6 +99,9 @@ type Collector struct {
 
 	// FwSocketClient
 	FwSockClient *fwsock.FwSockClient
+
+	// reputation
+	reputation []reputation.Reputation
 }
 
 type outgoingMessage struct {
@@ -166,7 +170,22 @@ func New(h string, p int, l *logrus.Logger, c *configurations.Collector, d *debu
 			logrus.ErrorLevel,
 		)
 		os.Exit(configurations.ERROR_CAN_T_INIT_COL_SERVER_LINUX_SOCKET.Int())
+
 	}
+
+	/** BEGIN REPUTATION INITIALIZATION */
+
+	// add reputation kind to reputation array
+	var reputs []reputation.Reputation
+	rptIpSum, err := reputation.NewIPSum(c.IPReputation.IPSumPath)
+	if err == nil {
+		reput, err := reputation.New(rptIpSum, d)
+
+		if err == nil {
+			reputs = append(reputs, *reput)
+		}
+	}
+	/** E N D REPUTATION INITIALIZATION */
 
 	nf := &Collector{
 		host: h,
@@ -182,8 +201,11 @@ func New(h string, p int, l *logrus.Logger, c *configurations.Collector, d *debu
 
 		cfTrans: cfTrans,
 
-		fwSock:       fws,
+		fwSock: fws,
+
 		FwSockClient: fwsClient,
+
+		reputation: reputs,
 	}
 
 	// portMap definition
@@ -520,6 +542,25 @@ func (nf *Collector) exportFSClient(metrics []common.Metric) {
 		metr.FlagEce = ece
 		metr.FlagCwr = cwr
 
+		if isThreat, _type, _kind, resp := nf._chekReputation(metr.SrcIP); isThreat {
+			metr.IsSrcThreat = true
+			metr.SrcThreatType = _type
+			metr.SrcThreatKind = _kind
+			metr.SrcThreatReputation = resp.Current
+		}
+		if isThreat, _type, _kind, resp := nf._chekReputation(metr.DstIP); isThreat {
+			metr.IsDstThreat = true
+			metr.DstThreatType = _type
+			metr.DstThreatKind = _kind
+			metr.DstThreatReputation = resp.Current
+		}
+		if isThreat, _type, _kind, resp := nf._chekReputation(metr.NextHop); isThreat {
+			metr.IsNextHopThreat = true
+			metr.NextHopThreatType = _type
+			metr.NextHopThreatKind = _kind
+			metr.NextHopThreatReputation = resp.Current
+		}
+
 		_metrics = append(_metrics, metr)
 	}
 
@@ -549,6 +590,16 @@ func (nf *Collector) exportFSClient(metrics []common.Metric) {
 		// os.Exit(configurations.ERROR_CAN_T_EXPORT_COL_SERVER_LINUX_SOCKET.Int())
 	}
 
+}
+
+func (nf *Collector) _chekReputation(ip string) (bool, string, string, reputation.ReputationResponse) {
+	for _, rpu := range nf.reputation {
+		if resp := rpu.Get(ip); resp.Current > 0 {
+			return true, rpu.GetType(), rpu.GetKind(), resp
+		}
+	}
+
+	return false, "", "", reputation.ReputationResponse{}
 }
 
 func (nf *Collector) getLocation(ip string) *ip2location.IP2Locationrecord {
