@@ -196,7 +196,7 @@ func (ncl *netSockClient) HandleSockConnection(scl *socketClientList) {
 			// 		}
 			// 	}
 			// }
-			fmt.Println("nfcol:", countCollector, "it:", countSelf, "api:", countAPI, "na:", countNotIdentified)
+			// fmt.Println("nfcol:", countCollector, "it:", countSelf, "api:", countAPI, "na:", countNotIdentified)
 			// 	for _, c := range scl.sockClients {
 			// 		if c.IsIdentified && c.IsRemoteInstaller && !c.Disconnected {
 			// 			rr := goremoteinstall.ClientServerReqResp{
