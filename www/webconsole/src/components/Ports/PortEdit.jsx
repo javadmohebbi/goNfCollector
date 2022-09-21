@@ -105,9 +105,6 @@ const PortEditComponent = (props) => {
 
     }
 
-
-
-
     React.useEffect(() => {
         if (portId !== '') {
             PortGetById({ id: portId }).then(async (json) => {

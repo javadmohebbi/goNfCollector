@@ -10,9 +10,11 @@ import PlayCircleIcon from '@material-ui/icons/PlayArrow'
 import StopCircleIcon from '@material-ui/icons/Stop'
 import DownloadIcon from '@material-ui/icons/FileCopy'
 
-import _ from 'lodash'
+import _, { flow } from 'lodash'
 import RowComponent from './RowComponent';
 import humanFormat from 'human-format';
+import FilterFormComponent from './FilterFormComponent';
+import { fltModel } from './filtermodel';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -112,6 +114,8 @@ function LiveFlowComponent(props) {
     const [sumPackets, setSumPackets] = useState(0)
     const [recordsCount, setRecordsCount] = useState(0)
 
+    const [filter, setFilter] = useState({ ...fltModel })
+
     // eslint-disable-next-line
     const [page, setPage] = React.useState(1);
     const [rowsPerPage, setRowsPerPage] = React.useState(25);
@@ -182,7 +186,18 @@ function LiveFlowComponent(props) {
         // setTableData(getPaginatedItems(rows, 0, nrpp))
     };
 
+    const handleFilterChange = (filter, isEnabled) => {
 
+        // set or unset filters
+        filter.isFilterEnable = isEnabled
+
+        setRows([])
+
+        socket.emit(
+            "filterLiveFlow",
+            JSON.stringify(filter)
+        )
+    }
 
 
     useEffect(() => {
@@ -195,13 +210,14 @@ function LiveFlowComponent(props) {
         });
         socket.on('live-flow', (data) => {
             const flowData = JSON.parse(data)
-            if (flowData.hasOwnProperty('payload')) {
+            // if (flowData.hasOwnProperty('payload')) {
+            if (Array.isArray(flowData) && flowData.length > 0) {
                 // console.log(flowData.payload);
                 // console.log(rows);
                 // const dt = [...flowData.payload, ...rows]
                 // setRows(dt)
                 // console.log("dt", dt);
-                setNewRows(flowData.payload)
+                setNewRows(flowData)
             }
         })
         return () => {
@@ -380,6 +396,15 @@ function LiveFlowComponent(props) {
                                     />
                                     : <></>
                             }
+                            {
+                                isConnected ?
+                                    <FilterFormComponent
+                                        filter={filter}
+                                        callback={handleFilterChange}
+                                    />
+                                    : <></>
+                            }
+
                         </div>
 
                         <TableContainer component={Paper}>

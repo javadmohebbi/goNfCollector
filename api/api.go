@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -86,6 +87,9 @@ type APIServer struct {
 
 	// list of websocket clients
 	WebSocketClients *WebSocketIDs
+
+	// Filter for live sockets
+	filteLiveFlow *FilterLiveFlow
 }
 
 type WSClients struct {
@@ -247,6 +251,7 @@ func New(l *logrus.Logger, c *configurations.Collector, d *debugger.Debugger, pa
 		log.Println("join:", s.ID(), s.RemoteAddr().String(), "room: ", room)
 		return room
 	})
+
 	sockSrv.OnEvent("/", "bye", func(s socketio.Conn) string {
 		last := s.Context().(string)
 		log.Println("bye:", s.ID(), s.RemoteAddr().String(), "last: ", last)
@@ -284,8 +289,59 @@ func New(l *logrus.Logger, c *configurations.Collector, d *debugger.Debugger, pa
 
 		WebSocketClients: &WebSocketIDs{},
 
-		apiSocketServer: sockSrv,
+		filteLiveFlow: &FilterLiveFlow{
+			mu: sync.Mutex{},
+		},
 	}
+
+	/**  BEGIN SocketIO websocket for live socket filter */
+	sockSrv.OnEvent("/", "filterLiveFlow", func(s socketio.Conn, jsonReq string) string {
+		var fltflow FilterLiveFlow
+		err := json.Unmarshal([]byte(jsonReq), &fltflow)
+		if err != nil {
+			api.d.Verbose(
+				fmt.Sprintf("error in unmarshaling JSON filter flow: %s", err.Error()),
+				logrus.ErrorLevel,
+			)
+		}
+
+		// disable or enable filter
+		if fltflow.IsFilterEnable {
+			api.filteLiveFlow.EnableFilter()
+		} else {
+			api.filteLiveFlow.DisableFilter()
+		}
+
+		// set filters
+		api.filteLiveFlow.SetDeviceFilter(fltflow.Device)
+		api.filteLiveFlow.SetIPFilter(fltflow.IP)
+		api.filteLiveFlow.SetPortFilter(fltflow.Port)
+		api.filteLiveFlow.SetProtoFilter(fltflow.Proto)
+		api.filteLiveFlow.SetSrcOrDst(fltflow.SrcOrDst)
+		api.filteLiveFlow.SetCountry(fltflow.Country)
+		api.filteLiveFlow.SetRegion(fltflow.Region)
+		api.filteLiveFlow.SetCity(fltflow.City)
+		api.filteLiveFlow.SetFlag(
+			fltflow.Flags.List.Fin,
+			fltflow.Flags.List.Syn,
+			fltflow.Flags.List.Rst,
+			fltflow.Flags.List.Psh,
+			fltflow.Flags.List.Ack, fltflow.Flags.List.Urg,
+			fltflow.Flags.List.Ece,
+			fltflow.Flags.List.Cwr,
+			fltflow.Flags.Filtered,
+		)
+		api.filteLiveFlow.SetThreat(
+			fltflow.Threat.IsThreat,
+			fltflow.Threat.Filtered,
+		)
+		api.filteLiveFlow.SetFlowVersion(fltflow.FlowVersion)
+
+		return jsonReq
+	})
+	/**  E N D SocketIO websocket for live socket filter */
+
+	api.apiSocketServer = sockSrv
 
 	api.ch = make(chan os.Signal, 1)
 	signal.Notify(api.ch,

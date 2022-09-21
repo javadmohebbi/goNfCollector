@@ -71,4 +71,8 @@ type Metric struct {
 	NextHopThreatType       string `json:"nextHopThreatType"`
 	NextHopThreatKind       string `json:"nextHopThreatKind"`
 	NextHopThreatReputation uint   `json:"nextHopThreatReputation"`
+
+	// ONLY FOR FIlTER
+	IncludeFilterIP   bool `json:"-"`
+	IncludeFilterPort bool `json:"-"`
 }
