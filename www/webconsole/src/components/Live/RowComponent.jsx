@@ -46,7 +46,12 @@ const RowComponent = (props) => {
                     </IconButton>
                 </TableCell>
                 <TableCell >
-                    <Link component={RouterLink} to={`/devices/${row.device}/report`} target='_blank'>
+                    <Link
+                        style={{ fontSize: '125%' }}
+                        component={RouterLink}
+                        to={`/devices/${row.device}/report`}
+                        target='_blank'
+                    >
                         {row.device}
                     </Link>
                 </TableCell>
