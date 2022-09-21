@@ -2,7 +2,6 @@ package api
 
 import (
 	"fmt"
-	"log"
 	"time"
 )
 
@@ -14,7 +13,7 @@ func (api *APIServer) _ip2loc() {
 		for {
 			select {
 			case <-ticker.C:
-				log.Println("Room Len. (ip2l):", api.apiSocketServer.RoomLen("/", "ip2l"))
+				// log.Println("Room Len. (ip2l):", api.apiSocketServer.RoomLen("/", "ip2l"))
 				api.apiSocketServer.BroadcastToRoom(
 					"/",
 					"ip2l",
