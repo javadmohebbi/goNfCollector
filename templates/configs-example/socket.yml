@@ -1,0 +1,7 @@
+### Socket configuration file
+# this file intend to keep the configuration for
+# unix socket UDP listener for forwarding flow packets
+# to other services
+
+# path to socket file
+Socket: /opt/nfcollector/var/socket/fw.socket
