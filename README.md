@@ -57,7 +57,7 @@ There are multiple ways to deploy "**netflow collector**" app & easiest ways is 
 
 ## ALL-IN-ONE deployment using docker-compose
 1. Download the latest version:
-  ```wget https://download.openintelligence24.com/latest.sh```
+  ```wget -O latest.sh https://raw.githubusercontent.com/javadmohebbi/goNfCollector/main/dockerize/build-up-from-github.sh```
 2. Make this shell script executable
   ```chmod +x latest.sh```
 3. Run the downloaded shellscript.
