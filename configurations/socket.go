@@ -40,7 +40,7 @@ func (c *Socket) Read() (interface{}, error) {
 
 		// if file not found set default fallback values
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			log.Fatalf("Logfile %v.%v not found in path %v", c.confFile.path, c.confFile.file, c.confFile.ext)
+			log.Fatalf("Configuration file %v.%v not found in path %v", c.confFile.path, c.confFile.file, c.confFile.ext)
 			return c, nil
 		}
 		log.Fatalln("Could not read config file due to error: ", err)

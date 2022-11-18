@@ -76,7 +76,7 @@ services:
            - NFC_IP2L_IP=/opt/nfcollector/vendors/ip2location/db/IP2LOCATION-LITE-DB11.IPV6.BIN/IP2LOCATION-LITE-DB11.IPV6.BIN
            - NFC_IP2L_PROXY=/opt/nfcollector/vendors/ip2location/db/IP2PROXY-LITE-PX10.IPV6.CSV/IP2PROXY-LITE-PX10.IPV6.CSV
            - NFC_IP2L_LOCAL=/opt/nfcollector/vendors/ip2location/local-db/local.csv
-
+           - NFC_SOCK_PATH=/opt/nfcollector/var/socket/fw.socket
 
 
 
