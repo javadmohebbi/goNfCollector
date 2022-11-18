@@ -60,7 +60,7 @@ func downloadIP2Location(ipl, iplASN, iplProx bool, path string) {
 			filepath.Base(i2lConf.IP),    // file name
 			filepath.Dir(i2lConf.IP)+"/", // directory
 			"/tmp/",                      // tmp file path
-			"https://download.openintelligence24.com/vendors/ip2location/IP2LOCATION-LITE-DB11.IPV6.BIN.ZIP", // url to download
+			"https://github.com/javadmohebbi/goNfCollector/raw/main/updates/IP2LOCATION-LITE-DB11.IPV6.BIN.ZIP", // url to download
 			true, // need unzip
 		)
 
@@ -72,7 +72,7 @@ func downloadIP2Location(ipl, iplASN, iplProx bool, path string) {
 			filepath.Base(i2lConf.ASN),    // file name
 			filepath.Dir(i2lConf.ASN)+"/", // directory
 			"/tmp/",                       // tmp file path
-			"https://download.openintelligence24.com/vendors/ip2location/IP2LOCATION-LITE-ASN.IPV6.CSV.ZIP", // url to download
+			"https://github.com/javadmohebbi/goNfCollector/raw/main/updates/IP2LOCATION-LITE-ASN.IPV6.CSV.ZIP", // url to download
 			true, // need unzip
 		)
 	}
@@ -83,7 +83,7 @@ func downloadIP2Location(ipl, iplASN, iplProx bool, path string) {
 			filepath.Base(i2lConf.Proxy),    // file name
 			filepath.Dir(i2lConf.Proxy)+"/", // directory
 			"/tmp/",                         // tmp file path
-			"https://download.openintelligence24.com/vendors/ip2location/IP2PROXY-LITE-PX10.IPV6.CSV.ZIP", // url to download
+			"https://github.com/javadmohebbi/goNfCollector/raw/main/updates/IP2PROXY-LITE-PX10.IPV6.CSV.ZIP", // url to download
 			true, // need unzip
 		)
 	}
@@ -97,7 +97,7 @@ func downloadIPSum(path string) {
 		filepath.Base(colConf.IPReputation.IPSumPath),    // file name
 		filepath.Dir(colConf.IPReputation.IPSumPath)+"/", // directory
 		"/tmp/", // tmp file path
-		"https://download.openintelligence24.com/vendors/ipsum/ipsum.txt", // url to download
+		"https://raw.githubusercontent.com/stamparm/ipsum/master/ipsum.txt", // url to download
 		false, // does not need unzip
 	)
 }
