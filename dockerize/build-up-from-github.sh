@@ -128,6 +128,12 @@ download_latest_version() {
     check_errors
 
 
+    # added in version 0.0.1-31b
+    # socket.yml
+    wget -O $PROJECT_DIR/etc/socket.yml https://raw.githubusercontent.com/javadmohebbi/goNfCollector/main/templates/configs-example/socket.yml?rnd=$RAND_STR
+    check_errors
+
+
     echo "COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}" > $PROJECT_DIR/.env
 
     echo -e "${GREEN}...done!${NC}"
@@ -152,6 +158,10 @@ prepare_dir()
     mkdir -pv $PROJECT_DIR/bin
     check_errors
 
+    # var
+    mkdir -pv $PROJECT_DIR/var/socket
+    check_errors
+
     # vendors dir & files
     mkdir -pv $PROJECT_DIR/vendors/ip2location
     check_errors
@@ -167,6 +177,9 @@ prepare_dir()
     # grafana directory
     mkdir -pv $GRAFANA_DIR
     check_errors
+
+    # socket-dir
+    mkdir -pv $PROJECT_DIR/var/socket/fw.socket
 
     echo -e "${GREEN}...done!${NC}"
 }
