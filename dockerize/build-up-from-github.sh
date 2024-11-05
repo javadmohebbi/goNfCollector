@@ -2,7 +2,7 @@
 
 # This shell-script will install the latest version of
 # nfcollector to your system & has some system requirements including
-# docker, docker-compose, wget. If not satisfied, will help you install
+# docker, docker-compose (use docker compose), wget. If not satisfied, will help you install
 # them using a guide printed in the terminal
 # Check more about it's usage at: https://github.com/javadmohebbi/goNfCollector
 
@@ -226,7 +226,10 @@ get_influx_db_info() {
     # wait until command finished; mean
     echo ""
     echo -e "${YELLOW} Waiting for InfluxDB (${CONTAINERID}) to be ready...!${NC}"
-    docker exec -it $CONTAINERID wget http://localhost:8086 > /dev/null
+    # It doesn't work without sleep
+    sleep 30;
+    # Comment out "> /dev/null" for debugging
+    docker exec -it $CONTAINERID wget http://localhost:8086 #> /dev/null
     check_errors
 
     until [ "`docker inspect -f {{.State.Running}} $CONTAINERID`"=="true" ]; do
@@ -290,9 +293,10 @@ print_info(){
     echo -e "${YELLOW}- - - - - - - - - - - - - - - - "
     echo ""
     echo -e " ${YELLOW}To start containers:"
-    echo -e " ${NC}\$ ${GREEN}cd ${PROJECT_DIR} && docker-compose up -d${NC}"
+    # Use "docker compose" instead of "docker-compose"
+    echo -e " ${NC}\$ ${GREEN}cd ${PROJECT_DIR} && docker compose up -d${NC}"
     echo -e " ${YELLOW}To stop containers:"
-    echo -e " ${NC}\$ ${GREEN}cd ${PROJECT_DIR} && docker-compose down${NC}"
+    echo -e " ${NC}\$ ${GREEN}cd ${PROJECT_DIR} && docker compose down${NC}"
     echo ""
     echo -e "${YELLOW}- - - - - - - - - - - - - - - - "
     echo ""
@@ -441,16 +445,17 @@ requirement_check() {
     fi
 
 
+    # Comment out because I use "docker compose" instead of "docker-compose"
     #check if  docker-compose command is installed
-    commad_path=$(command -v docker-compose)
-    if [ -z  "$commad_path" ] ; then
-        # OK
-        echo -e "${RED} >>> DOCKER-COMPOSE is not installed. Please install docker-compose and try again.${NC}"
-        echo -e "${RED} >>> Docker-Compose installation guide: https://docs.docker.com/compose/install/"
-        exit 1
-    else
-        echo -e "${GREEN} Found 'docker-compose' in '$commad_path'"
-    fi
+    #commad_path=$(command -v docker-compose)
+    #if [ -z  "$commad_path" ] ; then
+    #    # OK
+    #    echo -e "${RED} >>> DOCKER-COMPOSE is not installed. Please install docker-compose and try again.${NC}"
+    #    echo -e "${RED} >>> Docker-Compose installation guide: https://docs.docker.com/compose/install/"
+    #    exit 1
+    #else
+    #    echo -e "${GREEN} Found 'docker-compose' in '$commad_path'"
+    #fi
 
 
     #check if wget command is installed
@@ -493,7 +498,8 @@ cron_jobs() {
     check_errors
     echo "pushd $PROJECT_DIR" >> $sh_path
     check_errors
-    echo "docker-compose restart" >> $sh_path
+    # Use "docker compose" instead of "docker-compose"
+    echo "docker compose restart" >> $sh_path
     check_errors
     echo "popd" >> $sh_path
     check_errors

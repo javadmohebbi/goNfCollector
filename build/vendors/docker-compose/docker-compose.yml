@@ -19,8 +19,9 @@ services:
 
         networks:
             - tick-graf
-
-        restart: on-failure
+            
+        # Two restart policies
+        #restart: on-failure
 
     # Grafna
     grafana:
